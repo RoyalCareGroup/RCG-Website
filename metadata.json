@@ -1,0 +1,10 @@
+{
+  "name": "Royal Care Group - Structural Intelligence Hub",
+  "version": "9.9.5",
+  "requestFramePermissions": [
+    "microphone",
+    "camera",
+    "geolocation"
+  ],
+  "description": "National NDIS Business Intelligence & Tech Division ecosystem powered by SYNK Core."
+}
