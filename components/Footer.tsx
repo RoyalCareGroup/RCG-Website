@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linkedin, Mail, MapPin, Globe, ShieldCheck } from 'lucide-react';
+import { Linkedin, Mail, MapPin, Globe, ShieldCheck, Cloud } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 import { BrandLogo } from './BrandLogo.tsx';
@@ -21,9 +21,18 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex flex-col items-center md:items-end">
-            <p className="text-[9px] text-slate-600 uppercase font-black mb-3 tracking-[0.5em]">Engineering Access</p>
-            <BackupButton />
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex flex-col items-center md:items-end">
+              <p className="text-[9px] text-slate-600 uppercase font-black mb-3 tracking-[0.5em]">Network Operations</p>
+              <Link to="/deploy" className="flex items-center space-x-3 px-6 py-4 bg-royal-950 border border-neon-blue/50 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] hover:bg-neon-blue hover:text-white transition-all shadow-xl">
+                <Cloud size={14} className="animate-pulse" />
+                <span>Open Deployment Hub</span>
+              </Link>
+            </div>
+            <div className="flex flex-col items-center md:items-end">
+              <p className="text-[9px] text-slate-600 uppercase font-black mb-3 tracking-[0.5em]">Engineering Access</p>
+              <BackupButton />
+            </div>
           </div>
 
           <div className="hidden lg:flex items-center space-x-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
@@ -59,6 +68,7 @@ const Footer: React.FC = () => {
             <h4 className="text-[10px] font-black text-white uppercase tracking-[0.6em] mb-8">Navigation</h4>
             <ul className="space-y-4 text-[11px] text-slate-400 font-black uppercase tracking-[0.3em]">
               <li><Link to="/" className="hover:text-neon-blue transition-colors">Mainframe</Link></li>
+              <li><Link to="/deploy" className="hover:text-neon-blue transition-colors text-neon-blue font-bold animate-pulse">Deployment Hub</Link></li>
               <li><Link to="/about" className="hover:text-neon-blue transition-colors">DNA & Origins</Link></li>
               <li><Link to="/casestudies" className="hover:text-neon-blue transition-colors">Case Studies</Link></li>
               <li><Link to="/consultancy" className="hover:text-neon-blue transition-colors">Strategic Advisory</Link></li>

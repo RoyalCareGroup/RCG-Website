@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu as MenuIcon, X, Sparkles, Cpu, ShieldCheck, Home as HomeIcon, Briefcase, Mic, Video, Layout, Terminal, Zap, Users, Star, Mail, Palette, Share2, Target, Shield } from 'lucide-react';
+import { Menu as MenuIcon, X, Sparkles, Cpu, ShieldCheck, Home as HomeIcon, Briefcase, Mic, Video, Layout, Terminal, Zap, Users, Star, Mail, Palette, Share2, Target, Shield, Cloud } from 'lucide-react';
 import { BrandLogo } from './BrandLogo.tsx';
 
 const Header = () => {
@@ -16,6 +16,7 @@ const Header = () => {
 
   const navLinks = [
     { path: '/', label: 'PROTOCOL MAINFRAME', icon: <HomeIcon size={14} className="mr-3 text-neon-blue" /> },
+    { path: '/deploy', label: 'DEPLOYMENT HUB', icon: <Cloud size={14} className="mr-3 text-neon-blue animate-pulse" />, highlight: true },
     { path: '/about', label: 'DNA & ORIGINS', icon: <Users size={14} className="mr-3 text-slate-500" /> },
     { path: '/casestudies', label: 'CASE STUDIES', icon: <Star size={14} className="mr-3 text-slate-500" /> },
     { path: '/consultancy', label: 'STRATEGIC ADVISORY', icon: <Target size={14} className="mr-3 text-neon-purple" /> },

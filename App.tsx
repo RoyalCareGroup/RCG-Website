@@ -19,6 +19,7 @@ import Terms from './pages/Terms.tsx';
 import Socials from './pages/Socials.tsx';
 import Consultancy from './pages/Consultancy.tsx';
 import Governance from './pages/Governance.tsx';
+import DeploymentHub from './pages/DeploymentHub.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 
 const ScrollToTop = () => {
@@ -63,6 +64,7 @@ const App: React.FC = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/socials" element={<Socials />} />
+            <Route path="/deploy" element={<DeploymentHub />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

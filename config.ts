@@ -11,6 +11,8 @@ export const COMPANY_DETAILS = {
   emailGeneral: "info@royalcaregroup.com.au",
   address: "2/290 Boundary Street",
   cityStateZip: "Spring Hill QLD 4000",
+  // Fix: Added missing productionUrl required by DeploymentHub.tsx
+  productionUrl: "https://www.royalcaregroup.com.au",
   socials: {
     linkedin: "https://linkedin.com/company/royalcaregroup"
   },
