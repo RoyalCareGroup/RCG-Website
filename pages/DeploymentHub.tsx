@@ -25,7 +25,9 @@ import {
   SearchCode,
   FileJson,
   Eye,
-  Info
+  Info,
+  CheckCircle,
+  Play
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -225,6 +227,42 @@ const DeploymentHub: React.FC = () => {
            </div>
         </div>
 
+        {/* --- DEPLOYMENT LIFECYCLE VISUALIZATION --- */}
+        <div className="mb-12 orbital-tile p-10 bg-royal-900/20 border-white/5 relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neon-blue to-transparent"></div>
+           <div className="flex items-center gap-5 mb-12">
+              <div className="p-3 bg-neon-blue/10 rounded-xl border border-neon-blue/20">
+                <Activity size={20} className="text-neon-blue" />
+              </div>
+              <h3 className="text-white font-black text-[11px] uppercase tracking-[0.5em]">The Deployment Lifecycle</h3>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+              {[
+                { step: "01", icon: <Terminal />, label: "STAGE", desc: "Apply XML code blocks to local buffer.", color: "text-white" },
+                { step: "02", icon: <Lock />, label: "COMMIT", desc: "Lock changes with a version signature.", color: "text-amber-500" },
+                { step: "03", icon: <Cloud />, label: "PUSH", desc: "Broadcast local buffer to GitHub relay.", color: "text-neon-blue" },
+                { step: "04", icon: <CheckCircle />, label: "BUILD", desc: "Cloudflare constructs the live node.", color: "text-emerald-500" }
+              ].map((item, i) => (
+                <div key={i} className="bg-royal-950/60 p-8 rounded-2xl border border-white/5 relative group hover:border-white/20 transition-all">
+                   <div className="text-[8px] font-mono text-slate-700 mb-4 font-black">STEP_{item.step}</div>
+                   <div className={`mb-6 ${item.color} group-hover:scale-110 transition-transform`}>
+                      {item.icon}
+                   </div>
+                   <h4 className={`text-sm font-black uppercase tracking-widest mb-3 ${item.color}`}>{item.label}</h4>
+                   <p className="text-[10px] text-slate-500 leading-relaxed font-light">{item.desc}</p>
+                </div>
+              ))}
+              {/* Connector Arrows for Desktop */}
+              <div className="hidden md:block absolute top-1/2 left-[23%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
+              <div className="hidden md:block absolute top-1/2 left-[48%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
+              <div className="hidden md:block absolute top-1/2 left-[73%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
+           </div>
+           <div className="mt-10 p-6 bg-royal-800/30 rounded-xl border border-white/5 italic text-[10px] text-slate-500 text-center">
+              "Automation is disabled to prevent accidental deployment of unstable logic nodes to the national infrastructure."
+           </div>
+        </div>
+
         {/* Sync Instructions Panel */}
         <div className="mb-12 orbital-tile p-10 bg-royal-950 border-amber-500/20 shadow-2xl">
            <div className="flex items-center gap-5 mb-8 text-amber-500">
@@ -238,7 +276,7 @@ const DeploymentHub: React.FC = () => {
                  </p>
                  <ol className="space-y-4 text-xs text-slate-500 list-decimal pl-5">
                     <li>Click the <strong>Source Control</strong> icon in the far-left vertical sidebar (looks like a branch).</li>
-                    <li>In the "Message" input field at the top, type <span className="text-neon-blue font-mono font-bold">Deploy v10.12.12</span>.</li>
+                    <li>In the "Message" input field at the top, type <span className="text-neon-blue font-mono font-bold">Deploy v{COMPANY_DETAILS.appVersion}</span>.</li>
                     <li>Click the blue <strong>"Commit"</strong> button.</li>
                     <li>After committing, click the blue <strong>"Sync Changes"</strong> or <strong>"Publish Branch"</strong> button that appears.</li>
                  </ol>
