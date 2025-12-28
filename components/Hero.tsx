@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ChevronRight, Activity, Terminal, ShieldCheck, Cpu, Radio } from 'lucide-react';
+import { Sparkles, ChevronRight, Activity, Terminal, ShieldCheck, Cpu, Radio, Zap } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Hero: React.FC = () => {
@@ -13,7 +13,7 @@ const Hero: React.FC = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center relative z-10">
         <div className="animate-fade-in">
           <div className="inline-flex items-center px-6 py-2.5 rounded-full border border-neon-purple/30 bg-neon-purple/10 text-neon-purple text-[10px] font-black tracking-[0.5em] mb-12 uppercase">
-             <Sparkles size={16} className="mr-3" /> Australia Wide Deployments
+             <Zap size={16} className="mr-3 animate-pulse text-neon-blue" /> National NDIS Engineering Core
           </div>
           <h1 className="text-6xl md:text-8xl font-display font-black text-white leading-[0.9] tracking-tighter mb-12">
             Structural<br/>
@@ -79,7 +79,7 @@ const Hero: React.FC = () => {
                  </div>
                </div>
 
-               {/* New Test Deployment Node */}
+               {/* Sync Status Node */}
                <div className="flex items-center justify-between px-4 py-2 bg-neon-blue/10 border border-neon-blue/20 rounded-xl">
                  <div className="flex items-center gap-3">
                    <Radio size={14} className="text-neon-blue animate-pulse" />
