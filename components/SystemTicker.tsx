@@ -18,7 +18,7 @@ export const SystemTicker: React.FC = () => {
     { icon: Activity, text: "Network Latency: 14.2ms Optimized", color: "text-neon-green" },
     { icon: Cpu, text: "SYNK_CORE Cluster: Status Nominal", color: "text-neon-blue" },
     { icon: Zap, text: "TFix Diagnostic: Scanning Real-time", color: "text-amber-500" },
-    { icon: Globe, text: "Uplink Node: AU-EAST ESTABLISHED", color: "text-neon-blue" },
+    { icon: Globe, text: "Uplink Node: AU-EAST DEPLOYMENT_VERIFIED", color: "text-neon-blue" },
   ];
 
   return (

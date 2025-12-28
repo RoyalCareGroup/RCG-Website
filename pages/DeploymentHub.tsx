@@ -21,7 +21,9 @@ import {
   Plus,
   Unplug,
   MousePointer2,
-  Trophy as WinIcon
+  Trophy as WinIcon,
+  SearchCode,
+  FileJson
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -29,6 +31,9 @@ import { COMPANY_DETAILS } from '../config.ts';
 const DeploymentHub: React.FC = () => {
   const [diagnosticReport, setDiagnosticReport] = useState<string[]>([]);
   const [hostStatus, setHostStatus] = useState<'CLOUDFLARE' | 'GOOGLE' | 'LOCAL'>('LOCAL');
+  const [liveVersion, setLiveVersion] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'SYNCED' | 'OUT_OF_SYNC' | 'UNKNOWN'>('UNKNOWN');
 
   const runDiagnostics = async () => {
     const report: string[] = [];
@@ -55,6 +60,30 @@ const DeploymentHub: React.FC = () => {
     setDiagnosticReport(report);
   };
 
+  const verifyPipeline = async () => {
+    setVerifying(true);
+    try {
+      // We attempt to fetch the version.json from the LIVE production domain
+      // This confirms if the GitHub -> Cloudflare push actually happened.
+      const response = await fetch(`${COMPANY_DETAILS.productionUrl}/version.json?cache_bust=${Date.now()}`);
+      if (!response.ok) throw new Error("Could not reach production node.");
+      
+      const data = await response.json();
+      setLiveVersion(data.version);
+      
+      if (data.version === COMPANY_DETAILS.appVersion) {
+        setSyncStatus('SYNCED');
+      } else {
+        setSyncStatus('OUT_OF_SYNC');
+      }
+    } catch (err) {
+      console.error("Pipeline verification failed:", err);
+      setSyncStatus('UNKNOWN');
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   useEffect(() => {
     runDiagnostics();
     const interval = setInterval(runDiagnostics, 30000);
@@ -78,6 +107,68 @@ const DeploymentHub: React.FC = () => {
           </p>
         </div>
 
+        {/* GitHub Connectivity Verifier */}
+        <div className="mb-12 glass border border-white/10 rounded-[3rem] p-10 md:p-16 relative overflow-hidden group">
+           <div className="absolute top-0 right-0 p-16 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-1000 pointer-events-none">
+              <Github size={300} className="text-white" />
+           </div>
+
+           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7 space-y-8">
+                 <div className="flex items-center gap-6">
+                    <div className="p-4 bg-royal-950 border border-neon-blue rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                       <SearchCode className="text-neon-blue" size={32} />
+                    </div>
+                    <div>
+                       <h3 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-2">Node Verification</h3>
+                       <p className="text-3xl font-display font-black text-white uppercase tracking-tight">Pipeline Integrity Test</p>
+                    </div>
+                 </div>
+                 <p className="text-slate-400 text-lg font-light leading-relaxed max-w-xl">
+                    Run a cross-node audit to see if the changes in this editor have successfully deployed to your live website at <span className="text-neon-blue font-bold">{COMPANY_DETAILS.productionUrl}</span>.
+                 </p>
+                 <button 
+                   onClick={verifyPipeline}
+                   disabled={verifying}
+                   className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl flex items-center gap-4 active:scale-95 disabled:opacity-50"
+                 >
+                    {verifying ? <RefreshCcw size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
+                    {verifying ? 'AUDITING GRID...' : 'Verify GitHub -> Cloudflare Sync'}
+                 </button>
+              </div>
+
+              <div className="lg:col-span-5">
+                 <div className={`p-10 rounded-[2.5rem] border ${syncStatus === 'SYNCED' ? 'border-emerald-500/30 bg-emerald-500/5' : syncStatus === 'OUT_OF_SYNC' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-royal-900/40'} transition-all duration-700 shadow-inner`}>
+                    <div className="space-y-8">
+                       <div className="flex justify-between items-center">
+                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Local Editor Version</span>
+                          <span className="text-white font-mono font-bold">{COMPANY_DETAILS.appVersion}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Live Site Version</span>
+                          <span className={`font-mono font-bold ${syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : syncStatus === 'SYNCED' ? 'text-emerald-500' : 'text-slate-700'}`}>
+                             {liveVersion || 'AWAITING_CHECK'}
+                          </span>
+                       </div>
+                       <div className="pt-6 border-t border-white/10">
+                          <div className={`flex items-center gap-4 ${syncStatus === 'SYNCED' ? 'text-emerald-500' : syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : 'text-slate-600'}`}>
+                             {syncStatus === 'SYNCED' ? <SuccessIcon size={20} /> : syncStatus === 'OUT_OF_SYNC' ? <AlertTriangle size={20} /> : <FileJson size={20} />}
+                             <span className="text-[11px] font-black uppercase tracking-[0.3em]">
+                                {syncStatus === 'SYNCED' ? 'PIPELINE_SYNCHRONIZED' : syncStatus === 'OUT_OF_SYNC' ? 'PUSH_REQUIRED: VERSIONS_MISMATCH' : 'SYSTEM_READY_FOR_TEST'}
+                             </span>
+                          </div>
+                          {syncStatus === 'OUT_OF_SYNC' && (
+                            <p className="mt-4 text-[10px] text-slate-500 leading-relaxed font-light italic">
+                               Tip: Your changes aren't live yet. Open the source control sidebar (left menu) and click "Push" or "Sync" to send this code to GitHub.
+                            </p>
+                          )}
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+
         {/* Deployment Path Map */}
         <div className="mb-12 relative">
            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
@@ -87,9 +178,8 @@ const DeploymentHub: React.FC = () => {
                     <Terminal size={32} />
                  </div>
                  <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4">Node 01: Editor</h3>
-                 <p className="text-slate-400 text-sm font-light">Code modified and XML applied. Current state saved locally.</p>
+                 <p className="text-slate-400 text-sm font-light">Code modified locally. Current buffer: <span className="text-white font-mono">{COMPANY_DETAILS.appVersion}</span></p>
                  <div className="mt-8 flex items-center gap-2 text-emerald-400 font-mono text-[9px] font-bold">
-                    {/* Fix: use correctly imported CheckCircle2 component */}
                     <CheckCircle2 size={14} /> STATUS: MODIFIED
                  </div>
               </div>
@@ -103,7 +193,6 @@ const DeploymentHub: React.FC = () => {
                  <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4">Node 02: GitHub</h3>
                  <p className="text-slate-400 text-sm font-light">The central relay. You must manually push changes from the editor sidebar.</p>
                  <div className={`mt-8 flex items-center gap-2 ${hostStatus === 'GOOGLE' ? 'text-amber-500' : 'text-emerald-400'} font-mono text-[9px] font-bold`}>
-                    {/* Fix: use correctly imported CheckCircle2 component */}
                     {hostStatus === 'GOOGLE' ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
                     {hostStatus === 'GOOGLE' ? 'STATUS: AWAITING_PUSH' : 'STATUS: SYNCHRONIZED'}
                  </div>
@@ -130,28 +219,6 @@ const DeploymentHub: React.FC = () => {
               <ArrowRight size={40} className="text-white/10" />
            </div>
         </div>
-
-        {hostStatus === 'GOOGLE' && (
-           <div className="bg-amber-500/10 border border-amber-500/30 rounded-[3rem] p-12 mb-12 flex flex-col lg:flex-row items-center justify-between gap-12">
-              <div className="flex items-center gap-8">
-                 <div className="p-6 bg-amber-500 text-black rounded-full shadow-[0_0_40px_rgba(245,158,11,0.4)]">
-                    <AlertTriangle size={40} />
-                 </div>
-                 <div>
-                    <h2 className="text-white font-black text-2xl uppercase tracking-tighter mb-2">Push Protocol Required</h2>
-                    <p className="text-amber-200 text-lg font-light max-w-xl">
-                       You are viewing a **Preview** environment. To see version **{COMPANY_DETAILS.appVersion}** on your live site, click the "Sync" or "Push" button in your editor's sidebar.
-                    </p>
-                 </div>
-              </div>
-              <button 
-                 onClick={() => window.open('https://github.com/login', '_blank')}
-                 className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-amber-500 transition-all shadow-3xl flex items-center gap-4"
-              >
-                 Open GitHub Relay <ExternalLink size={14} />
-              </button>
-           </div>
-        )}
 
         <div className="glass p-10 rounded-[3rem] border border-white/5 bg-royal-900/20 mb-12">
            <div className="flex items-center gap-4 mb-8 text-slate-500">

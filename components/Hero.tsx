@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ChevronRight, Activity, Terminal, ShieldCheck, Cpu } from 'lucide-react';
+import { Sparkles, ChevronRight, Activity, Terminal, ShieldCheck, Cpu, Radio } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Hero: React.FC = () => {
@@ -77,6 +77,15 @@ const Hero: React.FC = () => {
                  <div className="w-full bg-royal-950 h-2 rounded-full overflow-hidden">
                    <div className="bg-neon-purple h-full w-[100%]"></div>
                  </div>
+               </div>
+
+               {/* New Test Deployment Node */}
+               <div className="flex items-center justify-between px-4 py-2 bg-neon-blue/10 border border-neon-blue/20 rounded-xl">
+                 <div className="flex items-center gap-3">
+                   <Radio size={14} className="text-neon-blue animate-pulse" />
+                   <span className="text-[9px] font-black text-white uppercase tracking-widest">Sync Status: NOMINAL</span>
+                 </div>
+                 <span className="text-[8px] font-mono text-neon-blue">v{COMPANY_DETAILS.appVersion}</span>
                </div>
              </div>
 
