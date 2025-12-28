@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Radio, Cpu, Database, Shield, Lock, Zap } from 'lucide-react';
+import { Activity, Radio, Cpu, Database, Shield, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const LiveStatusHUD = () => {
@@ -31,10 +31,7 @@ const LiveStatusHUD = () => {
     <div className="fixed bottom-8 left-8 z-[1001] hidden xl:block animate-fade-in">
       <div className="glass bg-royal-900/80 border border-white/15 p-5 rounded-[12px] flex items-center space-x-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
         <div className="flex items-center space-x-4">
-          <div className="relative">
-             <Activity size={18} className="text-neon-blue" />
-             <Zap size={8} className="absolute -top-1 -right-1 text-neon-purple animate-pulse" />
-          </div>
+          <Activity size={18} className="text-neon-blue" />
           <div className="flex flex-col">
             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Latency</span>
             <span className="text-[11px] font-mono text-white font-bold">{telemetry.latency}ms</span>

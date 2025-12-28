@@ -26,6 +26,31 @@ import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Github, ExternalLink } from 'lucide-react';
 
+// --- FAVICON PULSE ENGINE v1.0 ---
+const FaviconPulse = () => {
+  useEffect(() => {
+    const phases = [
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946efcc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef88' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
+      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946efcc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>"
+    ];
+    
+    let step = 0;
+    const interval = setInterval(() => {
+      const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (link) {
+        link.href = phases[step % phases.length];
+      }
+      step++;
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return null;
+};
+
 // --- SOVEREIGN SYNC ENGINE v7.0 ---
 const SovereignSync = () => {
   const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
@@ -102,6 +127,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <SovereignSync />
+      <FaviconPulse />
       <GoogleTagTracker />
       <div className="min-h-screen bg-[#01040f] text-slate-200 flex flex-col">
         <LiveStatusHUD />

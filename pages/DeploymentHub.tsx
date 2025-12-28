@@ -23,7 +23,8 @@ import {
   MousePointer2,
   Trophy as WinIcon,
   SearchCode,
-  FileJson
+  FileJson,
+  Eye
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -33,7 +34,7 @@ const DeploymentHub: React.FC = () => {
   const [hostStatus, setHostStatus] = useState<'CLOUDFLARE' | 'GOOGLE' | 'LOCAL'>('LOCAL');
   const [liveVersion, setLiveVersion] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<'SYNCED' | 'OUT_OF_SYNC' | 'UNKNOWN'>('UNKNOWN');
+  const [syncStatus, setSyncStatus] = useState<'SYNCED' | 'OUT_OF_SYNC' | 'UNKNOWN' | 'CORS_RESTRICTED'>('UNKNOWN');
 
   const runDiagnostics = async () => {
     const report: string[] = [];
@@ -62,23 +63,43 @@ const DeploymentHub: React.FC = () => {
 
   const verifyPipeline = async () => {
     setVerifying(true);
+    setSyncStatus('UNKNOWN');
+    
     try {
-      // We attempt to fetch the version.json from the LIVE production domain
-      // This confirms if the GitHub -> Cloudflare push actually happened.
-      const response = await fetch(`${COMPANY_DETAILS.productionUrl}/version.json?cache_bust=${Date.now()}`);
-      if (!response.ok) throw new Error("Could not reach production node.");
-      
-      const data = await response.json();
-      setLiveVersion(data.version);
-      
-      if (data.version === COMPANY_DETAILS.appVersion) {
-        setSyncStatus('SYNCED');
-      } else {
-        setSyncStatus('OUT_OF_SYNC');
+      const relativeRes = await fetch('./version.json?cb=' + Date.now());
+      if (relativeRes.ok) {
+        const data = await relativeRes.json();
+        setLiveVersion(data.version);
+        if (data.version === COMPANY_DETAILS.appVersion) {
+           setSyncStatus('SYNCED');
+           return;
+        }
       }
-    } catch (err) {
+
+      const host = window.location.hostname;
+      if (!host.includes('royalcaregroup.com.au')) {
+        const response = await fetch(`${COMPANY_DETAILS.productionUrl}/version.json?cache_bust=${Date.now()}`, {
+          mode: 'cors'
+        });
+        
+        if (!response.ok) throw new Error("Could not reach production node.");
+        
+        const data = await response.json();
+        setLiveVersion(data.version);
+        
+        if (data.version === COMPANY_DETAILS.appVersion) {
+          setSyncStatus('SYNCED');
+        } else {
+          setSyncStatus('OUT_OF_SYNC');
+        }
+      }
+    } catch (err: any) {
       console.error("Pipeline verification failed:", err);
-      setSyncStatus('UNKNOWN');
+      if (err.name === 'TypeError' || err.message.includes('fetch')) {
+        setSyncStatus('CORS_RESTRICTED');
+      } else {
+        setSyncStatus('UNKNOWN');
+      }
     } finally {
       setVerifying(false);
     }
@@ -127,18 +148,27 @@ const DeploymentHub: React.FC = () => {
                  <p className="text-slate-400 text-lg font-light leading-relaxed max-w-xl">
                     Run a cross-node audit to see if the changes in this editor have successfully deployed to your live website at <span className="text-neon-blue font-bold">{COMPANY_DETAILS.productionUrl}</span>.
                  </p>
-                 <button 
-                   onClick={verifyPipeline}
-                   disabled={verifying}
-                   className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl flex items-center gap-4 active:scale-95 disabled:opacity-50"
-                 >
-                    {verifying ? <RefreshCcw size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
-                    {verifying ? 'AUDITING GRID...' : 'Verify GitHub -> Cloudflare Sync'}
-                 </button>
+                 <div className="flex flex-wrap gap-4">
+                   <button 
+                     onClick={verifyPipeline}
+                     disabled={verifying}
+                     className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl flex items-center gap-4 active:scale-95 disabled:opacity-50"
+                   >
+                      {verifying ? <RefreshCcw size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
+                      {verifying ? 'AUDITING GRID...' : 'Verify GitHub -> Cloudflare Sync'}
+                   </button>
+                   <a 
+                     href={`${COMPANY_DETAILS.productionUrl}/version.json`} 
+                     target="_blank" 
+                     className="px-10 py-5 bg-royal-900 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-royal-800 transition-all shadow-3xl flex items-center gap-4"
+                   >
+                      <Eye size={16} className="text-neon-purple" /> Inspect Live Node (Manual)
+                   </a>
+                 </div>
               </div>
 
               <div className="lg:col-span-5">
-                 <div className={`p-10 rounded-[2.5rem] border ${syncStatus === 'SYNCED' ? 'border-emerald-500/30 bg-emerald-500/5' : syncStatus === 'OUT_OF_SYNC' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-royal-900/40'} transition-all duration-700 shadow-inner`}>
+                 <div className={`p-10 rounded-[2.5rem] border ${syncStatus === 'SYNCED' ? 'border-emerald-500/30 bg-emerald-500/5' : syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-royal-900/40'} transition-all duration-700 shadow-inner`}>
                     <div className="space-y-8">
                        <div className="flex justify-between items-center">
                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Local Editor Version</span>
@@ -147,16 +177,23 @@ const DeploymentHub: React.FC = () => {
                        <div className="flex justify-between items-center">
                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Live Site Version</span>
                           <span className={`font-mono font-bold ${syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : syncStatus === 'SYNCED' ? 'text-emerald-500' : 'text-slate-700'}`}>
-                             {liveVersion || 'AWAITING_CHECK'}
+                             {syncStatus === 'CORS_RESTRICTED' ? 'CORS_BLOCKED' : (liveVersion || 'AWAITING_CHECK')}
                           </span>
                        </div>
                        <div className="pt-6 border-t border-white/10">
-                          <div className={`flex items-center gap-4 ${syncStatus === 'SYNCED' ? 'text-emerald-500' : syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : 'text-slate-600'}`}>
-                             {syncStatus === 'SYNCED' ? <SuccessIcon size={20} /> : syncStatus === 'OUT_OF_SYNC' ? <AlertTriangle size={20} /> : <FileJson size={20} />}
+                          <div className={`flex items-center gap-4 ${syncStatus === 'SYNCED' ? 'text-emerald-500' : syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED' ? 'text-amber-500' : 'text-slate-600'}`}>
+                             {syncStatus === 'SYNCED' ? <SuccessIcon size={20} /> : (syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED') ? <AlertTriangle size={20} /> : <FileJson size={20} />}
                              <span className="text-[11px] font-black uppercase tracking-[0.3em]">
-                                {syncStatus === 'SYNCED' ? 'PIPELINE_SYNCHRONIZED' : syncStatus === 'OUT_OF_SYNC' ? 'PUSH_REQUIRED: VERSIONS_MISMATCH' : 'SYSTEM_READY_FOR_TEST'}
+                                {syncStatus === 'SYNCED' ? 'PIPELINE_SYNCHRONIZED' : 
+                                 syncStatus === 'CORS_RESTRICTED' ? 'CROSS_ORIGIN_SECURITY_RESTRICTION' :
+                                 syncStatus === 'OUT_OF_SYNC' ? 'PUSH_REQUIRED: VERSIONS_MISMATCH' : 'SYSTEM_READY_FOR_TEST'}
                              </span>
                           </div>
+                          {syncStatus === 'CORS_RESTRICTED' && (
+                             <p className="mt-4 text-[10px] text-slate-500 leading-relaxed font-light italic">
+                                Note: This preview environment cannot directly query the production domain due to browser CORS policies. Use the "Inspect Live Node" button above to verify manually.
+                             </p>
+                          )}
                           {syncStatus === 'OUT_OF_SYNC' && (
                             <p className="mt-4 text-[10px] text-slate-500 leading-relaxed font-light italic">
                                Tip: Your changes aren't live yet. Open the source control sidebar (left menu) and click "Push" or "Sync" to send this code to GitHub.
