@@ -27,7 +27,8 @@ import {
   Eye,
   Info,
   CheckCircle,
-  Play
+  Play,
+  History
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -45,6 +46,7 @@ const DeploymentHub: React.FC = () => {
     
     report.push(`[${new Date().toLocaleTimeString()}] Starting Structural Connectivity Audit...`);
     report.push(`[DETECTED_HOST]: ${host}`);
+    report.push(`[LOCAL_EDITOR_PULSE]: Version ${COMPANY_DETAILS.appVersion} verified in local buffer.`);
     
     if (host.includes('pages.dev') || host.includes('royalcaregroup.com.au')) {
       setHostStatus('CLOUDFLARE');
@@ -193,7 +195,10 @@ const DeploymentHub: React.FC = () => {
                     <div className="space-y-8">
                        <div className="flex justify-between items-center">
                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Local Editor Version</span>
-                          <span className="text-white font-mono font-bold">{COMPANY_DETAILS.appVersion}</span>
+                          <div className="flex flex-col items-end">
+                            <span className="text-white font-mono font-bold">{COMPANY_DETAILS.appVersion}</span>
+                            <span className="text-[8px] text-slate-600 font-mono mt-1">BUILD: {COMPANY_DETAILS.buildDate}</span>
+                          </div>
                        </div>
                        <div className="flex justify-between items-center">
                           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Live Site Version</span>
@@ -225,6 +230,23 @@ const DeploymentHub: React.FC = () => {
                  </div>
               </div>
            </div>
+        </div>
+
+        {/* Sync Status Live HUD */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {[
+              { label: "Local Buffer", val: COMPANY_DETAILS.appVersion, icon: <Terminal size={16}/>, color: "text-white" },
+              { label: "Last Push", val: "Awaiting Sync", icon: <History size={16}/>, color: "text-slate-500" },
+              { label: "Production Node", val: liveVersion || "Pending", icon: <Globe size={16}/>, color: "text-neon-blue" }
+            ].map((node, i) => (
+              <div key={i} className="glass p-6 rounded-2xl border border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-royal-950 rounded-lg text-slate-600">{node.icon}</div>
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{node.label}</span>
+                </div>
+                <span className={`text-[10px] font-mono font-bold ${node.color}`}>{node.val}</span>
+              </div>
+            ))}
         </div>
 
         {/* --- DEPLOYMENT LIFECYCLE VISUALIZATION --- */}
@@ -294,57 +316,6 @@ const DeploymentHub: React.FC = () => {
                     <span className="text-[9px] font-mono text-emerald-500">{COMPANY_DETAILS.cloudflareEndpoint}</span>
                  </div>
               </div>
-           </div>
-        </div>
-
-        {/* Deployment Path Map */}
-        <div className="mb-12 relative">
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
-              {/* Step 1: Editor */}
-              <div className="orbital-tile p-10 bg-royal-900/40 border-white/10 flex flex-col items-center text-center">
-                 <div className="p-5 bg-white text-black rounded-2xl mb-6 shadow-2xl">
-                    <Terminal size={32} />
-                 </div>
-                 <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4">Node 01: Editor</h3>
-                 <p className="text-slate-400 text-sm font-light">Code modified locally. Current buffer: <span className="text-white font-mono">{COMPANY_DETAILS.appVersion}</span></p>
-                 <div className="mt-8 flex items-center gap-2 text-emerald-400 font-mono text-[9px] font-bold">
-                    <CheckCircle2 size={14} /> STATUS: MODIFIED
-                 </div>
-              </div>
-
-              {/* Step 2: GitHub */}
-              <div className="orbital-tile p-10 bg-royal-900/40 border-neon-blue/30 flex flex-col items-center text-center relative overflow-hidden">
-                 {hostStatus === 'GOOGLE' && <div className="absolute inset-0 bg-amber-500/5 animate-pulse"></div>}
-                 <div className="p-5 bg-royal-950 border border-neon-blue text-neon-blue rounded-2xl mb-6 shadow-3xl">
-                    <Github size={32} />
-                 </div>
-                 <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4">Node 02: GitHub</h3>
-                 <p className="text-slate-400 text-sm font-light">The central relay. You must manually push changes from the editor sidebar.</p>
-                 <div className={`mt-8 flex items-center gap-2 ${hostStatus === 'GOOGLE' ? 'text-amber-500' : 'text-emerald-400'} font-mono text-[9px] font-bold`}>
-                    {hostStatus === 'GOOGLE' ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
-                    {hostStatus === 'GOOGLE' ? 'STATUS: AWAITING_PUSH' : 'STATUS: SYNCHRONIZED'}
-                 </div>
-              </div>
-
-              {/* Step 3: Cloudflare */}
-              <div className="orbital-tile p-10 bg-royal-900/40 border-white/10 flex flex-col items-center text-center">
-                 <div className="p-5 bg-royal-950 border border-white/10 text-white rounded-2xl mb-6 shadow-2xl">
-                    <Cloud size={32} />
-                 </div>
-                 <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4">Node 03: Live Site</h3>
-                 <p className="text-slate-400 text-sm font-light">Cloudflare builds the site from GitHub and broadcasts to the global edge.</p>
-                 <div className="mt-8 flex items-center gap-2 text-slate-500 font-mono text-[9px] font-bold uppercase tracking-widest">
-                    Build: {hostStatus === 'CLOUDFLARE' ? 'Active' : 'Awaiting Relay'}
-                 </div>
-              </div>
-           </div>
-
-           {/* Connector Arrows */}
-           <div className="hidden lg:block absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2 z-0">
-              <ArrowRight size={40} className="text-white/10" />
-           </div>
-           <div className="hidden lg:block absolute top-1/2 left-2/3 -translate-y-1/2 -translate-x-1/2 z-0">
-              <ArrowRight size={40} className="text-white/10" />
            </div>
         </div>
 
