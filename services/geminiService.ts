@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { COMPANY_DETAILS } from "../config.ts";
 
 export const sendChatMessage = async (
   prompt: string, 
@@ -10,7 +11,7 @@ export const sendChatMessage = async (
     
     const config: any = {
       temperature: 0.7,
-      systemInstruction: `You are the RCG-SYNK Structural Intelligence Node v9.9.5. 
+      systemInstruction: `You are the RCG-SYNK Structural Intelligence Node v${COMPANY_DETAILS.appVersion}. 
       Role: National NDIS Strategic Consultant & Technical Engineer.
       Identity: Sovereign logic layer for Royal Care Group.
       

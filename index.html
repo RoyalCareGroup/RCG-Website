@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en-AU" class="dark">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17820482706"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17820482706');
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <title>Royal Care Group | Structural Intelligence for NDIS</title>
-    <!-- Favicon Integration -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>">
+    
+    <meta name="title" content="Royal Care Group | Structural Intelligence for NDIS">
+    <meta name="description" content="National NDIS Business Intelligence & Tech Division. We architect high-performance provider systems through proprietary structural intelligence.">
+    <link rel="canonical" href="https://www.royalcaregroup.com.au/" />
+
+    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3h18v18H3V3z'/><path d='m7 7 10 10'/><path d='m17 7-10 10'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -13,71 +31,38 @@
         theme: {
           extend: {
             colors: {
-              royal: { 
-                950: '#01040f', 
-                900: '#020617', 
-                800: '#0f172a', 
-                700: '#1e293b',
-                600: '#334155'
-              },
-              neon: { 
-                purple: '#d946ef', 
-                blue: '#06b6d4',
-                green: '#10b981',
-                red: '#ef4444'
-              }
+              royal: { 950: '#020817', 900: '#0f172a', 800: '#1e293b', 700: '#334155', 600: '#475569' },
+              neon: { purple: '#d946ef', blue: '#06b6d4', green: '#10b981', red: '#ef4444' }
             },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Outfit', 'sans-serif']
-            },
+            fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
             animation: {
               'spin-slow': 'spin 12s linear infinite',
               'spin-reverse-slow': 'spin-reverse 15s linear infinite',
               'float': 'float 6s ease-in-out infinite',
-              'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'gradient-x': 'gradient-x 5s ease infinite',
               'scan': 'scan 3s ease-in-out infinite',
-              'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
-              'glitch': 'glitch 1s linear infinite',
-              'marquee': 'marquee 40s linear infinite'
+              'border-beam': 'border-beam 4s infinite linear',
+              'tracing-light': 'tracing-light 3s linear infinite',
+              'hero-reveal': 'hero-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'blob-drift': 'blob-drift 20s ease-in-out infinite alternate',
             },
             keyframes: {
-              'spin-reverse': {
-                from: { transform: 'rotate(360deg)' },
-                to: { transform: 'rotate(0deg)' }
+              'spin-reverse': { from: { transform: 'rotate(360deg)' }, to: { transform: 'rotate(0deg)' } },
+              'float': { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+              'gradient-x': { '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' }, '50%': { 'background-size': '200% 200%', 'background-position': 'right center' } },
+              'scan': { '0%, 100%': { top: '0%' }, '50%': { top: '100%' } },
+              'tracing-light': {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' }
               },
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' }
+              'hero-reveal': {
+                '0%': { opacity: '0', transform: 'translateY(40px) scale(0.98)', filter: 'blur(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0) scale(1)', filter: 'blur(0)' }
               },
-              'pulse-glow': {
-                '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(217,70,239,0.3)' },
-                '50%': { opacity: 0.7, boxShadow: '0 0 40px rgba(217,70,239,0.6)' }
-              },
-              'gradient-x': {
-                '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
-                '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
-              },
-              scan: {
-                '0%, 100%': { top: '0%' },
-                '50%': { top: '100%' }
-              },
-              'fade-in-up': {
-                '0%': { opacity: '0', transform: 'translate(-50%, 20px)' },
-                '100%': { opacity: '1', transform: 'translate(-50%, -50%)' }
-              },
-              glitch: {
-                '0%': { transform: 'translate(0)' },
-                '20%': { transform: 'translate(-2px, 2px)' },
-                '40%': { transform: 'translate(-2px, -2px)' },
-                '60%': { transform: 'translate(2px, 2px)' },
-                '80%': { transform: 'translate(2px, -2px)' },
-                '100%': { transform: 'translate(0)' }
-              },
-              marquee: {
-                '0%': { transform: 'translateX(0%)' },
-                '100%': { transform: 'translateX(-100%)' }
+              'blob-drift': {
+                '0%': { transform: 'translate(0, 0) scale(1)' },
+                '50%': { transform: 'translate(5%, 10%) scale(1.1)' },
+                '100%': { transform: 'translate(-5%, 5%) scale(0.9)' }
               }
             }
           }
@@ -86,131 +71,111 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      body { background-color: #01040f; color: #f8fafc; margin: 0; overflow-x: hidden; }
-      .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-      .neon-border-purple { border: 1px solid rgba(217,70,239,0.3); box-shadow: 0 0 20px rgba(217,70,239,0.1); }
-      .neon-border-blue { border: 1px solid rgba(6,182,212,0.3); box-shadow: 0 0 20px rgba(6,182,212,0.1); }
-      .glow-text-purple { text-shadow: 0 0 10px rgba(217,70,239,0.5); }
-      .glow-text-blue { text-shadow: 0 0 10px rgba(6,182,212,0.5); }
+      body { background-color: #020817; color: #f1f5f9; margin: 0; overflow-x: hidden; }
+      
+      /* HIGH DEFINITION SURFACES */
+      .glass { 
+        background: rgba(15, 23, 42, 0.85); 
+        backdrop-filter: blur(20px); 
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
       
       .bg-noise::after {
-        content: "";
-        position: fixed;
-        top: -150%;
-        left: -150%;
-        width: 300%;
-        height: 300%;
-        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-        opacity: 0.05;
-        pointer-events: none;
-        z-index: 9999;
+        content: ""; position: fixed; top: -150%; left: -150%; width: 300%; height: 300%;
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg"); opacity: 0.03; pointer-events: none; z-index: 9999;
       }
 
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #01040f; }
-      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #d946ef; }
-      
+      /* ARCHITECTURAL MENU BORDER: 10px Rounded + Tracing Light */
       .orbital-border {
-        border: 1px solid rgba(6,182,212,0.2);
-        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        border-radius: 10px; 
         position: relative;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(16px);
+        background: #0f172a; 
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
       }
       .orbital-border::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 50%;
-        padding: 2px;
-        background: linear-gradient(45deg, #06b6d4, #d946ef, #06b6d4);
-        background-size: 200% 200%;
-        animation: gradient-x 3s linear infinite;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
+        content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #06b6d4, #d946ef, transparent);
+        animation: tracing-light 3s linear infinite;
+      }
+      .orbital-border::after {
+        content: ""; position: absolute; bottom: 0; right: -100%; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #d946ef, #06b6d4, transparent);
+        animation: tracing-light 3s linear infinite;
+        animation-delay: 1.5s;
       }
 
       .orbital-tile {
-        position: relative;
-        background: rgba(15, 23, 42, 0.3);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 2.5rem;
+        position: relative; 
+        background: rgba(15, 23, 42, 0.7); 
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        border-radius: 2rem; 
         overflow: hidden;
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .orbital-tile::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at top right, rgba(6, 182, 212, 0.08), transparent 40%);
-        pointer-events: none;
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
       }
       .orbital-tile:hover {
-        border-color: rgba(6, 182, 212, 0.3);
-        transform: translateY(-8px) scale(1.01);
-        box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.6);
-      }
-      .orbital-content {
-        position: relative;
-        z-index: 10;
+        transform: translateY(-10px); 
+        border-color: rgba(6, 182, 212, 0.5);
+        background: rgba(30, 41, 59, 0.85); 
+        box-shadow: 0 50px 100px -20px rgba(0,0,0,0.8), 0 0 30px rgba(6, 182, 212, 0.1);
       }
 
+      /* NEON BUTTON SYSTEM */
       .slim-orbital-btn {
-        position: relative;
-        background: #020617;
-        border: 1px solid rgba(6, 182, 212, 0.4);
-        border-radius: 1.25rem;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative; 
+        background: #0f172a; 
+        border: 1px solid rgba(6, 182, 212, 0.3);
+        border-radius: 12px; 
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
         overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        z-index: 1;
       }
       .slim-orbital-btn::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(45deg, rgba(6, 182, 212, 0.2), rgba(217, 70, 239, 0.2));
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(45deg, #06b6d422, #d946ef22);
+        opacity: 0; transition: opacity 0.4s ease; z-index: -1;
       }
       .slim-orbital-btn:hover {
-        border-color: #06b6d4;
-        box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
-        transform: translateY(-2px);
+        border-color: #06b6d4; 
+        background: #1e293b;
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 0 25px rgba(6, 182, 212, 0.4), 0 10px 40px rgba(0,0,0,0.5);
       }
       .slim-orbital-btn:hover::before {
         opacity: 1;
       }
+
+      /* Apply subtle neon to ALL theme buttons */
+      button:not(.orbital-border), a.px-12, a.px-14, a.px-16 {
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
       
-      .text-spotlight {
-        background: linear-gradient(135deg, #fff 0%, #94a3b8 50%, #475569 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-size: 200% 200%;
-        animation: gradient-x 8s ease infinite;
+      .bg-neon-purple:hover {
+        box-shadow: 0 0 30px rgba(217, 70, 239, 0.5);
+        border: 1px solid rgba(255,255,255,0.4);
+      }
+      
+      .bg-white:hover {
+        box-shadow: 0 0 30px rgba(6, 182, 212, 0.4);
       }
 
       .cyber-grid {
-        background-image: linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
+        background-image: linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
       }
 
-      @keyframes fade-in {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .animate-fade-in {
-        animation: fade-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      }
-
-      .mask-radial {
-        mask-image: radial-gradient(circle at center, black, transparent 80%);
-      }
+      /* Scrollbar Definition */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: #020817; }
+      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
     </style>
 <script type="importmap">
 {

@@ -1,13 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { SynkProductIcon } from './SynkProductIcon.tsx';
-import { Rocket } from 'lucide-react';
+import { Rocket, Clock } from 'lucide-react';
 
 export const LaunchCountdown: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   function calculateTimeLeft() {
-    // Target: January 16, 2026
     const targetDate = new Date('2026-01-16T00:00:00').getTime();
     const now = new Date().getTime();
     const difference = targetDate - now;
@@ -28,55 +26,50 @@ export const LaunchCountdown: React.FC = () => {
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-    <div className="flex flex-col items-center mx-1 sm:mx-2">
-      <div className="bg-royal-950/80 border border-royal-700 rounded-lg p-2 w-12 sm:w-16 h-12 sm:h-16 flex items-center justify-center shadow-inner relative overflow-hidden group">
-        <div className="absolute inset-0 bg-neon-purple/5 group-hover:bg-neon-purple/10 transition-colors"></div>
-        <span className="text-xl sm:text-2xl font-mono font-bold text-white group-hover:text-neon-purple transition-colors">
+    <div className="flex flex-col items-center mx-2">
+      <div className="bg-royal-950 border border-white/10 rounded-xl p-3 w-16 sm:w-20 h-16 sm:h-20 flex items-center justify-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neon-blue to-transparent opacity-30"></div>
+        <span className="text-2xl sm:text-3xl font-mono font-black text-white group-hover:text-neon-blue transition-colors">
           {value.toString().padStart(2, '0')}
         </span>
       </div>
-      <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wider mt-1 font-semibold">{label}</span>
+      <span className="text-[9px] text-slate-500 uppercase tracking-[0.3em] mt-3 font-black">{label}</span>
     </div>
   );
 
   return (
     <div className="relative group">
-      {/* Glow Effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-neon-purple via-neon-blue to-neon-purple rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+      <div className="absolute -inset-1 bg-gradient-to-r from-neon-purple via-neon-blue to-neon-purple rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
       
-      <div className="relative flex flex-col sm:flex-row items-center gap-6 p-5 sm:p-6 bg-royal-900/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl">
+      <div className="relative flex flex-col sm:flex-row items-center gap-8 p-8 bg-royal-900/90 backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-3xl">
         
-        {/* Left: Icon & Badge */}
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-2 min-w-[120px]">
-           <div className="transform scale-75 sm:scale-90 origin-center sm:origin-left">
-             <SynkProductIcon type="claim" size={64} isActive={true} phase={1} />
+        <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-3 min-w-[140px]">
+           <div className="bg-royal-950 p-3 rounded-xl border border-white/5 shadow-2xl">
+             <SynkProductIcon type="claim" size={56} isActive={true} phase={1} />
            </div>
            <div>
-             <div className="flex items-center justify-center sm:justify-start space-x-1 text-neon-purple text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
+             <div className="flex items-center justify-center sm:justify-start space-x-2 text-neon-purple text-[9px] font-black tracking-[0.3em] uppercase mb-1">
                <Rocket size={12} className="animate-pulse" />
-               <span>Incoming</span>
+               <span>Deployment</span>
              </div>
-             <div className="text-white font-display font-bold text-lg leading-none">ClaimSYNK</div>
-             <div className="text-slate-400 text-xs">Official Launch</div>
+             <div className="text-white font-display font-black text-xl leading-none uppercase tracking-tighter">ClaimSYNK</div>
+             <div className="text-slate-500 text-[10px] font-mono mt-1">EST_SYNCHRONIZATION</div>
            </div>
         </div>
 
-        {/* Divider */}
-        <div className="w-full sm:w-px h-px sm:h-20 bg-gradient-to-r sm:bg-gradient-to-b from-transparent via-slate-600 to-transparent"></div>
+        <div className="w-full sm:w-[1px] h-[1px] sm:h-24 bg-royal-800"></div>
 
-        {/* Right: Counter */}
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center">
           <TimeUnit value={timeLeft.days} label="Days" />
-          <div className="text-slate-600 text-2xl font-light mt-2">:</div>
+          <Clock className="text-royal-800 mx-1 mt-[-20px]" size={16} />
           <TimeUnit value={timeLeft.hours} label="Hrs" />
-          <div className="text-slate-600 text-2xl font-light mt-2">:</div>
+          <Clock className="text-royal-800 mx-1 mt-[-20px]" size={16} />
           <TimeUnit value={timeLeft.minutes} label="Mins" />
-          <div className="text-slate-600 text-2xl font-light mt-2">:</div>
+          <Clock className="text-royal-800 mx-1 mt-[-20px]" size={16} />
           <TimeUnit value={timeLeft.seconds} label="Secs" />
         </div>
       </div>

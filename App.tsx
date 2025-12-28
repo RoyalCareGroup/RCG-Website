@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -20,55 +20,117 @@ import Socials from './pages/Socials.tsx';
 import Consultancy from './pages/Consultancy.tsx';
 import Governance from './pages/Governance.tsx';
 import DeploymentHub from './pages/DeploymentHub.tsx';
+import CommandCenter from './pages/CommandCenter.tsx';
+import AdminLogin from './components/AdminLogin.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
+import { COMPANY_DETAILS } from './config.ts';
+import { AlertTriangle, Github, ExternalLink } from 'lucide-react';
 
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
+// --- SOVEREIGN SYNC ENGINE v7.0 ---
+const SovereignSync = () => {
+  const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
+  const location = useLocation();
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    const host = window.location.hostname;
+    const isStaging = host.includes('run.app');
+    const isLive = host.includes('royalcaregroup.com.au') || host.includes('pages.dev');
+    
+    if (isStaging) setEnvStatus('STAGING');
+    else if (isLive) setEnvStatus('LIVE');
+    else setEnvStatus('LOCAL');
+
+    // Cache Purge Logic
+    const activeVersion = COMPANY_DETAILS.appVersion;
+    const lastSeenVersion = localStorage.getItem('rcg_mainframe_pulse');
+
+    if (lastSeenVersion && lastSeenVersion !== activeVersion) {
+      localStorage.setItem('rcg_mainframe_pulse', activeVersion);
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          for (const name of names) caches.delete(name);
+        });
+      }
+      window.location.reload();
+    } else {
+      localStorage.setItem('rcg_mainframe_pulse', activeVersion);
+    }
+  }, [location]);
+
+  if (envStatus === 'STAGING') {
+    return (
+      <div className="bg-amber-500 text-black py-2 px-6 flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] relative z-[9999] shadow-2xl">
+        <AlertTriangle size={14} />
+        <span>Staging Preview Mode: Changes here must be Pushed to GitHub to update the Live Domain</span>
+        <div className="w-px h-4 bg-black/20"></div>
+        <span className="font-mono">v{COMPANY_DETAILS.appVersion}</span>
+      </div>
+    );
+  }
+
   return null;
 };
 
-const Scanline = () => (
-  <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.03]">
-    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
-  </div>
-);
+// --- AUTH GATING ---
+const SovereignRoute = ({ children }: { children?: React.ReactNode }) => {
+  const isAuthorized = !!localStorage.getItem('rcg_auth_token');
+  const location = useLocation();
+
+  if (!isAuthorized) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// --- TRACKING ---
+const GoogleTagTracker = () => {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (typeof (window as any).gtag === 'function') {
+      (window as any).gtag('config', 'AW-17820482706', {
+        'page_path': pathname + hash,
+        'page_title': document.title
+      });
+    }
+  }, [pathname, hash]);
+  return null;
+};
 
 const App: React.FC = () => {
   return (
     <Router>
-      <ScrollToTop />
-      <div className="min-h-screen bg-[#01040f] text-slate-200 selection:bg-neon-blue/30 selection:text-white flex flex-col">
-        <Scanline />
+      <SovereignSync />
+      <GoogleTagTracker />
+      <div className="min-h-screen bg-[#01040f] text-slate-200 flex flex-col">
         <LiveStatusHUD />
         <Header />
-        
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<AdminLogin />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/consultancy" element={<Consultancy />} />
             <Route path="/governance" element={<Governance />} />
             <Route path="/tech" element={<Tech />} />
             <Route path="/intelligence" element={<IntelligenceHub />} />
-            <Route path="/creative" element={<CreativeStudio />} />
-            <Route path="/weblab" element={<WebLab />} />
-            <Route path="/video" element={<VideoStudio />} />
-            <Route path="/audio" element={<AudioStudio />} />
             <Route path="/about" element={<About />} />
             <Route path="/casestudies" element={<CaseStudies />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/design-system" element={<DesignSystem />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/socials" element={<Socials />} />
-            <Route path="/deploy" element={<DeploymentHub />} />
+            <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
+            <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
+            <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />
+            <Route path="/creative" element={<SovereignRoute><CreativeStudio /></SovereignRoute>} />
+            <Route path="/weblab" element={<SovereignRoute><WebLab /></SovereignRoute>} />
+            <Route path="/video" element={<SovereignRoute><VideoStudio /></SovereignRoute>} />
+            <Route path="/audio" element={<SovereignRoute><AudioStudio /></SovereignRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-
         <Footer />
       </div>
     </Router>

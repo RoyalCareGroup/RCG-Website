@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CheckCircle, TrendingUp, Users, Shield, ArrowRight, Star } from 'lucide-react';
 import { DecodingText } from '../components/DecodingText.tsx';
@@ -50,7 +49,7 @@ const CaseStudies: React.FC = () => {
           <div className="inline-flex items-center px-4 py-2 rounded-full border border-neon-purple/30 bg-neon-purple/5 text-neon-purple text-[10px] font-black tracking-[0.4em] mb-6 uppercase">
             <Star className="w-3.5 h-3.5 mr-2 animate-pulse" /> Transformation Prototypes
           </div>
-          <h1 className="text-5xl md:text-8xl font-display font-black text-white mb-8 tracking-tighter uppercase leading-none">
+          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-8 tracking-tighter uppercase leading-[0.9]">
             Structural<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">Proof.</span>
           </h1>
           <div className="max-w-2xl mx-auto">
@@ -67,27 +66,27 @@ const CaseStudies: React.FC = () => {
             <div key={idx} className="group relative bg-royal-900/40 border border-royal-700 rounded-[3rem] overflow-hidden hover:border-neon-purple/50 transition-all duration-700 shadow-2xl backdrop-blur-xl">
               <div className={`absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l ${c.color} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
               
-              <div className="p-10 md:p-16 flex flex-col lg:flex-row gap-16 relative z-10">
+              <div className="p-10 md:p-14 flex flex-col lg:flex-row gap-16 relative z-10">
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className={`p-3 rounded-2xl bg-gradient-to-br ${c.color} opacity-80 shadow-lg`}>
+                  <div className="flex items-center gap-5 mb-8">
+                    <div className={`p-4 rounded-2xl bg-gradient-to-br ${c.color} opacity-80 shadow-lg`}>
                       <Shield className="text-white" size={24} />
                     </div>
                     <div>
-                      <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">{c.title}</h3>
+                      <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight">{c.title}</h3>
                       <div className="text-neon-blue text-[10px] font-mono mt-1 uppercase tracking-[0.3em] font-black">{c.client}</div>
                     </div>
                   </div>
                   
-                  <div className="space-y-10">
+                  <div className="space-y-8">
                     <div className="border-l-2 border-royal-800 pl-8">
-                      <h4 className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-3 flex items-center">
+                      <h4 className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2 flex items-center">
                          The Operational Challenge
                       </h4>
                       <p className="text-slate-300 leading-relaxed font-light text-lg">{c.challenge}</p>
                     </div>
                     <div className="border-l-2 border-neon-purple pl-8">
-                      <h4 className="text-neon-purple text-[10px] font-black uppercase tracking-[0.4em] mb-3 flex items-center">
+                      <h4 className="text-neon-purple text-[10px] font-black uppercase tracking-[0.4em] mb-2 flex items-center">
                          The SYNK Deployment
                       </h4>
                       <p className="text-slate-100 leading-relaxed font-light text-lg">{c.result}</p>
@@ -98,14 +97,14 @@ const CaseStudies: React.FC = () => {
                 <div className="lg:w-1/3 flex flex-col justify-center gap-4">
                   <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-2 text-center">Structural Metrics</div>
                   {c.metrics.map((m, midx) => (
-                    <div key={midx} className="bg-royal-950/80 border border-royal-800 p-8 rounded-3xl flex items-center justify-between group/metric hover:border-neon-blue transition-all shadow-xl">
+                    <div key={midx} className="bg-royal-950/80 border border-royal-800 p-6 rounded-2xl flex items-center justify-between group/metric hover:border-neon-blue transition-all shadow-xl">
                       <span className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{m.label}</span>
-                      <span className={`text-3xl font-display font-black bg-clip-text text-transparent bg-gradient-to-r ${c.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]`}>
+                      <span className={`text-2xl font-display font-black bg-clip-text text-transparent bg-gradient-to-r ${c.color} drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]`}>
                         {m.val}
                       </span>
                     </div>
                   ))}
-                  <button className="mt-6 w-full py-6 bg-white text-black font-black text-[11px] tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center group/btn shadow-xl">
+                  <button className="mt-6 w-full py-5 bg-white text-black font-black text-[11px] tracking-[0.4em] uppercase rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center group/btn shadow-xl">
                     View Handover Report <ArrowRight className="ml-3 w-5 h-5 group-hover/btn:translate-x-3 transition-transform" />
                   </button>
                 </div>
@@ -114,17 +113,17 @@ const CaseStudies: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-32 p-16 glass rounded-[4rem] border border-royal-800 text-center relative overflow-hidden">
+        <div className="mt-24 p-16 glass rounded-[3.5rem] border border-royal-800 text-center relative overflow-hidden">
            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-blue animate-pulse"></div>
-           <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter mb-8">Architect Your Success.</h3>
+           <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-8">Architect Your Success.</h3>
            <p className="text-slate-400 text-lg font-light mb-12 max-w-2xl mx-auto leading-relaxed">
              Every organization has unique slippage points. Our architects perform deep-scans to identify the exact nodes required for your scale-up.
            </p>
            <div className="flex flex-col sm:flex-row justify-center gap-6">
-             <button className="px-12 py-6 bg-neon-purple text-white font-black text-[10px] tracking-[0.5em] uppercase rounded-2xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(217,70,239,0.3)]">
+             <button className="px-12 py-5 bg-neon-purple text-white font-black text-[10px] tracking-[0.5em] uppercase rounded-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(217,70,239,0.3)]">
                Initialize Audit
              </button>
-             <button className="px-12 py-6 border-2 border-royal-700 text-white font-black text-[10px] tracking-[0.5em] uppercase rounded-2xl hover:border-neon-blue transition-all">
+             <button className="px-12 py-5 border-2 border-royal-700 text-white font-black text-[10px] tracking-[0.5em] uppercase rounded-xl hover:border-neon-blue transition-all">
                Speak to Architect
              </button>
            </div>

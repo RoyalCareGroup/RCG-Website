@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, MapPin, Mail, Zap, Phone, Globe, PhoneCall, ShieldCheck } from 'lucide-react';
+import { Send, MapPin, Mail, Zap, Globe, PhoneCall, ShieldCheck } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Contact: React.FC = () => {
@@ -7,6 +7,15 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', 'ads_conversion_Contact_1', {
+        'event_category': 'Engagement',
+        'event_label': 'Contact Form Submission',
+        'value': 1.0
+      });
+    }
+
     const recipient = formData.dept === 'hello' ? COMPANY_DETAILS.emailGeneral : `${formData.dept}@royalcaregroup.com.au`;
     window.location.href = `mailto:${recipient}?subject=Website Enquiry from ${formData.name}&body=${encodeURIComponent(formData.msg)}`;
   };
@@ -19,7 +28,7 @@ const Contact: React.FC = () => {
             <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-neon-blue/20 bg-neon-blue/5 text-neon-blue text-[10px] font-black tracking-[0.4em] uppercase mb-8">
               <Zap size={14} className="mr-3 animate-pulse" /> Communication Grid
             </div>
-            <h1 className="text-5xl md:text-8xl font-display font-black text-white uppercase tracking-tighter text-spotlight leading-[0.85] mb-6">
+            <h1 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter text-spotlight leading-[0.9] mb-8">
               Contact<br/>Matrix.
             </h1>
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em]">National Tech & Training Infrastructure</p>
@@ -32,7 +41,6 @@ const Contact: React.FC = () => {
                   <MapPin className="text-neon-purple" size={20} />
                 </div>
                 <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Administrative Hub</h4>
-                <p className="text-white text-xs leading-relaxed italic opacity-80 mb-3">Mailing & Corporate Governance</p>
                 <p className="text-white text-xs leading-relaxed font-light">{COMPANY_DETAILS.address}<br/>{COMPANY_DETAILS.cityStateZip}</p>
               </div>
             </div>
@@ -67,14 +75,14 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="lg:col-span-7">
-          <div className="orbital-tile p-10 md:p-16 animate-fade-in shadow-2xl relative overflow-hidden">
+          <div className="orbital-tile p-10 md:p-14 animate-fade-in shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
               <ShieldCheck size={300} className="text-neon-blue" />
             </div>
             
             <div className="orbital-content relative z-10">
-              <div className="mb-12">
-                <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-2">Initialize Enquiry Node</h3>
+              <div className="mb-10">
+                <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-2">Initialize Enquiry Node</h3>
                 <p className="text-slate-500 text-xs font-light tracking-widest uppercase">Routing through SYNK_SECURE_GATEWAY_v4</p>
               </div>
 
@@ -86,7 +94,7 @@ const Contact: React.FC = () => {
                       type="text" 
                       placeholder="Full Name" 
                       required 
-                      className="w-full bg-royal-950 border border-royal-800 p-5 rounded-2xl text-white focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
+                      className="w-full bg-royal-950 border border-royal-800 p-5 rounded-xl text-white focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
                       value={formData.name} 
                       onChange={e => setFormData({...formData, name: e.target.value})} 
                     />
@@ -98,7 +106,7 @@ const Contact: React.FC = () => {
                       type="email" 
                       placeholder="Email Address" 
                       required 
-                      className="w-full bg-royal-950 border border-royal-800 p-5 rounded-2xl text-white focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
+                      className="w-full bg-royal-950 border border-royal-800 p-5 rounded-xl text-white focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
                       value={formData.email} 
                       onChange={e => setFormData({...formData, email: e.target.value})} 
                     />
@@ -108,7 +116,7 @@ const Contact: React.FC = () => {
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Department Routing</label>
                   <select 
-                    className="w-full bg-royal-950 border border-royal-800 p-5 rounded-2xl text-white focus:border-neon-purple outline-none transition-all font-light appearance-none cursor-pointer" 
+                    className="w-full bg-royal-950 border border-royal-800 p-5 rounded-xl text-white focus:border-neon-purple outline-none transition-all font-light appearance-none cursor-pointer" 
                     value={formData.dept} 
                     onChange={e => setFormData({...formData, dept: e.target.value})}
                   >
@@ -122,8 +130,8 @@ const Contact: React.FC = () => {
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">Instruction Payload</label>
                   <textarea 
                     placeholder="Describe your structural requirements..." 
-                    rows={6} 
-                    className="w-full bg-royal-950 border border-royal-800 p-5 rounded-2xl text-white resize-none focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
+                    rows={5} 
+                    className="w-full bg-royal-950 border border-royal-800 p-5 rounded-xl text-white resize-none focus:border-neon-blue outline-none transition-all placeholder:text-slate-800 font-light" 
                     value={formData.msg} 
                     onChange={e => setFormData({...formData, msg: e.target.value})}
                   ></textarea>
@@ -131,9 +139,10 @@ const Contact: React.FC = () => {
 
                 <button 
                   type="submit" 
-                  className="slim-orbital-btn w-full py-6 text-white font-black text-[11px] tracking-[0.6em] uppercase mt-8 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all"
+                  className="slim-orbital-btn w-full py-6 text-white font-black text-[11px] tracking-[0.6em] uppercase mt-8 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-4 group"
                 >
-                  <span>Deploy Enquiry Protocol <Send size={16} className="ml-4 inline animate-pulse" /></span>
+                  <span>Deploy Enquiry Protocol</span>
+                  <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform animate-pulse" />
                 </button>
               </form>
             </div>

@@ -47,6 +47,7 @@ const CreativeStudio: React.FC = () => {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // Use recommended models for image generation
       const modelName = quality === 'high' ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash-image';
 
       const response = await ai.models.generateContent({
@@ -286,6 +287,7 @@ const CreativeStudio: React.FC = () => {
           </div>
         </div>
 
+        {/* Brand Kit Downloader Integration */}
         <LogoExport />
       </div>
     </div>

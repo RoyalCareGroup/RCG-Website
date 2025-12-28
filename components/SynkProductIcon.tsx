@@ -1,4 +1,3 @@
-
 import React, { useId } from 'react';
 import { Cpu, MapPin } from 'lucide-react';
 import { SynkCrmLogo } from './logos/SynkCrmLogo.tsx';
@@ -88,8 +87,14 @@ export const SynkProductIcon: React.FC<SynkProductIconProps> = ({
            <stop offset="100%" stopColor="#0f172a" />
         </linearGradient>
       </defs>
+      {/* Frame: Rounded Square 18px */}
       <rect x="5" y="5" width="90" height="90" rx="18" fill={`url(#grad-${uniqueId})`} stroke={strokeColor} strokeWidth={isActive ? 2 : 1} fillOpacity="0.8" />
-      <circle cx="85" cy="15" r="3" fill={isActive ? '#00e054' : '#64748b'} filter={isActive ? `url(#glow-${uniqueId})` : ''} />
+      
+      {/* Status: Rounded Square (Not Circle) */}
+      <rect x="80" y="10" width="8" height="8" rx="2" fill={isActive ? '#00e054' : '#64748b'} filter={isActive ? `url(#glow-${uniqueId})` : ''}>
+         {isActive && <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />}
+      </rect>
+
       <g transform="translate(0,0)">
         {renderContent()}
       </g>

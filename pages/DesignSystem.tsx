@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
-import { Palette, Type, Layout, Package, Copy, Check, Download, Layers, ShieldCheck, Cpu, Crown } from 'lucide-react';
+import { Palette, Type, Layout, Package, Copy, Check, Download, Layers, ShieldCheck, Cpu, Crown, Share2, Globe, ExternalLink, ArrowDownCircle } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 import { LogoExport } from '../components/LogoExport.tsx';
 import { BrandLogo } from '../components/BrandLogo.tsx';
 import { SynkProductIcon, SynkIconType } from '../components/SynkProductIcon.tsx';
+import { RoyalSocialCard } from '../components/RoyalSocialCard.tsx';
 
 const DesignSystem: React.FC = () => {
   const [copied, setCopied] = useState<string | null>(null);
@@ -35,6 +37,15 @@ const DesignSystem: React.FC = () => {
     </div>
   );
 
+  const triggerSocialDownload = () => {
+    const btn = document.getElementById('trigger-social-graphic');
+    if (btn) {
+      btn.click();
+    } else {
+      console.error("Download node not found in DOM buffer.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#01040f] pt-40 pb-20 relative px-6">
       {/* Background Grid Decoration */}
@@ -51,10 +62,68 @@ const DesignSystem: React.FC = () => {
             Brand <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-neon-blue">Architecture.</span>
           </h1>
           <p className="text-slate-400 max-w-2xl text-lg font-light leading-relaxed border-l-4 border-royal-800 pl-10">
-            The official design system and technical asset library for Royal Care Group and the SYNK Technical Suite. 
+            The official design system and technical asset library for Royal Care Group. 
             Authorization Level: Administrative.
           </p>
         </div>
+
+        {/* SOVEREIGN SOCIAL PREVIEW NODE */}
+        <section className="mb-32">
+          <div className="flex items-center space-x-6 mb-12">
+            <h2 className="text-white font-black text-[11px] uppercase tracking-[0.6em] flex items-center shrink-0">
+              <Share2 size={16} className="mr-4 text-neon-purple" /> 00 // Royal Sovereign Asset
+            </h2>
+            <div className="h-px flex-1 bg-royal-900"></div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+             <div className="lg:col-span-4 space-y-8">
+                <div>
+                   <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight mb-4">Social Share Identity</h3>
+                   <p className="text-slate-400 text-base font-light leading-relaxed">
+                      The Royal Sovereign Card is our flagship visual for external networks. It establishes immediate brand authority for the Google Business listing.
+                   </p>
+                </div>
+
+                <div className="p-8 bg-royal-950 border border-royal-800 rounded-3xl space-y-6 shadow-2xl relative overflow-hidden group">
+                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                      <ShieldCheck size={40} className="text-neon-blue" />
+                   </div>
+                   <div className="flex items-center gap-4 text-neon-blue">
+                      <Globe size={20} />
+                      <span className="text-[11px] font-black uppercase tracking-[0.3em]">Status: PRODUCTION_READY</span>
+                   </div>
+                   <p className="text-[12px] text-slate-500 leading-relaxed italic">"Recommended for Google Ads, LinkedIn Cover, and Business Profile headers to maximize structural authority."</p>
+                   
+                   <div className="pt-4">
+                      <button 
+                         onClick={triggerSocialDownload}
+                         className="w-full py-5 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-xl flex items-center justify-center gap-4 group/dl"
+                      >
+                         <ArrowDownCircle size={18} className="group-hover/dl:animate-bounce" />
+                         Download High-Res Graphic
+                      </button>
+                   </div>
+                </div>
+             </div>
+             <div className="lg:col-span-8 flex flex-col items-center">
+                <div className="max-w-2xl w-full bg-[#0a0a0f] rounded-3xl overflow-hidden border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative group">
+                   <div className="absolute inset-0 bg-neon-blue/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                   <div className="aspect-[1.91/1] bg-black relative">
+                      <RoyalSocialCard />
+                   </div>
+                   <div className="p-8 space-y-3 border-t border-white/5 bg-royal-950/60 backdrop-blur-xl">
+                      <div className="flex justify-between items-center">
+                         <div className="text-[11px] text-slate-500 uppercase font-black tracking-[0.4em]">ROYALCAREGROUP.COM.AU</div>
+                         <div className="text-[9px] font-mono text-neon-blue">1200 x 630 PNG</div>
+                      </div>
+                      <div className="text-2xl font-bold text-white leading-tight uppercase tracking-tighter">Royal Care Group | Structural Intelligence</div>
+                      <div className="text-sm text-slate-400 font-light line-clamp-1 opacity-60">National NDIS Business Intelligence & Tech Division powered by SYNK...</div>
+                   </div>
+                </div>
+                <p className="mt-8 text-[10px] font-mono text-slate-700 uppercase tracking-[0.5em]">LIVE_PREVIEW // SOVEREIGN_ASSET_v1.0.4</p>
+             </div>
+          </div>
+        </section>
 
         {/* 1. COLOR MATRIX */}
         <section className="mb-32">
@@ -74,7 +143,6 @@ const DesignSystem: React.FC = () => {
           </div>
         </section>
 
-        {/* 2. TYPOGRAPHY LAB */}
         <section className="mb-32">
           <div className="flex items-center space-x-6 mb-12">
             <h2 className="text-white font-black text-[11px] uppercase tracking-[0.6em] flex items-center shrink-0">
@@ -110,7 +178,6 @@ const DesignSystem: React.FC = () => {
           </div>
         </section>
 
-        {/* 3. LOGO & ASSET EXPORT */}
         <section className="mb-32">
           <div className="flex items-center space-x-6 mb-12">
             <h2 className="text-white font-black text-[11px] uppercase tracking-[0.6em] flex items-center shrink-0">
@@ -119,26 +186,6 @@ const DesignSystem: React.FC = () => {
             <div className="h-px flex-1 bg-royal-900"></div>
           </div>
           <LogoExport />
-        </section>
-
-        {/* 4. SYNK SUITE ICONS */}
-        <section className="mb-32">
-          <div className="flex items-center space-x-6 mb-12">
-            <h2 className="text-white font-black text-[11px] uppercase tracking-[0.6em] flex items-center shrink-0">
-              <Layers size={16} className="mr-4 text-neon-blue" /> 04 // Module Symbols
-            </h2>
-            <div className="h-px flex-1 bg-royal-900"></div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-8">
-            {(['claim', 'report', 'service', 'charge', 'form', 'sign', 'chat', 'plan', 'train'] as SynkIconType[]).map((type, i) => (
-              <div key={i} className="flex flex-col items-center group">
-                <div className="p-6 bg-royal-900/40 border border-royal-800 rounded-[2rem] group-hover:border-neon-blue transition-all group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] backdrop-blur-sm">
-                  <SynkProductIcon type={type} size={48} isActive={true} phase={i % 2 === 0 ? 1 : 2} />
-                </div>
-                <span className="mt-4 text-[10px] font-mono text-slate-500 uppercase tracking-[0.3em] font-black group-hover:text-white transition-colors">{type}</span>
-              </div>
-            ))}
-          </div>
         </section>
 
         <div className="mt-24 p-16 glass rounded-[4rem] border border-royal-800 text-center relative overflow-hidden">

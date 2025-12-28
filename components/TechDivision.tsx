@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Activity, Settings, Wrench, ShieldCheck, Gauge, Cpu, Network } from 'lucide-react';
 import { ClaimSynkLogo } from './logos/ClaimSynkLogo.tsx';
@@ -6,6 +5,7 @@ import { ReportSynkLogo } from './logos/ReportSynkLogo.tsx';
 import { FormSynkLogo } from './logos/FormSynkLogo.tsx';
 import { ChargeSynkLogo } from './logos/ChargeSynkLogo.tsx';
 import { SynkCrmLogo } from './logos/SynkCrmLogo.tsx';
+import { COMPANY_DETAILS } from '../config.ts';
 
 const TelemetryValue = () => {
   const [val, setVal] = useState("00.00");
@@ -124,7 +124,7 @@ const TechDivision: React.FC = () => {
              <Cpu className="text-neon-blue" size={32} />
              <div className="text-left">
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] block">Status Check</span>
-                <span className="text-white font-mono text-sm tracking-widest">SYNK_CORE_VERSION_9.9.5: OPTIMAL</span>
+                <span className="text-white font-mono text-sm tracking-widest">SYNK_CORE_VERSION_{COMPANY_DETAILS.appVersion}: OPTIMAL</span>
              </div>
           </div>
           <h1 className="text-6xl md:text-[10rem] font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85]">SYNK Suite</h1>

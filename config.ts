@@ -5,23 +5,25 @@ export const COMPANY_DETAILS = {
   division: "Tech Division",
   techDivisionName: "Tech Division",
   motto: "Structural Intelligence for NDIS",
-  appVersion: "9.9.5 Stable",
+  appVersion: "10.12.5-Stable",
+  buildDate: "2024-05-22 15:30 AEST",
   abn: "76 684 189 320",
   email: "hello@royalcaregroup.com.au",
   emailGeneral: "info@royalcaregroup.com.au",
   address: "2/290 Boundary Street",
   cityStateZip: "Spring Hill QLD 4000",
-  // Fix: Added missing productionUrl required by DeploymentHub.tsx
   productionUrl: "https://www.royalcaregroup.com.au",
+  cloudflareEndpoint: "rcg-website-8s2.pages.dev",
+  googleAdsId: "AW-17820482706",
+  googleAIPs: ["216.239.32.21", "216.239.34.21", "216.239.36.21", "216.239.38.21"],
   socials: {
     linkedin: "https://linkedin.com/company/royalcaregroup"
   },
   colors: {
     neonPurple: '#d946ef',
     neonBlue: '#06b6d4',
-    royal950: '#01040f',
-    royal900: '#020617',
-    // Added missing royal800 color used in DesignSystem and across UI components
+    royal950: '#020817', 
+    royal900: '#0f172a', 
     royal800: '#1e293b',
     statusGreen: '#10b981'
   },

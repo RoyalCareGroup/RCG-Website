@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Download, Crown, Image as ImageIcon, Package, Loader2, Palette } from 'lucide-react';
+import { Download, Crown, Image as ImageIcon, Package, Loader2, Palette, Share2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { SynkIconType } from './SynkProductIcon.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -10,47 +10,164 @@ interface AssetDef {
   type: 'branding' | 'tech' | 'synk' | 'listing';
   synkType?: SynkIconType;
   phase?: 1 | 2 | 3 | 4;
+  dimensions?: { w: number, h: number };
 }
 
 const ASSETS: AssetDef[] = [
-  { id: 'google-listing', name: 'Google Listing Square', type: 'listing' },
-  { id: 'crown-purple', name: 'Royal Crown (Purple)', type: 'branding' },
-  { id: 'crown-blue', name: 'Royal Crown (Blue)', type: 'branding' },
-  { id: 'full-logo', name: 'Full Brand Logo', type: 'branding' },
-  { id: 'tech-mini', name: 'Tech Division Mini', type: 'tech' },
-  { id: 'synk-core', name: 'SYNK Core Logo', type: 'tech' },
-  { id: 'claim', name: 'ClaimSYNK', type: 'synk', synkType: 'claim', phase: 1 },
-  { id: 'report', name: 'ReportSYNK', type: 'synk', synkType: 'report', phase: 2 },
-  { id: 'service', name: 'ServiceSYNK', type: 'synk', synkType: 'service', phase: 2 },
-  { id: 'charge', name: 'ChargeSYNK', type: 'synk', synkType: 'chat', phase: 1 },
+  { id: 'social-graphic', name: 'Sovereign Social Graphic', type: 'listing', dimensions: { w: 1200, h: 630 } },
+  { id: 'google-listing', name: 'Google Listing Square', type: 'listing', dimensions: { w: 1024, h: 1024 } },
+  { id: 'crown-purple', name: 'Royal Crown (Purple)', type: 'branding', dimensions: { w: 1024, h: 1024 } },
+  { id: 'crown-blue', name: 'Royal Crown (Blue)', type: 'branding', dimensions: { w: 1024, h: 1024 } },
+  { id: 'full-logo', name: 'Full Brand Logo', type: 'branding', dimensions: { w: 2048, h: 512 } },
+  { id: 'tech-mini', name: 'Tech Division Mini', type: 'tech', dimensions: { w: 1024, h: 1024 } },
+  { id: 'synk-core', name: 'SYNK Core Logo', type: 'tech', dimensions: { w: 1024, h: 1024 } },
+  { id: 'claim', name: 'ClaimSYNK', type: 'synk', synkType: 'claim', phase: 1, dimensions: { w: 1024, h: 1024 } },
+  { id: 'report', name: 'ReportSYNK', type: 'synk', synkType: 'report', phase: 2, dimensions: { w: 1024, h: 1024 } },
+  { id: 'service', name: 'ServiceSYNK', type: 'synk', synkType: 'service', phase: 2, dimensions: { w: 1024, h: 1024 } },
 ];
 
 export const LogoExport: React.FC = () => {
   const [isExportingAll, setIsExportingAll] = useState(false);
+  const [exportingId, setExportingId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const drawToCanvas = async (asset: AssetDef, canvas: HTMLCanvasElement, size = 1024): Promise<string> => {
+  const drawToCanvas = async (asset: AssetDef, canvas: HTMLCanvasElement): Promise<string> => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
 
-    canvas.width = size;
-    canvas.height = size;
+    const width = asset.dimensions?.w || 1024;
+    const height = asset.dimensions?.h || 1024;
+    canvas.width = width;
+    canvas.height = height;
 
-    ctx.fillStyle = '#020617';
-    ctx.fillRect(0, 0, size, size);
+    // 1. BASE BACKGROUND
+    ctx.fillStyle = '#01040f';
+    ctx.fillRect(0, 0, width, height);
 
-    const isPurple = asset.id.includes('purple') || asset.phase === 1;
-    const glowColor = !isPurple ? 'rgba(6, 182, 212, 0.15)' : 'rgba(217, 70, 239, 0.15)';
-    const radial = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size * 0.6);
-    radial.addColorStop(0, glowColor);
-    radial.addColorStop(1, 'rgba(2, 6, 23, 0)');
-    ctx.fillStyle = radial;
-    ctx.fillRect(0, 0, size, size);
+    if (asset.id === 'social-graphic') {
+      // --- START SOVEREIGN GRAPHIC ENGINE ---
+      
+      // A. STRUCTURAL GRID
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+      }
+      for (let y = 0; y <= height; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+      }
 
-    if (asset.id === 'google-listing') {
+      // B. SOVEREIGN GLOW FIELDS
+      const purpleGlow = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width*0.5);
+      purpleGlow.addColorStop(0, 'rgba(217, 70, 239, 0.15)');
+      purpleGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = purpleGlow;
+      ctx.fillRect(0, 0, width, height);
+
+      const blueGlow = ctx.createRadialGradient(width/2, height/2 + 50, 0, width/2, height/2 + 50, width*0.4);
+      blueGlow.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
+      blueGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = blueGlow;
+      ctx.fillRect(0, 0, width, height);
+
+      // C. HOLOGRAPHIC FLOOR
+      const floorGrad = ctx.createLinearGradient(0, height * 0.7, 0, height);
+      floorGrad.addColorStop(0, 'transparent');
+      floorGrad.addColorStop(1, 'rgba(6, 182, 212, 0.05)');
+      ctx.fillStyle = floorGrad;
+      ctx.fillRect(0, height * 0.7, width, height * 0.3);
+
+      // D. CROWN IDENTITY NODE
       ctx.save();
-      ctx.translate(size/2 - (size*0.2), size/2 - (size*0.3));
-      ctx.scale(size*0.4/24, size*0.4/24);
+      const crownScale = 6;
+      ctx.translate(width/2 - (24 * crownScale / 2), height/2 - 160);
+      ctx.scale(crownScale, crownScale);
+      
+      const p = new Path2D("m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14");
+      
+      // Shadow/Glow behind crown
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = 'rgba(217, 70, 239, 0.8)';
+      ctx.strokeStyle = '#d946ef';
+      ctx.lineWidth = 1.2;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke(p);
+      ctx.restore();
+
+      // E. NEURAL CHIP SUB-NODE
+      ctx.save();
+      ctx.translate(width/2 + 55, height/2 - 45);
+      // Chip Box
+      ctx.fillStyle = '#01040f';
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = 'rgba(6, 182, 212, 0.4)';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(0, 0, 48, 48, 12); else ctx.rect(0, 0, 48, 48);
+      ctx.fill();
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      
+      // Chip Icon
+      ctx.translate(8, 8);
+      ctx.scale(32/24, 32/24);
+      const chip = new Path2D("M4 4h16v16H4V4zm4 5h8v6H8V9zm1-5V2m3 2V2m3 2V2m3 2V2M4 8H2m2 3H2m2 3H2m2 3H2m16-9h2m-2 3h2m-2 3h2m-2 3h2m-1 5v2m-3-2v2m-3-2v2m-3-2v2");
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 1.5;
+      ctx.stroke(chip);
+      ctx.restore();
+
+      // F. BRAND TYPOGRAPHY
+      ctx.textAlign = 'center';
+      ctx.font = 'black 84px Outfit, sans-serif';
+      ctx.textBaseline = 'top';
+      ctx.letterSpacing = '-2px';
+      
+      // Measure text for gradient placement
+      const t1 = "ROYAL CARE ";
+      const t2 = "GROUP.";
+      const fullWidth = ctx.measureText(t1 + t2).width;
+      const startX = (width - fullWidth) / 2;
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(t1, startX, height/2 + 40);
+      
+      ctx.fillStyle = '#06b6d4';
+      ctx.fillText(t2, startX + ctx.measureText(t1).width, height/2 + 40);
+
+      // G. SUBTEXT NODE
+      ctx.font = 'bold 15px Inter, sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '12px';
+      ctx.fillText("NATIONAL STRUCTURAL INTELLIGENCE", width/2, height/2 + 155);
+
+      // H. DECORATIVE BORDER
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      const pad = 32;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(pad, pad, width - pad*2, height - pad*2, 40);
+      ctx.stroke();
+
+      // I. METADATA TAGS
+      ctx.font = 'bold 10px monospace';
+      ctx.letterSpacing = '5px';
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+      ctx.textAlign = 'right';
+      ctx.fillText(`SYNK_CORE_STABLE_v${COMPANY_DETAILS.appVersion}`, width - 60, height - 50);
+      
+      ctx.textAlign = 'left';
+      ctx.fillText("AU_EAST_NODE_1", 60, height - 50);
+
+    } else if (asset.id === 'google-listing') {
+      // Simplified Square Listing
+      ctx.save();
+      ctx.translate(width/2 - (width*0.2), height/2 - (height*0.3));
+      ctx.scale(width*0.4/24, width*0.4/24);
       const p = new Path2D("m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14");
       ctx.strokeStyle = '#d946ef';
       ctx.lineWidth = 1.5;
@@ -58,15 +175,15 @@ export const LogoExport: React.FC = () => {
       ctx.restore();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${size * 0.06}px Outfit, sans-serif`;
+      ctx.font = `bold ${width * 0.06}px Outfit, sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText("ROYAL CARE GROUP", size / 2, size * 0.75);
+      ctx.fillText("ROYAL CARE GROUP", width / 2, height * 0.75);
       ctx.fillStyle = '#06b6d4';
-      ctx.font = `bold ${size * 0.02}px Inter, sans-serif`;
-      ctx.fillText("TECH DIVISION & CONSULTANCY", size / 2, size * 0.82);
+      ctx.font = `bold ${width * 0.02}px Inter, sans-serif`;
+      ctx.fillText("TECH DIVISION & CONSULTANCY", width / 2, height * 0.82);
     } else if (asset.id.includes('crown')) {
-      const padding = size * 0.25;
-      const drawScale = (size - padding * 2) / 24;
+      const padding = width * 0.25;
+      const drawScale = (width - padding * 2) / 24;
       ctx.save();
       ctx.translate(padding, padding);
       ctx.scale(drawScale, drawScale);
@@ -77,12 +194,26 @@ export const LogoExport: React.FC = () => {
       ctx.restore();
     } else {
       ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${size * 0.04}px Outfit, sans-serif`;
+      ctx.font = `bold ${width * 0.04}px Outfit, sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText(asset.name.toUpperCase(), size / 2, size / 2);
+      ctx.fillText(asset.name.toUpperCase(), width / 2, height / 2);
     }
 
     return canvas.toDataURL('image/png');
+  };
+
+  const downloadSingle = async (assetId: string) => {
+    if (!canvasRef.current) return;
+    const asset = ASSETS.find(a => a.id === assetId);
+    if (!asset) return;
+
+    setExportingId(assetId);
+    const dataUrl = await drawToCanvas(asset, canvasRef.current);
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `RCG_${asset.id}_${Date.now()}.png`;
+    link.click();
+    setExportingId(null);
   };
 
   const downloadAll = async () => {
@@ -91,14 +222,12 @@ export const LogoExport: React.FC = () => {
     const zip = new JSZip();
     const folder = zip.folder("RoyalCare_Brand_Kit");
 
-    // 1. Export PNGs
     for (const asset of ASSETS) {
       const dataUrl = await drawToCanvas(asset, canvasRef.current);
       const base64Data = dataUrl.split(',')[1];
       folder?.file(`logos/${asset.id}.png`, base64Data, { base64: true });
     }
 
-    // 2. Export Brand Manifest
     const manifest = {
       brand: COMPANY_DETAILS.name,
       legal: COMPANY_DETAILS.legalName,
@@ -109,29 +238,8 @@ export const LogoExport: React.FC = () => {
     };
     folder?.file("brand-identity.json", JSON.stringify(manifest, null, 2));
 
-    // 3. Export Typography Guide
-    const typeGuide = `# ROYAL CARE GROUP TYPOGRAPHY GUIDE
-- Primary Display: ${COMPANY_DETAILS.typography.display} (Google Fonts)
-- Body Sans: ${COMPANY_DETAILS.typography.body} (Google Fonts)
-- System Mono: JetBrains Mono / Inter Mono
-
-## Implementation:
-h1, h2, h3 { font-family: 'Outfit', sans-serif; font-weight: 800; }
-body { font-family: 'Inter', sans-serif; font-weight: 300; }`;
+    const typeGuide = `# ROYAL CARE GROUP TYPOGRAPHY GUIDE\n- Primary Display: ${COMPANY_DETAILS.typography.display}\n- Body Sans: ${COMPANY_DETAILS.typography.body}`;
     folder?.file("typography-guide.md", typeGuide);
-
-    // 4. Export CSS Variables
-    const cssVars = `:root {
-  --royal-neon-purple: ${COMPANY_DETAILS.colors.neonPurple};
-  --royal-neon-blue: ${COMPANY_DETAILS.colors.neonBlue};
-  --royal-bg: ${COMPANY_DETAILS.colors.royal950};
-  --royal-surface: ${COMPANY_DETAILS.colors.royal900};
-  --royal-layer: ${COMPANY_DETAILS.colors.royal800};
-  --royal-status-green: ${COMPANY_DETAILS.colors.statusGreen};
-  --font-display: '${COMPANY_DETAILS.typography.display}', sans-serif;
-  --font-body: '${COMPANY_DETAILS.typography.body}', sans-serif;
-}`;
-    folder?.file("styles/brand-variables.css", cssVars);
 
     const content = await zip.generateAsync({ type: "blob" });
     const url = window.URL.createObjectURL(content);
@@ -162,24 +270,40 @@ body { font-family: 'Inter', sans-serif; font-weight: 300; }`;
           </p>
         </div>
         
-        <button 
-          onClick={downloadAll}
-          disabled={isExportingAll}
-          className="flex items-center space-x-4 px-10 py-6 bg-gradient-to-r from-neon-purple to-neon-blue text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] hover:shadow-[0_0_30px_rgba(217,70,239,0.3)] transition-all disabled:opacity-50 group active:scale-95"
-        >
-          {isExportingAll ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5 group-hover:translate-y-1 transition-transform" />}
-          <span>{isExportingAll ? 'Compiling Kit...' : 'Download Identity Manifest (.zip)'}</span>
-        </button>
+        <div className="flex gap-4">
+           <button 
+              id="trigger-social-graphic"
+              onClick={() => downloadSingle('social-graphic')}
+              disabled={exportingId === 'social-graphic'}
+              className="flex items-center space-x-4 px-8 py-5 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-neon-blue hover:text-white transition-all shadow-xl group active:scale-95"
+           >
+              {exportingId === 'social-graphic' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+              <span>Export Social Graphic</span>
+           </button>
+           <button 
+              onClick={downloadAll}
+              disabled={isExportingAll}
+              className="flex items-center space-x-4 px-8 py-5 bg-gradient-to-r from-neon-purple to-neon-blue text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:shadow-[0_0_30px_rgba(217,70,239,0.3)] transition-all disabled:opacity-50 group active:scale-95"
+           >
+              {isExportingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 group-hover:translate-y-1 transition-transform" />}
+              <span>Download Full Kit (.zip)</span>
+           </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-6 relative z-10">
         {ASSETS.map((asset) => (
           <div key={asset.id} className="group bg-royal-950/80 border border-royal-800 rounded-[2rem] p-8 flex flex-col items-center hover:border-neon-blue transition-all shadow-xl">
-            <div className="mb-8 p-8 bg-royal-900/50 rounded-3xl group-hover:scale-110 transition-transform border border-royal-800">
-              {asset.id === 'google-listing' ? <ImageIcon className="text-neon-blue w-12 h-12" /> : <Crown className={asset.id.includes('blue') ? 'text-neon-blue w-12 h-12' : 'text-neon-purple w-12 h-12'} />}
+            <div className="mb-6 p-6 bg-royal-900/50 rounded-3xl group-hover:scale-110 transition-transform border border-royal-800 flex items-center justify-center min-h-[120px] w-full">
+              {asset.id === 'social-graphic' ? <Share2 className="text-neon-purple w-12 h-12" /> : asset.id === 'google-listing' ? <ImageIcon className="text-neon-blue w-12 h-12" /> : <Crown className={asset.id.includes('blue') ? 'text-neon-blue w-12 h-12' : 'text-neon-purple w-12 h-12'} />}
             </div>
             <h4 className="text-[10px] font-black text-slate-500 mb-3 uppercase tracking-[0.2em] text-center">{asset.name}</h4>
-            <div className="mt-auto px-4 py-1.5 bg-royal-900 rounded-full text-[9px] text-neon-blue font-mono border border-neon-blue/20">PNG / 1024px</div>
+            <button 
+              onClick={() => downloadSingle(asset.id)}
+              className="mt-auto px-4 py-2 bg-royal-900 hover:bg-neon-blue hover:text-white rounded-full text-[8px] text-neon-blue font-black uppercase tracking-widest border border-neon-blue/20 transition-all"
+            >
+               Download PNG
+            </button>
           </div>
         ))}
       </div>

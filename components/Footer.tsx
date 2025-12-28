@@ -1,11 +1,16 @@
-import React from 'react';
-import { Linkedin, Mail, MapPin, Globe, ShieldCheck, Cloud } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Linkedin, Mail, MapPin, Globe, ShieldCheck, Lock, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 import { BrandLogo } from './BrandLogo.tsx';
-import { BackupButton } from './BackupButton.tsx';
 
 const Footer: React.FC = () => {
+  const [isAuth, setIsAuth] = useState(false);
+
+  useEffect(() => {
+    setIsAuth(!!localStorage.getItem('rcg_auth_token'));
+  }, []);
+
   return (
     <footer className="bg-royal-950 border-t border-royal-800 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -21,30 +26,25 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="flex flex-col items-center md:items-end">
-              <p className="text-[9px] text-slate-600 uppercase font-black mb-3 tracking-[0.5em]">Network Operations</p>
-              <Link to="/deploy" className="flex items-center space-x-3 px-6 py-4 bg-royal-950 border border-neon-blue/50 rounded-2xl text-[10px] font-black text-white uppercase tracking-[0.2em] hover:bg-neon-blue hover:text-white transition-all shadow-xl">
-                <Cloud size={14} className="animate-pulse" />
-                <span>Open Deployment Hub</span>
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="hidden lg:flex items-center space-x-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+              <div className="flex items-center space-x-3">
+                <ShieldCheck size={16} className="text-neon-purple" />
+                <span>NDIS_CORE_v5</span>
+              </div>
+              <div className="w-px h-8 bg-royal-800"></div>
+              <div className="flex items-center space-x-3">
+                <Clock size={16} className="text-neon-blue" />
+                <span>Built: {COMPANY_DETAILS.buildDate}</span>
+              </div>
+            </div>
+            
+            {!isAuth && (
+              <Link to="/login" className="flex items-center space-x-3 text-[9px] font-black text-slate-700 uppercase tracking-[0.4em] hover:text-neon-purple transition-colors">
+                <Lock size={12} />
+                <span>Restricted Access</span>
               </Link>
-            </div>
-            <div className="flex flex-col items-center md:items-end">
-              <p className="text-[9px] text-slate-600 uppercase font-black mb-3 tracking-[0.5em]">Engineering Access</p>
-              <BackupButton />
-            </div>
-          </div>
-
-          <div className="hidden lg:flex items-center space-x-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
-            <div className="flex items-center space-x-3">
-              <ShieldCheck size={16} className="text-neon-purple" />
-              <span>NDIS_CORE_v5</span>
-            </div>
-            <div className="w-px h-8 bg-royal-800"></div>
-            <div className="flex items-center space-x-3">
-              <span className="text-neon-blue">AES-256</span>
-              <span>Encrypted</span>
-            </div>
+            )}
           </div>
         </div>
 
@@ -68,23 +68,19 @@ const Footer: React.FC = () => {
             <h4 className="text-[10px] font-black text-white uppercase tracking-[0.6em] mb-8">Navigation</h4>
             <ul className="space-y-4 text-[11px] text-slate-400 font-black uppercase tracking-[0.3em]">
               <li><Link to="/" className="hover:text-neon-blue transition-colors">Mainframe</Link></li>
-              <li><Link to="/deploy" className="hover:text-neon-blue transition-colors text-neon-blue font-bold animate-pulse">Deployment Hub</Link></li>
-              <li><Link to="/about" className="hover:text-neon-blue transition-colors">DNA & Origins</Link></li>
-              <li><Link to="/casestudies" className="hover:text-neon-blue transition-colors">Case Studies</Link></li>
               <li><Link to="/consultancy" className="hover:text-neon-blue transition-colors">Strategic Advisory</Link></li>
               <li><Link to="/governance" className="hover:text-neon-blue transition-colors">Governance Hub</Link></li>
               <li><Link to="/services" className="hover:text-neon-blue transition-colors">Service Nodes</Link></li>
               <li><Link to="/tech" className="hover:text-neon-blue transition-colors">Tech & SYNK Tools</Link></li>
+              <li><Link to="/casestudies" className="hover:text-neon-blue transition-colors">Case Studies</Link></li>
+              <li><Link to="/about" className="hover:text-neon-blue transition-colors">DNA & Origins</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.6em] mb-8">Creative</h4>
+            <h4 className="text-[10px] font-black text-white uppercase tracking-[0.6em] mb-8">Connectivity</h4>
             <ul className="space-y-4 text-[11px] text-slate-400 font-black uppercase tracking-[0.3em]">
-              <li><Link to="/creative" className="hover:text-neon-purple transition-colors">Blueprint Studio</Link></li>
-              <li><Link to="/audio" className="hover:text-neon-purple transition-colors">Voice Synth</Link></li>
-              <li><Link to="/video" className="hover:text-neon-purple transition-colors">Kinetic Engine</Link></li>
-              <li><Link to="/weblab" className="hover:text-neon-purple transition-colors">Web Lab</Link></li>
+              <li><Link to="/socials" className="hover:text-neon-purple transition-colors">Social Matrix</Link></li>
               <li><Link to="/contact" className="hover:text-neon-purple transition-colors">Contact Matrix</Link></li>
               <li><Link to="/privacy" className="hover:text-neon-purple transition-colors">Privacy Protocol</Link></li>
               <li><Link to="/terms" className="hover:text-neon-purple transition-colors">Terms of Service</Link></li>

@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronRight, Activity, Terminal, ShieldCheck, Cpu } from 'lucide-react';
+import { COMPANY_DETAILS } from '../config.ts';
 
 const Hero: React.FC = () => {
   return (
@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
                <Terminal size={40} className="text-neon-blue" />
                <div className="text-right">
                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">System Integrity</div>
-                 <div className="text-neon-blue font-mono font-bold">SYNK_CORE_9.9.5: OPTIMAL</div>
+                 <div className="text-neon-blue font-mono font-bold">SYNK_CORE_{COMPANY_DETAILS.appVersion}: OPTIMAL</div>
                </div>
              </div>
              
