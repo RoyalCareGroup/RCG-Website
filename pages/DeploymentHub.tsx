@@ -24,7 +24,8 @@ import {
   Trophy as WinIcon,
   SearchCode,
   FileJson,
-  Eye
+  Eye,
+  Info
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -59,6 +60,16 @@ const DeploymentHub: React.FC = () => {
     report.push(`[OK] SSL Protocol: SECURE_HANDSHAKE`);
 
     setDiagnosticReport(report);
+  };
+
+  const forceRefresh = () => {
+    localStorage.removeItem('rcg_mainframe_pulse');
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        for (const name of names) caches.delete(name);
+      });
+    }
+    window.location.reload();
   };
 
   const verifyPipeline = async () => {
@@ -123,9 +134,17 @@ const DeploymentHub: React.FC = () => {
           <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-[0.85]">
             Deployment<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-neon-blue text-spotlight">Pipeline.</span>
           </h1>
-          <p className="text-2xl text-slate-400 font-light leading-relaxed border-l-4 border-emerald-500 pl-10 max-w-3xl">
-            Visualize and manage the structural synchronization between your development environment and the national Cloudflare edge.
-          </p>
+          <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <p className="text-2xl text-slate-400 font-light leading-relaxed border-l-4 border-emerald-500 pl-10 max-w-2xl">
+              Visualize and manage the structural synchronization between your development environment and the national Cloudflare edge.
+            </p>
+            <button 
+              onClick={forceRefresh}
+              className="px-8 py-4 bg-royal-900 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 hover:bg-royal-800 transition-all shadow-2xl"
+            >
+              <RefreshCcw size={16} className="text-neon-purple" /> Force System Refresh
+            </button>
+          </div>
         </div>
 
         {/* GitHub Connectivity Verifier */}
@@ -201,6 +220,40 @@ const DeploymentHub: React.FC = () => {
                           )}
                        </div>
                     </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        {/* Sync Instructions Panel */}
+        <div className="mb-12 orbital-tile p-10 bg-royal-950 border-amber-500/20 shadow-2xl">
+           <div className="flex items-center gap-5 mb-8 text-amber-500">
+              <Info size={24} />
+              <h4 className="text-[11px] font-black uppercase tracking-[0.5em]">GitHub Sync Troubleshooting</h4>
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                 <p className="text-slate-400 text-sm font-light leading-relaxed">
+                    If you don't see a "Sync" or "Push" button in the left-hand sidebar, follow these steps to force the deployment:
+                 </p>
+                 <ol className="space-y-4 text-xs text-slate-500 list-decimal pl-5">
+                    <li>Click the <strong>Source Control</strong> icon in the far-left vertical sidebar (looks like a branch).</li>
+                    <li>In the "Message" input field at the top, type <span className="text-neon-blue font-mono font-bold">Deploy v10.12.12</span>.</li>
+                    <li>Click the blue <strong>"Commit"</strong> button.</li>
+                    <li>After committing, click the blue <strong>"Sync Changes"</strong> or <strong>"Publish Branch"</strong> button that appears.</li>
+                 </ol>
+              </div>
+              <div className="p-6 bg-royal-900 rounded-2xl border border-white/5 space-y-4">
+                 <div className="flex items-center gap-3 text-neon-blue">
+                    <Cloud size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Cloudflare Status</span>
+                 </div>
+                 <p className="text-[11px] text-slate-500 font-light italic">
+                    Once pushed to GitHub, Cloudflare Pages will take approximately 1-2 minutes to build the new version. Refresh your live site after 120 seconds.
+                 </p>
+                 <div className="pt-4 flex items-center gap-2">
+                    <span className="text-[9px] font-black text-slate-600 uppercase">Current Deployment Target:</span>
+                    <span className="text-[9px] font-mono text-emerald-500">{COMPANY_DETAILS.cloudflareEndpoint}</span>
                  </div>
               </div>
            </div>
