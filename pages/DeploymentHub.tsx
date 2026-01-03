@@ -127,7 +127,7 @@ const DeploymentHub: React.FC = () => {
                 <div className="bg-royal-950/80 border border-royal-800 rounded-2xl p-8 mb-10 flex-grow font-mono text-[12px] space-y-3 overflow-y-auto shadow-inner max-h-[300px]">
                    {diagnosticReport.map((line, i) => (
                      <div key={i} className="flex gap-4">
-                        <span className="text-neon-blue opacity-50">>></span>
+                        <span className="text-neon-blue opacity-50">{" >> "}</span>
                         <span className={line.includes('FAILURE') ? 'text-neon-red' : line.includes('SUCCESS') ? 'text-neon-green' : 'text-slate-400'}>
                           {line}
                         </span>
@@ -191,7 +191,7 @@ const DeploymentHub: React.FC = () => {
            <div className="space-y-4">
               {[
                 { cmd: 'git add .', desc: 'Stage all modified files for sync' },
-                { cmd: `git commit -m "deploy: sovereign sync v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
+                { cmd: `git commit -m "deploy: sync update v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
                 { cmd: 'git push origin main', desc: 'Force push to production edge' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col md:flex-row items-stretch md:items-center gap-4 group">
