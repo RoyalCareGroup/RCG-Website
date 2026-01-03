@@ -81,18 +81,20 @@ const Home = () => {
                   </p>
                 </div>
 
-                {/* Identity Anchor Node */}
-                <div className="flex justify-center pt-2 transform scale-75 opacity-80 hover:opacity-100 hover:scale-90 transition-all duration-700">
-                  <BrandLogo size="sm" />
-                </div>
-
-                <div className="pt-4 flex items-center justify-center gap-8">
-                   <div className="flex gap-2">
-                     <div className="w-1 h-1 rounded-full bg-neon-blue animate-pulse"></div>
-                     <div className="w-1 h-1 rounded-full bg-neon-purple animate-pulse delay-75"></div>
-                     <div className="w-1 h-1 rounded-full bg-neon-green animate-pulse delay-150"></div>
-                   </div>
-                   <span className="text-[8px] font-mono text-slate-400 uppercase tracking-[0.5em]">Established for the Grid // Custom Built for 06.06.26</span>
+                {/* Identity Seal Signature */}
+                <div className="flex flex-col items-center pt-8 border-t border-white/5 mt-4">
+                  <div className="relative group/seal cursor-none">
+                    <div className="absolute inset-0 bg-neon-purple/20 blur-2xl rounded-full scale-150 opacity-0 group-hover/seal:opacity-100 transition-opacity duration-1000"></div>
+                    <BrandLogo size="md" showText={false} />
+                  </div>
+                  <div className="mt-6 flex flex-col items-center gap-2">
+                     <span className="text-[8px] font-black text-white uppercase tracking-[0.6em]">Established for the Grid // 06.06.26</span>
+                     <div className="flex gap-4 items-center">
+                        <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-white/10"></div>
+                        <span className="text-[7px] font-mono text-slate-500 uppercase tracking-[0.8em] opacity-40">Verified_Node_Signature</span>
+                        <div className="w-12 h-[1px] bg-gradient-to-l from-transparent to-white/10"></div>
+                     </div>
+                  </div>
                 </div>
               </div>
             </div>
