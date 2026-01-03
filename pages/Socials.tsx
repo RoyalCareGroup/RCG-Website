@@ -1,108 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Linkedin, Facebook, Twitter, Youtube, ExternalLink, Share2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Socials: React.FC = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const socials = [
-    { 
-      name: 'LinkedIn', 
-      icon: <Linkedin size={28} />, 
-      color: 'text-[#0a66c2]', 
-      borderColor: 'border-[#0a66c2]/20',
-      bgHover: 'hover:bg-[#0a66c2]/5',
-      url: COMPANY_DETAILS.socials.linkedin,
-      handle: '/company/royalcaregroup'
-    },
-    { 
-      name: 'Facebook', 
-      icon: <Facebook size={28} />, 
-      color: 'text-[#1877f2]', 
-      borderColor: 'border-[#1877f2]/20',
-      bgHover: 'hover:bg-[#1877f2]/5',
-      url: '#',
-      handle: '@RoyalCareGroup'
-    },
-    { 
-      name: 'Twitter / X', 
-      icon: <Twitter size={28} />, 
-      color: 'text-white', 
-      borderColor: 'border-white/20',
-      bgHover: 'hover:bg-white/5',
-      url: '#',
-      handle: '@RCG_Tech'
-    },
-    { 
-      name: 'YouTube', 
-      icon: <Youtube size={28} />, 
-      color: 'text-[#ff0000]', 
-      borderColor: 'border-[#ff0000]/20',
-      bgHover: 'hover:bg-[#ff0000]/5',
-      url: '#',
-      handle: 'RoyalCareTech'
-    },
+    { name: 'LinkedIn', icon: <Linkedin size={28} />, handle: '/company/royalcaregroup', url: COMPANY_DETAILS.socials.linkedin },
+    { name: 'Facebook', icon: <Facebook size={28} />, handle: '@RoyalCareGroup', url: '#' }
   ];
 
   return (
-    <div className="min-h-screen bg-[#01040f] pt-40 pb-20 px-6 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute top-0 right-0 w-full h-[800px] bg-neon-purple/5 blur-[120px] pointer-events-none"></div>
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative">
       
-      <div className="max-w-5xl mx-auto relative z-10">
-        <div className="mb-20">
-          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-neon-blue transition-colors mb-12 group">
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
+      </div>
+      
+      <div className="max-w-5xl mx-auto relative z-10 pt-48 pb-32">
+        <div className="mb-20 animate-hero-reveal">
+          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors mb-12 group">
             <ArrowLeft size={14} className="mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Mainframe
           </Link>
-          
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-neon-purple/20 bg-neon-purple/5 text-neon-purple text-[10px] font-black tracking-[0.4em] uppercase mb-8">
+          <div className="circuit-capsule border-2 border-white/80 bg-black text-white px-10 py-4 shadow-2xl mb-8">
             <Share2 size={14} className="mr-3" /> Communication Matrix
           </div>
-          <h1 className="text-5xl md:text-8xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none">
-            Social<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-pink-500">Connectivity.</span>
-          </h1>
-          <p className="text-xl text-slate-400 font-light leading-relaxed border-l-4 border-royal-800 pl-10 max-w-2xl">
-            Follow our journey as we architect the next generation of NDIS technology and deploy structural intelligence across Australia.
-          </p>
+          <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none heading-wow">Social<br/><span className="heading-tech">Connectivity.</span></h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {socials.map((social) => (
-            <a 
-              key={social.name} 
-              href={social.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`orbital-tile group flex items-center justify-between p-10 border ${social.borderColor} ${social.bgHover} transition-all`}
-            >
-              <div className="orbital-content flex items-center gap-8">
-                <div className={`p-5 bg-royal-950 rounded-2xl border ${social.borderColor} ${social.color} shadow-lg transition-transform group-hover:scale-110`}>
+            <a key={social.name} href={social.url} className="orbital-tile group flex items-center justify-between p-12 bg-black border-2 border-white/10 shadow-3xl">
+              <div className="flex items-center gap-8">
+                <div className="p-6 bg-royal-950 rounded-2xl border-2 border-white/5 text-neon-blue group-hover:scale-110 transition-transform shadow-inner">
                   {social.icon}
                 </div>
-                <div className="text-left">
-                  <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight">{social.name}</h3>
+                <div>
+                  <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">{social.name}</h3>
                   <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mt-1">{social.handle}</p>
                 </div>
               </div>
-              <div className="p-3 bg-royal-900 rounded-xl text-slate-600 group-hover:text-white transition-colors">
-                <ExternalLink size={18} />
-              </div>
+              <ExternalLink size={24} className="text-white/20 group-hover:text-white transition-colors" />
             </a>
           ))}
-        </div>
-
-        <div className="mt-24 p-12 glass rounded-[3rem] border border-royal-800 text-center relative overflow-hidden">
-           <div className="absolute inset-0 bg-gradient-to-r from-neon-purple/5 to-neon-blue/5 pointer-events-none"></div>
-           <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-6">Stay Synchronized</h3>
-           <p className="text-slate-500 text-sm mb-10 font-light max-w-xl mx-auto tracking-wide">
-             Subscribe to our intelligence feed for real-time updates on NDIS regulation, SYNK product launches, and structural scale strategies.
-           </p>
-           <Link to="/contact" className="px-12 py-5 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all inline-block">
-             Join the Network
-           </Link>
-        </div>
-
-        <div className="mt-16 text-center text-[9px] font-mono text-slate-600 uppercase tracking-[0.5em]">
-           Official Communication Nodes // Royal Care Group v{COMPANY_DETAILS.appVersion}
         </div>
       </div>
     </div>

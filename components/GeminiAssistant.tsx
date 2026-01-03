@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal, Send, Bot, User, Loader2, Sparkles, ShieldCheck, HelpCircle } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
@@ -44,6 +43,7 @@ const GeminiAssistant: React.FC = () => {
         config: {
           systemInstruction: `You are the Royal Care Intelligence Engine. 
           Identity: National NDIS Technical Consultant & Neural Interface. 
+          SYNK Identity: Systematizing Your NDIS Knowledge.
           Expertise: SYNK Product Suite (ClaimSYNK, ReportSYNK, FormSYNK), TFix Diagnostic Engine, NDIS Price Guide 2024/25, and structural business intelligence. 
           Tone: Elite, high-tech, precise, professional.
           

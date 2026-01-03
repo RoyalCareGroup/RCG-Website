@@ -6,88 +6,66 @@ const AdminLogin: React.FC = () => {
   const [passkey, setPasskey] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking' | 'error' | 'success'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [scrollY, setScrollY] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('checking');
-    
     setTimeout(() => {
-      // Updated passkey to match v10.12 protocol
       if (passkey.toUpperCase() === 'SYNK-1012-CORE') {
         localStorage.setItem('rcg_auth_token', 'LEVEL_4_AUTHORIZED_' + Date.now());
         setStatus('success');
-        setTimeout(() => {
-          const destination = (location.state as any)?.from?.pathname || '/command';
-          navigate(destination);
-        }, 1500);
+        setTimeout(() => { navigate((location.state as any)?.from?.pathname || '/command'); }, 1500);
       } else {
-        setStatus('error');
-        setErrorMsg('ACCESS_DENIED: INVALID_IDENTITY_SIGNATURE');
-        setPasskey('');
-        setTimeout(() => setStatus('idle'), 2000);
+        setStatus('error'); setErrorMsg('ACCESS_DENIED');
+        setPasskey(''); setTimeout(() => setStatus('idle'), 2000);
       }
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen bg-royal-950 flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px)] [background-size:40px_40px]"></div>
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative justify-center items-center">
+      
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
       </div>
 
       <div className="max-w-md w-full relative z-10">
-        <div className={`glass border rounded-[2rem] p-12 transition-all duration-700 ${
-          status === 'error' ? 'border-red-500 shadow-[0_0_60px_rgba(239,68,68,0.25)]' : 
-          status === 'success' ? 'border-emerald-500 shadow-[0_0_60px_rgba(16,185,129,0.25)]' : 
-          'border-white/10 shadow-3xl'
+        <div className={`orbital-tile p-12 bg-black border-2 transition-all duration-700 ${
+          status === 'error' ? 'border-red-500' : status === 'success' ? 'border-emerald-500' : 'border-white/10'
         }`}>
           <div className="flex flex-col items-center text-center mb-12">
-            <div className={`p-6 rounded-2xl mb-8 border transition-all duration-500 ${
-              status === 'error' ? 'bg-red-500/10 text-red-500 border-red-500/40' : 
-              status === 'success' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/40' : 
-              'bg-neon-purple/10 text-neon-purple border-neon-purple/40'
-            }`}>
-              {status === 'checking' ? <Loader2 className="w-12 h-12 animate-spin" /> : 
-               status === 'error' ? <ShieldAlert className="w-12 h-12" /> :
-               status === 'success' ? <Zap className="w-12 h-12 animate-pulse" /> :
-               <Lock className="w-12 h-12" />}
+            <div className="p-6 rounded-2xl mb-8 bg-royal-950 border-2 border-white/5">
+              <Lock className="w-12 h-12 text-neon-purple" />
             </div>
             <h1 className="text-3xl font-display font-black text-white uppercase tracking-tighter">Command Access</h1>
-            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.5em] mt-4">
-              {status === 'checking' ? 'Validating Neural Signature...' : 
-               status === 'error' ? errorMsg : 
-               status === 'success' ? 'Clearance Granted' : 
-               'Identification Protocol Required'}
-            </p>
+            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.5em] mt-4">Identification Protocol Required</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-8">
-            <div className="relative group">
-              <Terminal className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-neon-blue transition-colors" size={20} />
-              <input 
-                type="password"
-                value={passkey}
-                onChange={(e) => setPasskey(e.target.value)}
-                placeholder="INPUT_PASSKEY_COMMAND"
-                disabled={status === 'checking' || status === 'success'}
-                className="w-full bg-royal-950/80 border border-white/10 rounded-xl py-6 pl-16 pr-8 text-white font-mono text-sm focus:outline-none focus:border-neon-blue transition-all shadow-inner"
-              />
-            </div>
-
-            <button 
-              type="submit"
-              disabled={status === 'checking' || status === 'success' || !passkey}
-              className="w-full py-6 bg-white text-black font-black text-[12px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-2xl flex items-center justify-center gap-4 group active:scale-95 disabled:opacity-30"
-            >
-              Initialize Sync <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-            </button>
+            <input type="password" value={passkey} onChange={e => setPasskey(e.target.value)} className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-6 px-8 text-white font-mono text-center focus:border-neon-blue outline-none transition-all shadow-inner" placeholder="INPUT_PASSKEY" />
+            <button type="submit" disabled={status === 'checking' || !passkey} className="slim-orbital-btn w-full py-8 text-black bg-white font-black text-[12px] tracking-[0.5em] uppercase transition-all shadow-3xl active:scale-95">Initialize Sync</button>
           </form>
-
-          <div className="mt-12 flex justify-center gap-3 opacity-20">
-             {[1,2,3].map(i => <div key={i} className="w-2 h-2 bg-slate-500 rounded-[2px]"></div>)}
-          </div>
         </div>
       </div>
     </div>

@@ -24,100 +24,57 @@ import CommandCenter from './pages/CommandCenter.tsx';
 import AdminLogin from './components/AdminLogin.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 import { COMPANY_DETAILS } from './config.ts';
-import { AlertTriangle, Github, ExternalLink } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
-// --- FAVICON PULSE ENGINE v1.0 ---
 const FaviconPulse = () => {
   useEffect(() => {
     const phases = [
       "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
-      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946efcc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
-      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef88' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
       "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946efcc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>"
     ];
-    
     let step = 0;
     const interval = setInterval(() => {
       const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-      if (link) {
-        link.href = phases[step % phases.length];
-      }
+      if (link) link.href = phases[step % phases.length];
       step++;
     }, 800);
-
     return () => clearInterval(interval);
   }, []);
-
   return null;
 };
 
-// --- SOVEREIGN SYNC ENGINE v7.0 ---
 const SovereignSync = () => {
   const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
-  const location = useLocation();
-
   useEffect(() => {
     const host = window.location.hostname;
-    const isStaging = host.includes('run.app');
-    const isLive = host.includes('royalcaregroup.com.au') || host.includes('pages.dev');
-    
-    if (isStaging) setEnvStatus('STAGING');
-    else if (isLive) setEnvStatus('LIVE');
+    if (host.includes('run.app')) setEnvStatus('STAGING');
+    else if (host.includes('royalcaregroup.com.au') || host.includes('pages.dev')) setEnvStatus('LIVE');
     else setEnvStatus('LOCAL');
-
-    // Cache Purge Logic
-    const activeVersion = COMPANY_DETAILS.appVersion;
-    const lastSeenVersion = localStorage.getItem('rcg_mainframe_pulse');
-
-    if (lastSeenVersion && lastSeenVersion !== activeVersion) {
-      localStorage.setItem('rcg_mainframe_pulse', activeVersion);
-      if ('caches' in window) {
-        caches.keys().then((names) => {
-          for (const name of names) caches.delete(name);
-        });
-      }
-      window.location.reload();
-    } else {
-      localStorage.setItem('rcg_mainframe_pulse', activeVersion);
-    }
-  }, [location]);
-
+  }, []);
   if (envStatus === 'STAGING') {
     return (
       <div className="bg-amber-500 text-black py-2 px-6 flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] relative z-[9999] shadow-2xl">
         <AlertTriangle size={14} />
-        <span>Staging Preview Mode: Changes here must be Pushed to GitHub to update the Live Domain</span>
-        <div className="w-px h-4 bg-black/20"></div>
-        <span className="font-mono">v{COMPANY_DETAILS.appVersion}</span>
+        <span>Staging Mode Node Active // v{COMPANY_DETAILS.appVersion}</span>
       </div>
     );
   }
-
   return null;
 };
 
-// --- AUTH GATING ---
 const SovereignRoute = ({ children }: { children?: React.ReactNode }) => {
   const isAuthorized = !!localStorage.getItem('rcg_auth_token');
   const location = useLocation();
-
-  if (!isAuthorized) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
+  if (!isAuthorized) return <Navigate to="/login" state={{ from: location }} replace />;
   return <>{children}</>;
 };
 
-// --- TRACKING ---
 const GoogleTagTracker = () => {
   const { pathname, hash } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', 'AW-17820482706', {
-        'page_path': pathname + hash,
-        'page_title': document.title
-      });
+      (window as any).gtag('config', 'AW-17820482706', { 'page_path': pathname + hash });
     }
   }, [pathname, hash]);
   return null;
@@ -129,7 +86,7 @@ const App: React.FC = () => {
       <SovereignSync />
       <FaviconPulse />
       <GoogleTagTracker />
-      <div className="min-h-screen bg-[#01040f] text-slate-200 flex flex-col">
+      <div className="min-h-screen bg-royal-950 text-slate-200 flex flex-col selection:bg-neon-blue/30 selection:text-white">
         <LiveStatusHUD />
         <Header />
         <main className="flex-grow">

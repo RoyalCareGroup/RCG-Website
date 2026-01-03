@@ -32,6 +32,7 @@ const AudioStudio: React.FC = () => {
   const [transcript, setTranscript] = useState<{ role: string; text: string }[]>([]);
   const [currentModelText, setCurrentModelText] = useState('');
   const [currentUserText, setCurrentUserText] = useState('');
+  const [scrollY, setScrollY] = useState(0);
   const audioContextsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null);
   const nextStartTimeRef = useRef(0);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
@@ -39,7 +40,12 @@ const AudioStudio: React.FC = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [transcript, currentModelText, currentUserText]);
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [transcript, currentModelText, currentUserText]);
 
   const stopSession = () => {
     if (sessionRef.current) sessionRef.current.close();
@@ -47,8 +53,7 @@ const AudioStudio: React.FC = () => {
     if (audioContextsRef.current) { audioContextsRef.current.input.close(); audioContextsRef.current.output.close(); }
     sourcesRef.current.forEach(source => source.stop());
     sourcesRef.current.clear();
-    setIsConnected(false);
-    setIsConnecting(false);
+    setIsConnected(false); setIsConnecting(false);
   };
 
   const startSession = async () => {
@@ -84,7 +89,7 @@ const AudioStudio: React.FC = () => {
               const sourceNode = output.createBufferSource();
               sourceNode.buffer = audioBuffer; sourceNode.connect(output.destination);
               sourceNode.start(nextStartTimeRef.current); nextStartTimeRef.current += audioBuffer.duration;
-              sourcesRef.current.add(sourceNode); sourceNode.onended = () => sourcesRef.current.delete(sourceNode);
+              sourcesRef.current.add(sourceNode);
             }
             if (m.serverContent?.inputTranscription) setCurrentUserText(p => p + m.serverContent.inputTranscription.text);
             if (m.serverContent?.outputTranscription) setCurrentModelText(p => p + m.serverContent.outputTranscription.text);
@@ -92,57 +97,55 @@ const AudioStudio: React.FC = () => {
               setTranscript(p => [...p, { role: 'OPERATOR', text: currentUserText }, { role: 'SYNK_CORE', text: currentModelText }]);
               setCurrentUserText(''); setCurrentModelText('');
             }
-          },
-          onerror: () => stopSession(), onclose: () => setIsConnected(false)
+          }
         },
-        config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
-          inputAudioTranscription: {}, outputAudioTranscription: {},
-          systemInstruction: 'You are the Royal Care Neural Audio Interface. Speak concisely, high-tech, and precisely.'
-        }
+        config: { responseModalities: [Modality.AUDIO], inputAudioTranscription: {}, outputAudioTranscription: {}, systemInstruction: 'Speak concisely, high-tech, and precisely.' }
       });
       sessionRef.current = await sessionPromise;
     } catch (err) { setIsConnecting(false); }
   };
 
   return (
-    <div className="pt-32 pb-32 px-6 min-h-screen animate-fade-in relative overflow-hidden bg-royal-950">
-      <div className="absolute top-0 left-0 w-full h-[600px] bg-neon-blue/5 blur-[120px] pointer-events-none"></div>
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative">
+      
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
+      </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 text-neon-blue text-[10px] font-black tracking-[0.4em] mb-6 uppercase">
+      <div className="max-w-6xl mx-auto pt-48 pb-32 relative z-10">
+        <div className="text-center mb-16 animate-hero-reveal">
+          <div className="circuit-capsule border-2 border-white/80 bg-black text-white px-4 py-2 rounded-full text-[10px] font-black tracking-[0.4em] mb-6 uppercase shadow-2xl">
             <Radio size={14} className="mr-2 animate-pulse" /> Neural Audio Protocol
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none">
-            Voice<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-neon-purple to-pink-500">Interface.</span>
-          </h1>
-          <p className="text-xl text-slate-500 font-light max-w-2xl mx-auto">Low-latency voice interaction with the RCG Intelligence Engine.</p>
+          <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none heading-wow">Voice<br/><span className="heading-tech">Interface.</span></h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-7">
-            <div className="glass border border-royal-800 rounded-[3rem] p-12 min-h-[500px] flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
-               <div className={`relative w-64 h-64 rounded-full border-4 border-dashed transition-all duration-700 flex items-center justify-center ${isConnected ? 'border-neon-blue animate-spin-slow shadow-[0_0_50px_rgba(6,182,212,0.3)]' : 'border-royal-800'}`}>
-                  {isConnected ? <Mic size={64} className="text-neon-blue animate-pulse" /> : isConnecting ? <Loader2 size={64} className="text-neon-purple animate-spin" /> : <MicOff size={64} className="text-slate-700" />}
+            <div className="orbital-tile border-2 border-white/10 rounded-[3rem] p-12 min-h-[500px] flex flex-col items-center justify-center relative overflow-hidden bg-black shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
+               <div className={`relative w-64 h-64 rounded-full border-4 border-dashed transition-all duration-700 flex items-center justify-center ${isConnected ? 'border-neon-blue animate-spin-slow' : 'border-white/10'}`}>
+                  {isConnected ? <Mic size={64} className="text-neon-blue animate-pulse" /> : isConnecting ? <Loader2 size={64} className="text-neon-purple animate-spin" /> : <MicOff size={64} className="text-white/10" />}
                </div>
-               <button
-                  onClick={isConnected ? stopSession : startSession}
-                  disabled={isConnecting}
-                  className={`mt-12 px-12 py-5 rounded-2xl font-black text-[11px] tracking-[0.5em] uppercase transition-all flex items-center gap-4 ${isConnected ? 'bg-red-500/10 border border-red-500/50 text-red-500 hover:bg-red-500' : 'bg-white text-black hover:bg-neon-blue hover:text-white border border-transparent hover:border-neon-blue/50 shadow-xl'}`}
-               >
-                  {isConnected ? <Zap size={18} /> : isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Activity size={18} />}
+               <button onClick={isConnected ? stopSession : startSession} disabled={isConnecting} className="slim-orbital-btn mt-12 px-16 py-8 text-black bg-white font-black text-[12px] tracking-[0.5em] uppercase transition-all shadow-3xl active:scale-95">
                   {isConnected ? 'Terminate Link' : isConnecting ? 'Linking...' : 'Initialize Uplink'}
                </button>
             </div>
           </div>
           <div className="lg:col-span-5 h-[700px] flex flex-col">
-             <div className="glass border border-royal-800 rounded-[3rem] flex-grow flex flex-col overflow-hidden shadow-2xl">
-                <div className="p-8 border-b border-royal-800 flex items-center justify-between">
-                   <h4 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Live Stream Feed</h4>
-                </div>
-                <div className="flex-grow overflow-y-auto p-8 space-y-6 scrollbar-thin font-mono text-[12px] text-slate-400">
+             <div className="orbital-tile border-2 border-white/10 rounded-[3rem] flex-grow flex flex-col overflow-hidden bg-black shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
+                <div className="flex-grow overflow-y-auto p-12 space-y-8 scrollbar-hide font-mono text-sm">
                    {transcript.map((msg, i) => <div key={i}><span className={msg.role === 'OPERATOR' ? 'text-neon-blue' : 'text-neon-purple'}>[{msg.role}]</span> {msg.text}</div>)}
                    {currentUserText && <div><span className="text-neon-blue">[USER]</span> {currentUserText}</div>}
                    {currentModelText && <div><span className="text-neon-purple">[CORE]</span> {currentModelText}</div>}

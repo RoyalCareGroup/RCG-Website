@@ -1,111 +1,61 @@
-import React from 'react';
-import { Shield, Lock, Eye, Database, ShieldCheck, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, Lock, Database, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Privacy: React.FC = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#01040f] pt-40 pb-20 px-6 relative">
-      {/* Background Ambience */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]"></div>
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative">
+      
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="mb-16">
-          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-neon-blue transition-colors mb-12 group">
+      <div className="max-w-4xl mx-auto relative z-10 pt-48 pb-32">
+        <div className="mb-16 animate-hero-reveal">
+          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors mb-12 group">
             <ArrowLeft size={14} className="mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Mainframe
           </Link>
-          
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-neon-blue/20 bg-neon-blue/5 text-neon-blue text-[10px] font-black tracking-[0.4em] uppercase mb-8">
+          <div className="circuit-capsule mb-8 border-2 border-white/80 bg-black text-white px-10 py-4 shadow-2xl">
             <Shield size={14} className="mr-3" /> Data Sovereignty Protocol
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none">
-            Privacy<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">Architecture.</span>
-          </h1>
-          <p className="text-xl text-slate-400 font-light leading-relaxed border-l-4 border-royal-800 pl-10">
-            Official privacy framework for {COMPANY_DETAILS.legalName}. We architect systems with zero-compromise security layers.
-          </p>
+          <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none heading-wow">Privacy<br/><span className="heading-tech">Architecture.</span></h1>
         </div>
 
         <div className="space-y-12">
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-purple/10 rounded-2xl text-neon-purple">
-                  <ShieldCheck size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">1. Commitment Node</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Protocol: PRIV_ACT_1988</p>
-                </div>
+          {[
+            { icon: <ShieldCheck />, title: "Commitment Node", desc: "Protecting data in strict accordance with the Privacy Act 1988 (Cth)." },
+            { icon: <Database />, title: "Data Acquisition", desc: "Collecting info necessary for elite business consultancy and high-performance tech engineering." },
+            { icon: <Lock />, title: "Sovereignty & Security", desc: "AES-256 encrypted sovereign servers with multi-factor authentication." }
+          ].map((item, i) => (
+            <div key={i} className="orbital-tile p-12 bg-black border-2 border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+              <div className="flex items-center gap-8 mb-8">
+                <div className="p-5 bg-royal-950 rounded-2xl border-2 border-white/5 text-neon-blue shadow-inner">{item.icon}</div>
+                <h2 className="text-3xl font-display font-black text-white uppercase tracking-tight">{item.title}</h2>
               </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed">
-                {COMPANY_DETAILS.legalName} is committed to protecting your organizational and participant data in strict accordance with the <strong>Privacy Act 1988 (Cth)</strong> and the Australian Privacy Principles. Our infrastructure is built to exceed these standards.
-              </p>
+              <p className="text-white text-lg font-black opacity-60 italic leading-relaxed">"{item.desc}"</p>
             </div>
-          </div>
-
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-blue/10 rounded-2xl text-neon-blue">
-                  <Database size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">2. Data Acquisition</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Input Vector: Diagnostic Nodes</p>
-                </div>
-              </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed mb-6">
-                We collect information necessary to facilitate elite business consultancy and high-performance tech engineering, including:
-              </p>
-              <ul className="space-y-4">
-                {[
-                  "Organizational diagnostic parameters",
-                  "Contact identification for administrative leads",
-                  "System telemetry for SYNK Suite optimization",
-                  "NDIS provider registration metadata"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 text-sm text-slate-300 font-light">
-                    <div className="w-1.5 h-1.5 rounded-full bg-neon-blue"></div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-green/10 rounded-2xl text-neon-green">
-                  <Lock size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">3. Sovereignty & Security</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Protocol: AES-256_ENCRYPTED</p>
-                </div>
-              </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed">
-                Our SYNK infrastructure utilizes proprietary security logic. Data is stored on sovereign servers with multi-factor authentication and real-time threat detection via the TFix Engine. We ensure your NDIS data remains within secure national boundaries.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-24 p-12 glass rounded-[3rem] border border-royal-800 text-center">
-           <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-6">Compliance Query?</h3>
-           <p className="text-slate-500 text-sm mb-10 font-light max-w-xl mx-auto tracking-wide">
-             If you require a deep-scan of our privacy protocols or have a data-access request, contact our Privacy Architect.
-           </p>
-           <a href={`mailto:${COMPANY_DETAILS.email}`} className="px-12 py-5 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all inline-block">
-             Contact Compliance Node
-           </a>
-        </div>
-        
-        <div className="mt-16 text-center text-[9px] font-mono text-slate-600 uppercase tracking-[0.5em]">
-           Last Revision: 2024.Q4 // Version: {COMPANY_DETAILS.appVersion}
+          ))}
         </div>
       </div>
     </div>

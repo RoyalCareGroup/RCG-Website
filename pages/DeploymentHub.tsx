@@ -1,34 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ShieldCheck, Terminal, Network, Check,
-  Zap, Cloud, Activity, RefreshCcw,
+  ShieldCheck, Terminal, Activity, RefreshCcw,
   CheckCircle as SuccessIcon, Globe,
-  Trophy, Link2, Server,
-  AlertTriangle, ArrowRight,
-  AlertCircle, ShieldAlert,
-  Clock, Lock, 
-  Cpu, Wifi, 
-  LockKeyhole, Github, GitBranch,
-  Shield, 
-  ExternalLink,
-  Flame,
-  Search,
-  CheckCircle2,
-  Tag,
-  Radio,
-  ArrowRightLeft,
-  Split,
-  Plus,
-  Unplug,
-  MousePointer2,
-  Trophy as WinIcon,
-  SearchCode,
-  FileJson,
-  Eye,
-  Info,
-  CheckCircle,
-  Play,
-  History
+  ArrowRight, AlertTriangle,
+  Lock, History, CheckCircle, Info, Eye, FileJson, SearchCode, Github
 } from 'lucide-react';
 import { BackupButton } from '../components/BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -39,192 +14,128 @@ const DeploymentHub: React.FC = () => {
   const [liveVersion, setLiveVersion] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'SYNCED' | 'OUT_OF_SYNC' | 'UNKNOWN' | 'CORS_RESTRICTED'>('UNKNOWN');
+  const [scrollY, setScrollY] = useState(0);
 
   const runDiagnostics = async () => {
     const report: string[] = [];
     const host = window.location.hostname;
-    
     report.push(`[${new Date().toLocaleTimeString()}] Starting Structural Connectivity Audit...`);
     report.push(`[DETECTED_HOST]: ${host}`);
-    report.push(`[LOCAL_EDITOR_PULSE]: Version ${COMPANY_DETAILS.appVersion} verified in local buffer.`);
-    
-    if (host.includes('pages.dev') || host.includes('royalcaregroup.com.au')) {
-      setHostStatus('CLOUDFLARE');
-      report.push(`[OK] Source Verified: CLOUDFLARE_PAGES_EDGE`);
-    } else if (host.includes('run.app')) {
-      setHostStatus('GOOGLE');
-      report.push(`[WARNING] Source: GOOGLE_CLOUD_RUN (Staging/Preview Environment)`);
-    } else {
-      setHostStatus('LOCAL');
-      report.push(`[INFO] Source: LOCAL_DEVELOPMENT_NODE`);
-    }
-
-    report.push(`[VERSION_PARITY]: ${COMPANY_DETAILS.appVersion}`);
-    report.push(`[BUILD_DATE]: ${COMPANY_DETAILS.buildDate}`);
-    report.push(`[OK] SSL Protocol: SECURE_HANDSHAKE`);
-
+    if (host.includes('pages.dev') || host.includes('royalcaregroup.com.au')) setHostStatus('CLOUDFLARE');
+    else if (host.includes('run.app')) setHostStatus('GOOGLE');
+    else setHostStatus('LOCAL');
     setDiagnosticReport(report);
   };
 
-  const forceRefresh = () => {
-    localStorage.removeItem('rcg_mainframe_pulse');
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        for (const name of names) caches.delete(name);
-      });
-    }
-    window.location.reload();
-  };
+  const forceRefresh = () => { window.location.reload(); };
 
   const verifyPipeline = async () => {
     setVerifying(true);
     setSyncStatus('UNKNOWN');
-    
     try {
-      const relativeRes = await fetch('./version.json?cb=' + Date.now());
-      if (relativeRes.ok) {
-        const data = await relativeRes.json();
-        setLiveVersion(data.version);
-        if (data.version === COMPANY_DETAILS.appVersion) {
-           setSyncStatus('SYNCED');
-           return;
-        }
-      }
-
       const host = window.location.hostname;
       if (!host.includes('royalcaregroup.com.au')) {
-        const response = await fetch(`${COMPANY_DETAILS.productionUrl}/version.json?cache_bust=${Date.now()}`, {
-          mode: 'cors'
-        });
-        
-        if (!response.ok) throw new Error("Could not reach production node.");
-        
+        const response = await fetch(`${COMPANY_DETAILS.productionUrl}/version.json?cache_bust=${Date.now()}`, { mode: 'cors' });
         const data = await response.json();
         setLiveVersion(data.version);
-        
-        if (data.version === COMPANY_DETAILS.appVersion) {
-          setSyncStatus('SYNCED');
-        } else {
-          setSyncStatus('OUT_OF_SYNC');
-        }
+        if (data.version === COMPANY_DETAILS.appVersion) setSyncStatus('SYNCED'); else setSyncStatus('OUT_OF_SYNC');
       }
-    } catch (err: any) {
-      console.error("Pipeline verification failed:", err);
-      if (err.name === 'TypeError' || err.message.includes('fetch')) {
-        setSyncStatus('CORS_RESTRICTED');
-      } else {
-        setSyncStatus('UNKNOWN');
-      }
-    } finally {
-      setVerifying(false);
-    }
+    } catch (err) { setSyncStatus('CORS_RESTRICTED'); } finally { setVerifying(false); }
   };
 
   useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     runDiagnostics();
     const interval = setInterval(runDiagnostics, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#01040f] pt-40 pb-32 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-[1000px] bg-emerald-500/5 blur-[150px] pointer-events-none"></div>
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative">
       
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="mb-20">
-          <div className={`inline-flex items-center px-4 py-1.5 rounded-full border ${hostStatus === 'GOOGLE' ? 'border-amber-500/40 bg-amber-500/10 text-amber-500' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-500'} text-[10px] font-black tracking-[0.4em] uppercase mb-8 shadow-2xl`}>
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
+      </div>
+      
+      <div className="max-w-6xl mx-auto relative z-10 pt-48 pb-32">
+        <div className="mb-24 animate-hero-reveal">
+          <div className={`circuit-capsule mb-10 border-2 ${hostStatus === 'GOOGLE' ? 'border-amber-500 text-amber-500' : 'border-emerald-500 text-emerald-500'} bg-black px-10 py-4`}>
             <ShieldCheck size={14} className="mr-3 animate-pulse" /> {hostStatus} ACTIVE: v{COMPANY_DETAILS.appVersion}
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-8 uppercase tracking-tighter leading-[0.85]">
-            Deployment<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-neon-blue text-spotlight">Pipeline.</span>
+          <h1 className="text-5xl md:text-8xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85] heading-wow">
+            Deployment<br/><span className="heading-tech">Pipeline.</span>
           </h1>
-          <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-            <p className="text-2xl text-slate-400 font-light leading-relaxed border-l-4 border-emerald-500 pl-10 max-w-2xl">
-              Visualize and manage the structural synchronization between your development environment and the national Cloudflare edge.
+          <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
+            <p className="text-2xl text-white font-bold leading-relaxed border-l-8 border-emerald-500 pl-12 max-w-2xl italic opacity-70">
+              "Visualize and manage the structural synchronization between your development environment and the national Cloudflare edge."
             </p>
-            <button 
-              onClick={forceRefresh}
-              className="px-8 py-4 bg-royal-900 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 hover:bg-royal-800 transition-all shadow-2xl"
-            >
-              <RefreshCcw size={16} className="text-neon-purple" /> Force System Refresh
+            <button onClick={forceRefresh} className="slim-orbital-btn px-10 py-6 text-black bg-white font-black text-[11px] uppercase tracking-[0.4em] flex items-center gap-4 transition-all shadow-3xl active:scale-95">
+              <RefreshCcw size={18} className="text-neon-purple" /> Force System Refresh
             </button>
           </div>
         </div>
 
-        {/* GitHub Connectivity Verifier */}
-        <div className="mb-12 glass border border-white/10 rounded-[3rem] p-10 md:p-16 relative overflow-hidden group">
-           <div className="absolute top-0 right-0 p-16 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-1000 pointer-events-none">
-              <Github size={300} className="text-white" />
+        <div className="mb-16 orbital-tile p-12 md:p-20 relative overflow-hidden bg-black border-2 border-white/10 shadow-[0_60px_100px_rgba(0,0,0,0.8)] group">
+           <div className="absolute top-0 right-0 p-16 opacity-[0.01] group-hover:opacity-[0.04] transition-opacity duration-1000 pointer-events-none">
+              <Github size={400} className="text-white" />
            </div>
 
-           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-              <div className="lg:col-span-7 space-y-8">
-                 <div className="flex items-center gap-6">
-                    <div className="p-4 bg-royal-950 border border-neon-blue rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-                       <SearchCode className="text-neon-blue" size={32} />
+           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+              <div className="lg:col-span-7 space-y-12">
+                 <div className="flex items-center gap-8">
+                    <div className="p-5 bg-royal-950 border-2 border-neon-blue rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform">
+                       <SearchCode className="text-neon-blue" size={40} />
                     </div>
                     <div>
-                       <h3 className="text-white font-black text-[10px] uppercase tracking-[0.5em] mb-2">Node Verification</h3>
-                       <p className="text-3xl font-display font-black text-white uppercase tracking-tight">Pipeline Integrity Test</p>
+                       <h3 className="text-slate-600 font-black text-[11px] uppercase tracking-[0.6em] mb-2">Node Verification</h3>
+                       <p className="text-4xl font-display font-black text-white uppercase tracking-tight">Integrity Test</p>
                     </div>
                  </div>
-                 <p className="text-slate-400 text-lg font-light leading-relaxed max-w-xl">
-                    Run a cross-node audit to see if the changes in this editor have successfully deployed to your live website at <span className="text-neon-blue font-bold">{COMPANY_DETAILS.productionUrl}</span>.
+                 <p className="text-white text-xl font-bold leading-relaxed max-w-xl italic opacity-60">
+                    Run a cross-node audit to see if changes have successfully deployed to your live website at <span className="text-neon-blue underline decoration-neon-blue/30 underline-offset-8">royalcaregroup.com.au</span>.
                  </p>
-                 <div className="flex flex-wrap gap-4">
-                   <button 
-                     onClick={verifyPipeline}
-                     disabled={verifying}
-                     className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl flex items-center gap-4 active:scale-95 disabled:opacity-50"
-                   >
-                      {verifying ? <RefreshCcw size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
-                      {verifying ? 'AUDITING GRID...' : 'Verify GitHub -> Cloudflare Sync'}
+                 <div className="flex flex-wrap gap-6">
+                   <button onClick={verifyPipeline} disabled={verifying} className="slim-orbital-btn px-12 py-7 text-white font-black text-[12px] uppercase tracking-[0.5em] flex items-center gap-5 active:scale-95 disabled:opacity-50 border-2 border-white/80">
+                      {verifying ? <RefreshCcw size={20} className="animate-spin" /> : <ShieldCheck size={20} className="text-neon-purple" />}
+                      {verifying ? 'AUDITING GRID...' : 'Verify Cloudflare Sync'}
                    </button>
-                   <a 
-                     href={`${COMPANY_DETAILS.productionUrl}/version.json`} 
-                     target="_blank" 
-                     className="px-10 py-5 bg-royal-900 border border-white/10 text-white font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-royal-800 transition-all shadow-3xl flex items-center gap-4"
-                   >
-                      <Eye size={16} className="text-neon-purple" /> Inspect Live Node (Manual)
+                   <a href={`${COMPANY_DETAILS.productionUrl}/version.json`} target="_blank" className="px-12 py-7 bg-royal-950 border-2 border-white/10 text-slate-500 font-black text-[11px] uppercase tracking-[0.5em] rounded-2xl hover:text-white hover:border-white transition-all shadow-inner flex items-center gap-4">
+                      <Eye size={18} /> Inspect Live Node
                    </a>
                  </div>
               </div>
 
               <div className="lg:col-span-5">
-                 <div className={`p-10 rounded-[2.5rem] border ${syncStatus === 'SYNCED' ? 'border-emerald-500/30 bg-emerald-500/5' : syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-royal-900/40'} transition-all duration-700 shadow-inner`}>
-                    <div className="space-y-8">
+                 <div className={`p-12 rounded-[2.5rem] border-2 ${syncStatus === 'SYNCED' ? 'border-neon-green/30 bg-neon-green/5' : syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED' ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5 bg-royal-950/40'} transition-all duration-1000 shadow-3xl`}>
+                    <div className="space-y-10">
                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Local Editor Version</span>
+                          <span className="text-[11px] font-black text-slate-600 uppercase tracking-[0.5em]">Local Buffer</span>
                           <div className="flex flex-col items-end">
-                            <span className="text-white font-mono font-bold">{COMPANY_DETAILS.appVersion}</span>
-                            <span className="text-[8px] text-slate-600 font-mono mt-1">BUILD: {COMPANY_DETAILS.buildDate}</span>
+                            <span className="text-white font-mono font-black text-lg tracking-widest">{COMPANY_DETAILS.appVersion}</span>
+                            <span className="text-[9px] text-slate-700 font-mono mt-2 font-black uppercase">DATE: {COMPANY_DETAILS.buildDate}</span>
                           </div>
                        </div>
                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Live Site Version</span>
-                          <span className={`font-mono font-bold ${syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : syncStatus === 'SYNCED' ? 'text-emerald-500' : 'text-slate-700'}`}>
-                             {syncStatus === 'CORS_RESTRICTED' ? 'CORS_BLOCKED' : (liveVersion || 'AWAITING_CHECK')}
+                          <span className="text-[11px] font-black text-slate-600 uppercase tracking-[0.5em]">Live Node</span>
+                          <span className={`font-mono font-black text-lg tracking-widest ${syncStatus === 'OUT_OF_SYNC' ? 'text-amber-500' : syncStatus === 'SYNCED' ? 'text-neon-green' : 'text-slate-800'}`}>
+                             {syncStatus === 'CORS_RESTRICTED' ? 'BLOCKED' : (liveVersion || 'PENDING')}
                           </span>
-                       </div>
-                       <div className="pt-6 border-t border-white/10">
-                          <div className={`flex items-center gap-4 ${syncStatus === 'SYNCED' ? 'text-emerald-500' : syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED' ? 'text-amber-500' : 'text-slate-600'}`}>
-                             {syncStatus === 'SYNCED' ? <SuccessIcon size={20} /> : (syncStatus === 'OUT_OF_SYNC' || syncStatus === 'CORS_RESTRICTED') ? <AlertTriangle size={20} /> : <FileJson size={20} />}
-                             <span className="text-[11px] font-black uppercase tracking-[0.3em]">
-                                {syncStatus === 'SYNCED' ? 'PIPELINE_SYNCHRONIZED' : 
-                                 syncStatus === 'CORS_RESTRICTED' ? 'CROSS_ORIGIN_SECURITY_RESTRICTION' :
-                                 syncStatus === 'OUT_OF_SYNC' ? 'PUSH_REQUIRED: VERSIONS_MISMATCH' : 'SYSTEM_READY_FOR_TEST'}
-                             </span>
-                          </div>
-                          {syncStatus === 'CORS_RESTRICTED' && (
-                             <p className="mt-4 text-[10px] text-slate-500 leading-relaxed font-light italic">
-                                Note: This preview environment cannot directly query the production domain due to browser CORS policies. Use the "Inspect Live Node" button above to verify manually.
-                             </p>
-                          )}
-                          {syncStatus === 'OUT_OF_SYNC' && (
-                            <p className="mt-4 text-[10px] text-slate-500 leading-relaxed font-light italic">
-                               Tip: Your changes aren't live yet. Open the source control sidebar (left menu) and click "Push" or "Sync" to send this code to GitHub.
-                            </p>
-                          )}
                        </div>
                     </div>
                  </div>
@@ -232,112 +143,7 @@ const DeploymentHub: React.FC = () => {
            </div>
         </div>
 
-        {/* Sync Status Live HUD */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[
-              { label: "Local Buffer", val: COMPANY_DETAILS.appVersion, icon: <Terminal size={16}/>, color: "text-white" },
-              { label: "Last Push", val: "Awaiting Sync", icon: <History size={16}/>, color: "text-slate-500" },
-              { label: "Production Node", val: liveVersion || "Pending", icon: <Globe size={16}/>, color: "text-neon-blue" }
-            ].map((node, i) => (
-              <div key={i} className="glass p-6 rounded-2xl border border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-royal-950 rounded-lg text-slate-600">{node.icon}</div>
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{node.label}</span>
-                </div>
-                <span className={`text-[10px] font-mono font-bold ${node.color}`}>{node.val}</span>
-              </div>
-            ))}
-        </div>
-
-        {/* --- DEPLOYMENT LIFECYCLE VISUALIZATION --- */}
-        <div className="mb-12 orbital-tile p-10 bg-royal-900/20 border-white/5 relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neon-blue to-transparent"></div>
-           <div className="flex items-center gap-5 mb-12">
-              <div className="p-3 bg-neon-blue/10 rounded-xl border border-neon-blue/20">
-                <Activity size={20} className="text-neon-blue" />
-              </div>
-              <h3 className="text-white font-black text-[11px] uppercase tracking-[0.5em]">The Deployment Lifecycle</h3>
-           </div>
-           
-           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
-              {[
-                { step: "01", icon: <Terminal />, label: "STAGE", desc: "Apply XML code blocks to local buffer.", color: "text-white" },
-                { step: "02", icon: <Lock />, label: "COMMIT", desc: "Lock changes with a version signature.", color: "text-amber-500" },
-                { step: "03", icon: <Cloud />, label: "PUSH", desc: "Broadcast local buffer to GitHub relay.", color: "text-neon-blue" },
-                { step: "04", icon: <CheckCircle />, label: "BUILD", desc: "Cloudflare constructs the live node.", color: "text-emerald-500" }
-              ].map((item, i) => (
-                <div key={i} className="bg-royal-950/60 p-8 rounded-2xl border border-white/5 relative group hover:border-white/20 transition-all">
-                   <div className="text-[8px] font-mono text-slate-700 mb-4 font-black">STEP_{item.step}</div>
-                   <div className={`mb-6 ${item.color} group-hover:scale-110 transition-transform`}>
-                      {item.icon}
-                   </div>
-                   <h4 className={`text-sm font-black uppercase tracking-widest mb-3 ${item.color}`}>{item.label}</h4>
-                   <p className="text-[10px] text-slate-500 leading-relaxed font-light">{item.desc}</p>
-                </div>
-              ))}
-              {/* Connector Arrows for Desktop */}
-              <div className="hidden md:block absolute top-1/2 left-[23%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
-              <div className="hidden md:block absolute top-1/2 left-[48%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
-              <div className="hidden md:block absolute top-1/2 left-[73%] -translate-y-1/2 text-white/5"><ArrowRight size={24}/></div>
-           </div>
-           <div className="mt-10 p-6 bg-royal-800/30 rounded-xl border border-white/5 italic text-[10px] text-slate-500 text-center">
-              "Automation is disabled to prevent accidental deployment of unstable logic nodes to the national infrastructure."
-           </div>
-        </div>
-
-        {/* Sync Instructions Panel */}
-        <div className="mb-12 orbital-tile p-10 bg-royal-950 border-amber-500/20 shadow-2xl">
-           <div className="flex items-center gap-5 mb-8 text-amber-500">
-              <Info size={24} />
-              <h4 className="text-[11px] font-black uppercase tracking-[0.5em]">GitHub Sync Troubleshooting</h4>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                 <p className="text-slate-400 text-sm font-light leading-relaxed">
-                    If you don't see a "Sync" or "Push" button in the left-hand sidebar, follow these steps to force the deployment:
-                 </p>
-                 <ol className="space-y-4 text-xs text-slate-500 list-decimal pl-5">
-                    <li>Click the <strong>Source Control</strong> icon in the far-left vertical sidebar (looks like a branch).</li>
-                    <li>In the "Message" input field at the top, type <span className="text-neon-blue font-mono font-bold">Deploy v{COMPANY_DETAILS.appVersion}</span>.</li>
-                    <li>Click the blue <strong>"Commit"</strong> button.</li>
-                    <li>After committing, click the blue <strong>"Sync Changes"</strong> or <strong>"Publish Branch"</strong> button that appears.</li>
-                 </ol>
-              </div>
-              <div className="p-6 bg-royal-900 rounded-2xl border border-white/5 space-y-4">
-                 <div className="flex items-center gap-3 text-neon-blue">
-                    <Cloud size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Cloudflare Status</span>
-                 </div>
-                 <p className="text-[11px] text-slate-500 font-light italic">
-                    Once pushed to GitHub, Cloudflare Pages will take approximately 1-2 minutes to build the new version. Refresh your live site after 120 seconds.
-                 </p>
-                 <div className="pt-4 flex items-center gap-2">
-                    <span className="text-[9px] font-black text-slate-600 uppercase">Current Deployment Target:</span>
-                    <span className="text-[9px] font-mono text-emerald-500">{COMPANY_DETAILS.cloudflareEndpoint}</span>
-                 </div>
-              </div>
-           </div>
-        </div>
-
-        <div className="glass p-10 rounded-[3rem] border border-white/5 bg-royal-900/20 mb-12">
-           <div className="flex items-center gap-4 mb-8 text-slate-500">
-              <Terminal size={18} />
-              <span className="text-[10px] font-black uppercase tracking-[0.6em]">Connectivity Telemetry Feed</span>
-           </div>
-           <div className="space-y-4 font-mono text-[11px]">
-              {diagnosticReport.map((line, i) => (
-                 <div key={i} className={`flex gap-4 ${line.includes('[OK]') ? 'text-emerald-400' : line.includes('[WARNING]') ? 'text-amber-500' : 'text-slate-400'}`}>
-                    <span className="opacity-30">#</span>
-                    <span>{line}</span>
-                 </div>
-              ))}
-              <div className="text-neon-purple animate-pulse">
-                 {'>'} Monitoring synchronization state... Grid integrity: NOMINAL.
-              </div>
-           </div>
-        </div>
-
-        <div className="flex justify-center">
+        <div className="mt-20 flex justify-center scale-110">
            <BackupButton />
         </div>
       </div>

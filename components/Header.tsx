@@ -19,25 +19,25 @@ const Header = () => {
   }, [isOpen, location]);
 
   const publicLinks = [
-    { path: '/', label: 'PROTOCOL MAINFRAME', icon: <HomeIcon size={14} className="mr-3 text-neon-blue" /> },
-    { path: '/consultancy', label: 'STRATEGIC ADVISORY', icon: <Target size={14} className="mr-3 text-neon-purple" /> },
-    { path: '/tech', label: 'SYNK TECH SUITE', icon: <Cpu size={14} className="mr-3 text-slate-500" /> },
-    { path: '/governance', label: 'GOVERNANCE HUB', icon: <Shield size={14} className="mr-3 text-neon-blue" /> },
-    { path: '/services', label: 'SERVICE NODES', icon: <Briefcase size={14} className="mr-3 text-slate-500" /> },
-    { path: '/intelligence', label: 'NEURAL HUB', icon: <Zap size={14} className="mr-3 text-neon-purple animate-pulse" />, highlight: true },
-    { path: '/about', label: 'DNA & ORIGINS', icon: <Users size={14} className="mr-3 text-slate-500" /> },
-    { path: '/casestudies', label: 'CASE STUDIES', icon: <Star size={14} className="mr-3 text-slate-500" /> },
-    { path: '/contact', label: 'CONTACT MATRIX', icon: <Mail size={14} className="mr-3 text-slate-500" /> }
+    { path: '/', label: 'PROTOCOL MAINFRAME', icon: <HomeIcon size={16} className="mr-4 text-neon-blue" /> },
+    { path: '/consultancy', label: 'STRATEGIC ADVISORY', icon: <Target size={16} className="mr-4 text-neon-purple" /> },
+    { path: '/tech', label: 'SYNK TECH SUITE', icon: <Cpu size={16} className="mr-4 text-slate-500" /> },
+    { path: '/governance', label: 'GOVERNANCE HUB', icon: <Shield size={16} className="mr-4 text-neon-blue" /> },
+    { path: '/services', label: 'SERVICE NODES', icon: <Briefcase size={16} className="mr-4 text-slate-500" /> },
+    { path: '/intelligence', label: 'NEURAL HUB', icon: <Zap size={16} className="mr-4 text-neon-purple animate-pulse" />, highlight: true },
+    { path: '/about', label: 'DNA & ORIGINS', icon: <Users size={16} className="mr-4 text-slate-500" /> },
+    { path: '/casestudies', label: 'CASE STUDIES', icon: <Star size={16} className="mr-4 text-slate-500" /> },
+    { path: '/contact', label: 'CONTACT MATRIX', icon: <Mail size={16} className="mr-4 text-slate-500" /> }
   ];
 
   const commandLinks = [
-    { path: '/command', label: 'COMMAND CENTER', icon: <Shield size={14} className="mr-3 text-emerald-400 animate-pulse" /> },
-    { path: '/deploy', label: 'DEPLOYMENT HUB', icon: <Cloud size={14} className="mr-3 text-neon-blue" /> },
-    { path: '/design-system', label: 'DESIGN SYSTEM', icon: <Palette size={14} className="mr-3 text-neon-purple" /> },
-    { path: '/creative', label: 'BLUEPRINT STUDIO', icon: <Layout size={14} className="mr-3 text-slate-500" /> },
-    { path: '/audio', label: 'VOICE SYNTH', icon: <Mic size={14} className="mr-3 text-slate-500" /> },
-    { path: '/video', label: 'KINETIC ENGINE', icon: <Video size={14} className="mr-3 text-slate-500" /> },
-    { path: '/weblab', label: 'WEB LAB', icon: <Terminal size={14} className="mr-3 text-slate-500" /> }
+    { path: '/command', label: 'COMMAND CENTER', icon: <Shield size={16} className="mr-4 text-emerald-400 animate-pulse" /> },
+    { path: '/deploy', label: 'DEPLOYMENT HUB', icon: <Cloud size={16} className="mr-4 text-neon-blue" /> },
+    { path: '/design-system', label: 'DESIGN SYSTEM', icon: <Palette size={16} className="mr-4 text-neon-purple" /> },
+    { path: '/creative', label: 'BLUEPRINT STUDIO', icon: <Layout size={16} className="mr-4 text-slate-500" /> },
+    { path: '/audio', label: 'VOICE SYNTH', icon: <Mic size={16} className="mr-4 text-slate-500" /> },
+    { path: '/video', label: 'KINETIC ENGINE', icon: <Video size={16} className="mr-4 text-slate-500" /> },
+    { path: '/weblab', label: 'WEB LAB', icon: <Terminal size={16} className="mr-4 text-slate-500" /> }
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -56,38 +56,30 @@ const Header = () => {
 
   return (
     <>
-      <div className="fixed top-8 left-8 z-[1100]">
+      <div className={`fixed top-10 left-10 z-[1100] transition-all duration-500 transform ${scrolled ? 'scale-75 -translate-x-12 -translate-y-6' : 'scale-100'}`}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <BrandLogo size="md" showText={!scrolled} />
+          <BrandLogo size="md" />
         </Link>
       </div>
 
-      <div className={`fixed top-8 right-8 z-[1100] transition-all duration-500 transform ${scrolled ? 'scale-90 opacity-90' : 'scale-100'}`}>
+      <div className={`fixed top-10 right-10 z-[1100] transition-all duration-500 transform ${scrolled ? 'scale-90 opacity-90' : 'scale-100'}`}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="orbital-border w-16 h-16 flex items-center justify-center transition-all active:scale-95 group"
+          className="circuit-capsule w-16 h-16 sm:w-24 sm:h-24 flex items-center justify-center transition-all group shadow-[0_20px_50px_rgba(0,0,0,0.7)] bg-black"
           aria-label="Toggle Menu"
+          style={{ padding: 0 }}
         >
-          <div className="relative z-10 flex items-center justify-center text-white">
-            {isOpen ? <X size={28} className="text-neon-purple" /> : <MenuIcon size={28} className="group-hover:text-neon-blue transition-colors" />}
+          <div className="relative z-10 flex items-center justify-center">
+            {isOpen ? <X size={44} /> : <MenuIcon size={44} />}
           </div>
         </button>
       </div>
 
-      <div className={`fixed inset-0 z-[1050] bg-royal-950/95 backdrop-blur-3xl transition-all duration-500 ease-in-out transform ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full opacity-[0.03] pointer-events-none">
-          <Terminal size={1000} className="text-neon-blue" />
-        </div>
-
+      <div className={`fixed inset-0 z-[1050] bg-royal-950/98 backdrop-blur-3xl transition-all duration-500 ease-in-out transform ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
         <div className="h-full flex flex-col justify-center items-center px-6 relative z-10 pt-16">
-          <nav className="flex flex-col space-y-3 w-full max-w-lg overflow-y-auto scrollbar-hide py-10 max-h-[85vh] bg-royal-900/60 p-10 rounded-[10px] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.6)] relative">
-            {/* Animated Tracing Light Border Node */}
-            <div className="absolute inset-0 p-[1px] rounded-[10px] pointer-events-none">
-               <div className="w-full h-full border border-neon-blue/20 rounded-[10px]"></div>
-            </div>
-
-            <div className="px-8 mb-4">
-               <div className="text-slate-500 text-[9px] font-black uppercase tracking-[0.6em] border-b border-royal-800 pb-5">Navigation Grid</div>
+          <nav className="flex flex-col space-y-3 w-full max-w-xl overflow-y-auto scrollbar-hide py-12 max-h-[85vh] bg-royal-900/80 p-12 rounded-[2rem] border-2 border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.8)] relative">
+            <div className="px-10 mb-6">
+               <div className="text-slate-500 text-[10px] font-black uppercase tracking-[0.6em] border-b-2 border-royal-800 pb-6">Core Navigation</div>
             </div>
             
             {publicLinks.map((link) => (
@@ -95,27 +87,27 @@ const Header = () => {
                 key={link.path}
                 to={link.path}
                 onClick={handleNavClick}
-                className={`group px-8 py-5 rounded-[8px] text-[11px] font-black uppercase tracking-[0.4em] transition-all border flex items-center justify-between overflow-hidden relative ${isActive(link.path) ? 'bg-royal-800 text-white border-neon-blue/50 shadow-2xl' : 'text-slate-500 hover:text-white border-transparent hover:bg-royal-950 hover:border-white/10'}`}
+                className={`group px-10 py-6 rounded-xl text-[12px] font-black uppercase tracking-[0.4em] transition-all border-2 flex items-center justify-between overflow-hidden relative ${isActive(link.path) ? 'bg-royal-800 text-white border-neon-blue shadow-2xl' : 'text-slate-400 hover:text-white border-transparent hover:bg-royal-950 hover:border-white/10'}`}
               >
                 <div className="relative z-10 flex items-center">
                   {link.icon}
                   {link.label}
-                  {link.highlight && <Sparkles size={14} className="ml-3 text-neon-purple animate-pulse" />}
+                  {link.highlight && <Sparkles size={16} className="ml-4 text-neon-purple animate-pulse" />}
                 </div>
               </Link>
             ))}
 
             {isAuthorized && (
               <>
-                <div className="px-8 mt-10 mb-4">
-                   <div className="text-neon-blue text-[9px] font-black uppercase tracking-[0.6em] border-b border-neon-blue/20 pb-5">Sovereign Command [L4]</div>
+                <div className="px-10 mt-12 mb-6">
+                   <div className="text-neon-blue text-[10px] font-black uppercase tracking-[0.6em] border-b-2 border-neon-blue/20 pb-6">Sovereign Command Hub</div>
                 </div>
                 {commandLinks.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
                     onClick={handleNavClick}
-                    className={`group px-8 py-5 rounded-[8px] text-[11px] font-black uppercase tracking-[0.4em] transition-all border flex items-center justify-between overflow-hidden relative ${isActive(link.path) ? 'bg-neon-blue/20 text-white border-neon-blue/50 shadow-2xl' : 'text-slate-400 hover:text-white border-transparent hover:bg-neon-blue/10'}`}
+                    className={`group px-10 py-6 rounded-xl text-[12px] font-black uppercase tracking-[0.4em] transition-all border-2 flex items-center justify-between overflow-hidden relative ${isActive(link.path) ? 'bg-neon-blue text-white border-neon-blue shadow-2xl' : 'text-slate-400 hover:text-white border-transparent hover:bg-neon-blue/10'}`}
                   >
                     <div className="relative z-10 flex items-center">
                       {link.icon}
@@ -125,31 +117,31 @@ const Header = () => {
                 ))}
                 <button 
                   onClick={handleLogout}
-                  className="mx-8 mt-8 py-5 flex items-center gap-3 text-red-500 text-[10px] font-black uppercase tracking-[0.4em] hover:text-red-400 transition-colors border-t border-white/5"
+                  className="mx-10 mt-10 py-6 flex items-center gap-4 text-red-500 text-[12px] font-black uppercase tracking-[0.4em] hover:text-red-400 transition-colors border-t-2 border-white/5"
                 >
-                  <LogOut size={14} /> Terminate Uplink
+                  <LogOut size={16} /> Terminate System Uplink
                 </button>
               </>
             )}
 
             {!isAuthorized && (
               <Link 
-                to="/command" 
+                to="/login" 
                 onClick={handleNavClick}
-                className="mx-8 mt-14 py-6 border border-royal-800 rounded-xl flex items-center justify-center gap-4 text-slate-500 hover:border-neon-purple hover:text-neon-purple transition-all group bg-royal-950/80 shadow-inner"
+                className="mx-10 mt-16 py-8 border-2 border-royal-800 rounded-2xl flex items-center justify-center gap-5 text-slate-500 hover:border-neon-purple hover:text-neon-purple transition-all group bg-royal-950 shadow-inner"
               >
-                <Lock size={14} className="group-hover:animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Administrative Node</span>
+                <Lock size={18} className="group-hover:animate-pulse" />
+                <span className="text-[11px] font-black uppercase tracking-[0.5em]">Restricted Administrative Node</span>
               </Link>
             )}
           </nav>
 
-          <div className="mt-12 flex items-center space-x-6 text-slate-800 font-mono text-[9px] uppercase tracking-[0.5em] font-bold">
+          <div className="mt-16 flex items-center space-x-10 text-slate-700 text-[11px] uppercase tracking-[0.6em] font-black">
             <div className="flex items-center">
-              <div className={`w-1.5 h-1.5 rounded-[1px] mr-3 ${isAuthorized ? 'bg-emerald-500 shadow-[0_0_12px_#10b981]' : 'bg-royal-800'}`}></div>
-              <span>Protocol: SYNK_v{COMPANY_DETAILS.appVersion}</span>
+              <div className={`w-2 h-2 rounded-full mr-4 ${isAuthorized ? 'bg-emerald-500 shadow-[0_0_12px_#10b981]' : 'bg-royal-800'}`}></div>
+              <span>Grid: SYNK_CORE_v{COMPANY_DETAILS.appVersion}</span>
             </div>
-            <div className="w-px h-3 bg-royal-800"></div>
+            <div className="w-1 h-4 bg-royal-800"></div>
             <span>AU_EAST_INFRASTRUCTURE</span>
           </div>
         </div>
