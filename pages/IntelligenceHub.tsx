@@ -59,25 +59,14 @@ const IntelligenceHub: React.FC = () => {
   return (
     <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 xl:px-32 font-sans font-bold relative">
       
-      {/* --- ATMOSPHERE NODES --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-[#334155]"></div>
-        <div 
-          className="absolute inset-0 parallax-layer opacity-[0.04]"
-          style={{ 
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
-            backgroundSize: '120px 120px',
-            transform: `translateY(${scrollY * -0.05}px)` 
-          }}
-        ></div>
         <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
         <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
       </div>
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 pt-48 pb-40">
         
-        {/* Sidebar Controls */}
         <div className="lg:col-span-3 space-y-10 hidden lg:block animate-hero-reveal">
           <div className="orbital-tile p-10 flex flex-col gap-10 bg-black border-2 border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
             <div className="flex items-center gap-5">
@@ -91,7 +80,6 @@ const IntelligenceHub: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="text-[10px] text-slate-500 uppercase tracking-[0.6em] mb-6 pl-4 border-l-2 border-neon-blue font-black">Controls</div>
               {[
                 { label: 'Monitor', id: 'monitor', icon: <Gauge size={18} /> },
                 { label: 'Scout', id: 'chat', icon: <Terminal size={18} /> },
@@ -119,7 +107,6 @@ const IntelligenceHub: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Interface Hub */}
         <div className="lg:col-span-9 flex flex-col h-[850px] animate-hero-reveal">
           <div className="flex-grow bg-black rounded-[3rem] border-2 border-white/10 flex flex-col overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.9)] relative">
             <div className="p-10 border-b-2 border-white/5 flex items-center justify-between bg-[#050505]">
@@ -128,9 +115,12 @@ const IntelligenceHub: React.FC = () => {
                     {activeTab === 'chat' ? <Terminal className="text-neon-purple animate-pulse" size={36} /> : activeTab === 'monitor' ? <Gauge className="text-neon-blue" size={36} /> : <ShieldCheck className="text-neon-purple" size={36} />}
                   </div>
                   <div>
-                    <h2 className="text-white font-black uppercase text-2xl tracking-tighter leading-none mb-3">
-                      {activeTab === 'chat' ? 'Neural Node' : activeTab === 'monitor' ? 'Operational Hub' : 'Audit Engine'}
-                    </h2>
+                    <div className="brand-heading-group cursor-default">
+                      <h2 className="tracking-tighter leading-none mb-1">
+                        <span className="heading-specular heading-structural-test text-xl mb-1">Neural</span>
+                        <span className="heading-specular heading-intelligence-test text-3xl">Interface.</span>
+                      </h2>
+                    </div>
                     <p className="text-[11px] text-slate-600 tracking-[0.5em] uppercase font-black italic">
                        RCG_INTELLIGENCE_LAYER_STABLE // AU_EAST_CLOUD
                     </p>
@@ -161,20 +151,6 @@ const IntelligenceHub: React.FC = () => {
                       </div>
                     </div>
                   ))}
-                  {isLoading && (
-                    <div className="flex gap-10 animate-pulse">
-                      <div className="w-20 h-20 rounded-[1.5rem] bg-black border-2 border-white/10 flex items-center justify-center">
-                        <Loader2 className="animate-spin text-neon-blue" size={32} />
-                      </div>
-                      <div className="bg-black border-2 border-white/5 p-12 rounded-[2.5rem] w-64 flex items-center justify-center">
-                         <div className="flex gap-3">
-                           <div className="w-2.5 h-2.5 rounded-full bg-neon-blue animate-bounce"></div>
-                           <div className="w-2.5 h-2.5 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                           <div className="w-2.5 h-2.5 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                         </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
                 <div className="p-12 bg-[#050505] border-t-2 border-white/5">
                    <form onSubmit={handleSendMessage} className="max-w-6xl mx-auto relative group">
@@ -196,15 +172,6 @@ const IntelligenceHub: React.FC = () => {
                    </form>
                 </div>
               </>
-            )}
-            {activeTab === 'monitor' && (
-              <div className="flex-grow p-12 flex flex-col items-center justify-center text-center space-y-12">
-                 <div className="relative">
-                    <div className="w-48 h-48 border-8 border-dashed border-white/5 rounded-full animate-spin-slow"></div>
-                    <Microscope className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20" size={80} />
-                 </div>
-                 <h2 className="text-4xl text-slate-800 uppercase tracking-[1em] font-black italic animate-pulse">Live Grid Monitoring Active...</h2>
-              </div>
             )}
           </div>
         </div>

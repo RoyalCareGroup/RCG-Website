@@ -23,6 +23,7 @@ import DeploymentHub from './pages/DeploymentHub.tsx';
 import CommandCenter from './pages/CommandCenter.tsx';
 import AdminLogin from './components/AdminLogin.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
+import { CustomCursor } from './components/CustomCursor.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle } from 'lucide-react';
 
@@ -86,6 +87,7 @@ const App: React.FC = () => {
       <SovereignSync />
       <FaviconPulse />
       <GoogleTagTracker />
+      <CustomCursor />
       <div className="min-h-screen bg-royal-950 text-slate-200 flex flex-col selection:bg-neon-blue/30 selection:text-white">
         <LiveStatusHUD />
         <Header />

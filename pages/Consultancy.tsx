@@ -90,7 +90,7 @@ const Consultancy: React.FC = () => {
               <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8">
                  <div>
                     <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter">Impact Projection</h3>
-                    <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.5em] mt-3 font-mono">SYNK_INTEGRATION_METRICS</p>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] mt-3 font-mono">SYNK_INTEGRATION_METRICS</p>
                  </div>
                  <div className="flex gap-8 bg-royal-950 px-8 py-4 rounded-2xl border-2 border-white/5 shadow-inner">
                     <div className="flex items-center gap-3">
@@ -112,7 +112,7 @@ const Consultancy: React.FC = () => {
                              <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                           </linearGradient>
                        </defs>
-                       <XAxis dataKey="month" stroke="#475569" fontSize={11} fontWeight="black" axisLine={false} tickLine={false} />
+                       <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} fontWeight="black" axisLine={false} tickLine={false} />
                        <Tooltip contentStyle={{ backgroundColor: '#000', border: '2px solid rgba(255,255,255,0.1)', borderRadius: '15px', fontSize: '11px', fontWeight: '900', color: '#fff' }} />
                        <Area type="monotone" dataKey="growth" stroke="#06b6d4" fillOpacity={1} fill="url(#colorGrowthElite)" strokeWidth={5} />
                        <Area type="monotone" dataKey="compliance" stroke="#d946ef" fillOpacity={0} strokeWidth={5} />
@@ -132,7 +132,7 @@ const Consultancy: React.FC = () => {
                       <div className="p-3 bg-royal-950 rounded-xl group-hover:scale-110 group-hover:border-neon-blue border-2 border-transparent transition-all shadow-inner">{m.icon}</div>
                       <span className="text-3xl font-display font-black text-white tracking-tighter">{m.val}</span>
                    </div>
-                   <div className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">{m.label}</div>
+                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.5em]">{m.label}</div>
                 </div>
               ))}
            </div>
@@ -145,7 +145,7 @@ const Consultancy: React.FC = () => {
                   {s.icon}
                 </div>
                 <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-6 leading-none group-hover:text-neon-blue transition-colors">{s.title}</h3>
-                <p className="text-white text-lg font-black leading-relaxed mb-12 flex-grow italic opacity-80 group-hover:opacity-100 transition-opacity">"{s.desc}"</p>
+                <p className="text-white text-lg font-bold leading-relaxed mb-12 flex-grow italic opacity-95 group-hover:opacity-100 transition-opacity">"{s.desc}"</p>
                 <Link to="/contact" className="slim-orbital-btn inline-flex items-center justify-center py-5 text-white font-black text-[11px] uppercase tracking-[0.6em] border-2 border-white/80 hover:bg-white hover:text-black transition-all group/link shadow-2xl active:scale-95">
                   Execute Strategy Node <ArrowRight size={18} className="ml-4 group-hover/link:translate-x-3 transition-transform text-neon-purple" />
                 </Link>
@@ -166,7 +166,7 @@ const Consultancy: React.FC = () => {
               Architectural<br/>
               <span className="heading-tech">Excellence.</span>
              </h2>
-             <p className="text-2xl text-white font-black leading-relaxed max-w-3xl italic">
+             <p className="text-2xl text-slate-100 font-bold leading-relaxed max-w-3xl italic">
                "We provide the strategic oversight required to transition from regional provider to national infrastructure leader."
              </p>
              

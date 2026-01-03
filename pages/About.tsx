@@ -37,10 +37,12 @@ const About: React.FC = () => {
           <div className="circuit-capsule mb-10 border-2 border-white/80 bg-black px-10 py-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
             <Users size={14} className="mr-3 text-neon-purple" /> Organizational DNA
           </div>
-          <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85] heading-wow">
-            Experience-Led <br/>
-            <span className="heading-tech">Intelligence.</span>
-          </h1>
+          <div className="brand-heading-group cursor-default">
+            <h1 className="text-5xl md:text-7xl xl:text-8xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85]">
+              <span className="heading-specular heading-structural-test">Experience-Led</span>
+              <span className="heading-specular heading-intelligence-test">Intelligence.</span>
+            </h1>
+          </div>
           <div className="max-w-2xl relative group banner-pop bg-black p-10 shadow-2xl border-2 border-white/10 mt-10">
             <DecodingText 
               text="Royal Care Group is a national NDIS Business Management Consultancy and Tech Division, built on a foundation of direct industry immersion."
@@ -103,7 +105,12 @@ const About: React.FC = () => {
 
         <div className="mt-40 p-16 md:p-24 banner-pop bg-black rounded-[4rem] border-2 border-white/10 text-center shadow-[0_40px_120px_rgba(0,0,0,0.9)] relative overflow-hidden group">
            <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <h3 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter mb-8 heading-wow">Scale Your<br/><span className="heading-tech">Sovereignty.</span></h3>
+           <div className="brand-heading-group cursor-default inline-block mb-8">
+             <h3 className="text-4xl md:text-6xl xl:text-7xl font-display font-black text-white uppercase tracking-tighter">
+               <span className="heading-specular heading-structural-test">Scale Your</span>
+               <span className="heading-specular heading-intelligence-test">Sovereignty.</span>
+             </h3>
+           </div>
            <p className="text-white opacity-60 text-xl mb-14 font-black max-w-2xl mx-auto tracking-wide italic">
              "Connect with an RCG Architect today to begin your organizational re-engineering."
            </p>

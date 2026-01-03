@@ -37,7 +37,7 @@ const SynkModuleChassis: React.FC<{
       <div className={`relative bg-royal-950/80 backdrop-blur-xl border ${border} rounded-3xl p-10 h-full flex flex-col shadow-2xl overflow-hidden`}>
         <div className="flex justify-between items-start mb-10">
           <div className="flex flex-col">
-            <span className="text-[8px] font-mono text-slate-500 uppercase tracking-[0.3em]">MODULE ID</span>
+            <span className="text-[8px] font-mono text-slate-400 uppercase tracking-[0.3em]">MODULE ID</span>
             <span className="text-[10px] font-mono text-white tracking-widest">RC-SYNK-{id.toUpperCase()}</span>
           </div>
           <div className={`px-4 py-1 rounded-lg border text-[8px] font-black tracking-[0.2em] bg-black/40 ${accent} ${isStable ? 'border-neon-blue/50' : 'border-neon-purple/50'}`}>
@@ -50,13 +50,13 @@ const SynkModuleChassis: React.FC<{
             {icon}
           </div>
           <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-4">{title}</h3>
-          <p className="text-slate-400 text-sm leading-relaxed font-light mb-8">{desc}</p>
+          <p className="text-slate-200 text-sm leading-relaxed font-bold mb-8">{desc}</p>
         </div>
 
         <div className="mt-auto space-y-6">
           <div className="flex flex-wrap gap-2">
             {specs.map((spec, i) => (
-              <div key={i} className="px-3 py-1 bg-royal-950 border border-royal-800 rounded text-[9px] font-mono text-slate-400 uppercase tracking-widest flex items-center">
+              <div key={i} className="px-3 py-1 bg-royal-950 border border-royal-800 rounded text-[9px] font-mono text-slate-300 uppercase tracking-widest flex items-center">
                 <div className="w-1 h-1 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                 {spec}
               </div>
@@ -66,9 +66,9 @@ const SynkModuleChassis: React.FC<{
           <div className="pt-6 border-t border-royal-800/50 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Activity size={12} className={accent} />
-              <span className="text-[8px] font-mono text-slate-500 tracking-widest uppercase">LATENCY: <TelemetryValue />ms</span>
+              <span className="text-[8px] font-mono text-slate-400 tracking-widest uppercase">LATENCY: <TelemetryValue />ms</span>
             </div>
-            <span className="text-[8px] font-mono text-slate-500 tracking-widest">AES-256</span>
+            <span className="text-[8px] font-mono text-slate-400 tracking-widest">AES-256</span>
           </div>
         </div>
       </div>
@@ -123,12 +123,12 @@ const TechDivision: React.FC = () => {
           <div className="inline-flex items-center space-x-4 mb-10 p-4 bg-royal-900 border border-royal-800 rounded-3xl">
              <Cpu className="text-neon-blue" size={32} />
              <div className="text-left">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] block">Status Check</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] block">Status Check</span>
                 <span className="text-white font-mono text-sm tracking-widest">SYNK_CORE_VERSION_{COMPANY_DETAILS.appVersion}: OPTIMAL</span>
              </div>
           </div>
           <h1 className="text-6xl md:text-[10rem] font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85]">SYNK Suite</h1>
-          <p className="text-slate-500 uppercase tracking-[0.8em] text-[11px] font-black">Royal Care Tech Division // Translating Regulation into Binary</p>
+          <p className="text-slate-400 uppercase tracking-[0.8em] text-[11px] font-black">Royal Care Tech Division // Translating Regulation into Binary</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-40">
@@ -148,7 +148,7 @@ const TechDivision: React.FC = () => {
               <span className="text-sm font-black uppercase tracking-[0.6em]">Diagnostic Infrastructure</span>
             </div>
             <h2 className="text-5xl md:text-8xl font-display font-black text-white mb-12 uppercase tracking-tighter">The TFix Engine</h2>
-            <p className="text-2xl text-slate-400 leading-relaxed font-light mb-16 border-l-4 border-neon-blue pl-12">
+            <p className="text-2xl text-slate-200 leading-relaxed font-bold mb-16 border-l-4 border-neon-blue pl-12">
               The TFix Core is the foundational intelligence behind every Royal Care deployment. It actively scans your organizational architecture to identify "Compliance Slippage" and "Revenue Leakage" before they impact your NDIS bottom line.
             </p>
             
@@ -158,7 +158,7 @@ const TechDivision: React.FC = () => {
                    <ShieldCheck className="text-neon-purple" size={32} />
                    <h4 className="text-white font-black text-xl uppercase tracking-tight">Self-Healing Protocols</h4>
                  </div>
-                 <p className="text-slate-500 text-lg leading-relaxed font-light">
+                 <p className="text-slate-300 text-lg leading-relaxed font-bold">
                    Automated identification and correction of support documentation errors in real-time. TFix bridges the gap between field-staff input and commission requirements.
                  </p>
               </div>
@@ -167,7 +167,7 @@ const TechDivision: React.FC = () => {
                    <Gauge className="text-neon-blue" size={32} />
                    <h4 className="text-white font-black text-xl uppercase tracking-tight">Predictive Compliance</h4>
                  </div>
-                 <p className="text-slate-500 text-lg leading-relaxed font-light">
+                 <p className="text-slate-300 text-lg leading-relaxed font-bold">
                    Forecasting audit risk based on historical operational telemetry. We identify patterns of non-compliance and automate the retraining cycle for your organization.
                  </p>
               </div>

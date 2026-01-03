@@ -27,42 +27,42 @@ const LiveStatusHUD = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-10 left-10 z-[1001] hidden xl:block animate-fade-in font-sans font-black">
-      <div className="glass bg-black/90 border-2 border-white/10 p-6 rounded-2xl flex items-center space-x-12 shadow-[0_30px_60px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center space-x-5">
-          <Activity size={22} className="text-neon-blue" />
+    <div className="fixed bottom-6 left-6 z-[1001] hidden xl:block animate-fade-in font-sans font-black">
+      <div className="bg-black/80 backdrop-blur-md border-[0.5px] border-white/10 p-4 rounded-xl flex items-center space-x-8 shadow-2xl">
+        <div className="flex items-center space-x-3">
+          <Activity size={16} className="text-neon-blue" />
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mb-1.5">Latency</span>
-            <span className="text-[13px] text-white tracking-tight">{telemetry.latency}ms</span>
+            <span className="text-[8px] text-slate-500 uppercase tracking-widest leading-none mb-1">Latency</span>
+            <span className="text-[11px] text-white tracking-tight">{telemetry.latency}ms</span>
           </div>
         </div>
-        <div className="w-[1.5px] h-10 bg-royal-800"></div>
-        <div className="flex items-center space-x-5">
-          <Database size={22} className="text-neon-purple" />
+        <div className="w-[0.5px] h-6 bg-royal-800"></div>
+        <div className="flex items-center space-x-3">
+          <Database size={16} className="text-neon-purple" />
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mb-1.5">SYNK Load</span>
-            <span className="text-[13px] text-white tracking-tight">{telemetry.load}</span>
+            <span className="text-[8px] text-slate-500 uppercase tracking-widest leading-none mb-1">SYNK Load</span>
+            <span className="text-[11px] text-white tracking-tight">{telemetry.load}</span>
           </div>
         </div>
-        <div className="w-[1.5px] h-10 bg-royal-800"></div>
-        <div className="flex items-center space-x-5">
-          <Radio size={22} className="text-neon-green" />
+        <div className="w-[0.5px] h-6 bg-royal-800"></div>
+        <div className="flex items-center space-x-3">
+          <Radio size={16} className="text-neon-green" />
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mb-1.5">Integrity</span>
-            <span className="text-[13px] text-white tracking-tight">{telemetry.integrity}%</span>
+            <span className="text-[8px] text-slate-500 uppercase tracking-widest leading-none mb-1">Integrity</span>
+            <span className="text-[11px] text-white tracking-tight">{telemetry.integrity}%</span>
           </div>
         </div>
-        <div className="w-[1.5px] h-10 bg-royal-800"></div>
+        <div className="w-[0.5px] h-6 bg-royal-800"></div>
         <Link 
           to={telemetry.clearance === 'LEVEL_4' ? "/command" : "/login"} 
-          className="flex items-center space-x-5 hover:opacity-80 transition-opacity group"
+          className="flex items-center space-x-3 hover:opacity-80 transition-opacity group"
         >
-          <div className={`p-2.5 rounded-xl border-2 transition-colors ${telemetry.clearance === 'LEVEL_4' ? 'bg-neon-blue/15 border-neon-blue/40 text-neon-blue shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'bg-royal-950 border-white/10 text-slate-600 group-hover:text-neon-purple'}`}>
-             <Shield size={22} />
+          <div className={`p-1.5 rounded-lg border-[0.5px] transition-colors ${telemetry.clearance === 'LEVEL_4' ? 'bg-neon-blue/10 border-neon-blue/30 text-neon-blue' : 'bg-royal-950 border-white/10 text-slate-600'}`}>
+             <Shield size={16} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mb-1.5">Clearance</span>
-            <span className={`text-[13px] font-black ${telemetry.clearance === 'LEVEL_4' ? 'text-neon-blue' : 'text-slate-500'}`}>
+            <span className="text-[8px] text-slate-500 uppercase tracking-widest leading-none mb-1">Clearance</span>
+            <span className={`text-[11px] font-black ${telemetry.clearance === 'LEVEL_4' ? 'text-neon-blue' : 'text-slate-500'}`}>
               {telemetry.clearance}
             </span>
           </div>

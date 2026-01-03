@@ -3,9 +3,9 @@ import { Zap, Shield, Cpu, Activity, Globe } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const TickerItem: React.FC<{ icon: any; text: string; color: string }> = ({ icon: Icon, text, color }) => (
-  <div className="flex items-center space-x-4 px-12 shrink-0 border-r border-royal-800">
-    <Icon size={12} className={color} />
-    <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] whitespace-nowrap">
+  <div className="flex items-center space-x-3 px-8 shrink-0 border-r border-royal-800/40">
+    <Icon size={10} className={color} />
+    <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] whitespace-nowrap">
       {text}
     </span>
   </div>
@@ -22,9 +22,9 @@ export const SystemTicker: React.FC = () => {
   ];
 
   return (
-    <div className="w-full bg-royal-950/80 backdrop-blur-xl border-b border-white/5 py-3 overflow-hidden flex relative z-[1002]">
+    <div className="w-full bg-royal-950/60 backdrop-blur-md border-b border-white/5 py-1.5 overflow-hidden flex relative z-[1002]">
       <div className="flex animate-[ticker_40s_linear_infinite]">
-        {[...items, ...items, ...items].map((item, i) => (
+        {[...items, ...items].map((item, i) => (
           <TickerItem key={i} {...item} />
         ))}
       </div>

@@ -15,21 +15,13 @@ const Hero: React.FC = () => {
           <div className="inline-flex items-center px-6 py-2.5 rounded-full border border-neon-purple/30 bg-neon-purple/10 text-neon-purple text-[10px] font-black tracking-[0.5em] mb-12 uppercase">
              <Sparkles size={16} className="mr-3" /> Australia Wide Deployments
           </div>
-          <h1 className="text-6xl md:text-8xl font-display font-black text-white leading-[0.9] tracking-tighter mb-12">
-            Structural<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-neon-purple to-pink-500 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Intelligence.</span>
+          <h1 className="text-6xl md:text-8xl font-display leading-[0.9] tracking-tighter mb-12">
+            <span className="heading-structural-test block mb-2">Structural</span>
+            <span className="heading-intelligence-test">Intelligence.</span>
           </h1>
           <p className="text-2xl text-slate-400 max-w-xl mb-16 border-l-4 border-royal-800 pl-10 font-light leading-relaxed">
             Architecting the future of NDIS. We re-engineer provider logic with proprietary binary systems and elite consultancy.
           </p>
-          <div className="flex flex-col sm:flex-row gap-8">
-            <Link to="/services" className="px-14 py-7 bg-white text-black font-black text-xs tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all text-center">
-              Consultancy Node
-            </Link>
-            <Link to="/tech" className="px-14 py-7 border-2 border-royal-800 text-white font-black text-xs tracking-[0.4em] uppercase rounded-2xl hover:border-neon-purple transition-all text-center">
-              SYNK Tech Suite
-            </Link>
-          </div>
 
           <div className="mt-20 grid grid-cols-3 gap-8">
             <div>

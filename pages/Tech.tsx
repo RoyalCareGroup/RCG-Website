@@ -103,10 +103,12 @@ const Tech: React.FC = () => {
             <div className="circuit-capsule mb-6 px-6 bg-black border-2 border-white/80 py-2.5 text-[8px] shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                <Boxes size={14} className="mr-3 text-neon-blue animate-pulse" /> Ecosystem Node Active
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-black text-white mb-6 uppercase leading-[0.8] tracking-tighter heading-wow">
-              Suite &<br/>
-              <span className="heading-tech">Systems.</span>
-            </h1>
+            <div className="brand-heading-group cursor-default">
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-black text-white mb-6 uppercase leading-[0.8] tracking-tighter">
+                <span className="heading-specular heading-structural-test">Suite &</span>
+                <span className="heading-specular heading-intelligence-test">Systems.</span>
+              </h1>
+            </div>
             <div className="max-w-xl relative group banner-pop bg-black p-6 lg:p-8 shadow-2xl border-2 border-white/10 mt-6">
               <DecodingText 
                 text="Australia's unified NDIS infrastructure. Systematizing Your NDIS Knowledge (SYNK) through high-fidelity binary logic."
@@ -189,10 +191,12 @@ const Tech: React.FC = () => {
               <div className="circuit-capsule mb-6 border-2 border-white/80 bg-black px-10 py-3 text-[8px]">
                 <Microscope size={14} className="mr-3 text-neon-purple animate-pulse" /> Infrastructure Lab
               </div>
-              <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase leading-[0.8] mb-6 tracking-tighter heading-wow">
-                The<br/>
-                <span className="heading-tech">Node.</span>
-              </h2>
+              <div className="brand-heading-group cursor-default inline-block">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-white uppercase leading-[0.8] mb-6 tracking-tighter">
+                  <span className="heading-specular heading-structural-test">The</span>
+                  <span className="heading-specular heading-intelligence-test">Node.</span>
+                </h2>
+              </div>
               <p className="text-slate-700 font-black text-[10px] uppercase tracking-[1em] opacity-60 font-mono">LOGIC_VALIDATION_MATRIX_LIVE</p>
            </div>
            

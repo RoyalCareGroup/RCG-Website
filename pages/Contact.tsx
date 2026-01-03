@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, MapPin, Mail, Zap, Globe, PhoneCall, ShieldCheck, Terminal, Activity, ArrowRight } from 'lucide-react';
+import { Send, MapPin, Mail, Zap, Globe, PhoneCall, ShieldCheck, Terminal, Activity, ArrowRight, ExternalLink } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 import { DecodingText } from '../components/DecodingText.tsx';
 
@@ -22,8 +22,18 @@ const Contact: React.FC = () => {
         'value': 1.0
       });
     }
+    
+    // Construct the direct mailto link
     const recipient = formData.dept === 'hello' ? COMPANY_DETAILS.emailGeneral : `${formData.dept}@royalcaregroup.com.au`;
-    window.location.href = `mailto:${recipient}?subject=Website Enquiry from ${formData.name}&body=${encodeURIComponent(formData.msg)}`;
+    const subject = `Structural Enquiry: ${formData.name}`;
+    const body = `Operator Name: ${formData.name}\nDepartment: ${formData.dept}\n\nMessage Payload:\n------------------\n${formData.msg}\n------------------\nSent via Royal Care Matrix`;
+    
+    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const directMailto = () => {
+    const subject = "Direct Uplink: Requesting Structural Intelligence";
+    window.location.href = `mailto:${COMPANY_DETAILS.emailGeneral}?subject=${encodeURIComponent(subject)}`;
   };
 
   return (
@@ -45,109 +55,128 @@ const Contact: React.FC = () => {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 relative z-10 pt-48 pb-32">
-        <div className="lg:col-span-5 space-y-16 animate-hero-reveal">
-          <div>
-            <div className="circuit-capsule border-2 border-white/80 bg-black text-white mb-10 px-10 py-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-              <Zap size={14} className="mr-4 animate-pulse text-neon-blue" /> Communication Grid Node Active
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 relative z-10 pt-48 pb-32">
+        
+        {/* Left Column: Context & Direct Uplink */}
+        <div className="lg:col-span-5 space-y-12 animate-hero-reveal">
+          <div className="space-y-8">
+            <div className="circuit-capsule border-2 border-white/80 bg-black text-white px-8 py-3 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+              <Zap size={14} className="mr-4 animate-pulse text-neon-blue" /> Grid Connectivity Protocol Active
             </div>
-            <h1 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] mb-10 heading-wow">
+            <h1 className="text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85] heading-wow">
               Contact<br/>
               <span className="heading-tech">Matrix.</span>
             </h1>
-            <div className="max-w-md relative group banner-pop bg-black p-10 shadow-2xl border-2 border-white/10 mt-10">
+            <div className="banner-pop bg-black p-8 shadow-2xl border-2 border-white/10 rounded-[2rem]">
               <DecodingText 
-                text="Establish a secure uplink with our architectural division for strategic advisory and technical SYNK deployments."
-                className="text-lg text-white font-black leading-tight tracking-wide opacity-80"
+                text="Communication with the RCG-SYNK architecture is strictly routed via visitors' native email clients to ensure data sovereignty."
+                className="text-lg text-white font-black leading-tight tracking-wide opacity-70 italic"
                 stagger={8}
               />
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {[
-              { icon: <MapPin className="text-neon-purple" size={24} />, label: "Admin Hub", val: COMPANY_DETAILS.address },
-              { icon: <Mail className="text-neon-blue" size={24} />, label: "Protocol Link", val: COMPANY_DETAILS.emailGeneral },
-              { icon: <PhoneCall className="text-neon-purple" size={24} />, label: "Voice Node", val: "AU_GRID_ENABLED" },
-              { icon: <Globe className="text-neon-blue" size={24} />, label: "Service Reach", val: "National_Sovereign" }
-            ].map((node, i) => (
-              <div key={i} className="orbital-tile p-10 group hover:border-white transition-all duration-700 bg-black border-2 border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
-                <div className="p-5 bg-royal-950 rounded-2xl border-2 border-white/5 w-fit mb-8 group-hover:scale-110 group-hover:border-neon-blue transition-all shadow-inner">
-                  {node.icon}
+
+          {/* New Direct Action Node */}
+          <div className="orbital-tile p-10 bg-black border-2 border-neon-blue shadow-[0_20px_60px_rgba(6,182,212,0.2)]">
+             <div className="flex flex-col items-center text-center space-y-6">
+                <div className="p-5 bg-royal-950 border-2 border-neon-blue rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                   <Mail className="text-neon-blue" size={36} />
                 </div>
-                <h4 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-4 font-mono">{node.label}</h4>
-                <p className="text-white text-xs leading-relaxed font-black tracking-tight">{node.val}</p>
+                <div>
+                   <h3 className="text-white text-2xl font-display font-black uppercase tracking-tight">Direct Neural Uplink</h3>
+                   <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mt-2">Bypass composer // Instant Mailto</p>
+                </div>
+                <button 
+                  onClick={directMailto}
+                  className="slim-orbital-btn w-full py-5 bg-white text-black font-black text-[11px] tracking-[0.4em] uppercase transition-all shadow-3xl hover:scale-105 active:scale-95 flex items-center justify-center gap-4"
+                >
+                  Launch Email Client <ExternalLink size={16} />
+                </button>
+             </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6">
+            {[
+              { icon: <MapPin className="text-neon-purple" />, label: "Grid Hub", val: COMPANY_DETAILS.address },
+              { icon: <PhoneCall className="text-neon-blue" />, label: "Voice node", val: "AU_GRID_ENABLED" },
+            ].map((node, i) => (
+              <div key={i} className="orbital-tile p-8 bg-black border-2 border-white/5 shadow-2xl">
+                <div className="mb-4 text-neon-blue">{node.icon}</div>
+                <h4 className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mb-2 font-mono">{node.label}</h4>
+                <p className="text-white text-[11px] font-black">{node.val}</p>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Right Column: The Composer */}
         <div className="lg:col-span-7">
-          <div className="orbital-tile p-12 md:p-20 shadow-[0_80px_160px_rgba(0,0,0,0.9)] relative overflow-hidden bg-black border-2 border-white/15">
-            <div className="absolute top-0 right-0 p-16 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+          <div className="orbital-tile p-10 md:p-16 shadow-[0_80px_160px_rgba(0,0,0,0.9)] relative overflow-hidden bg-black border-2 border-white/10">
+            <div className="absolute top-0 right-0 p-16 opacity-[0.03] pointer-events-none">
               <ShieldCheck size={400} className="text-neon-blue" />
             </div>
             
             <div className="relative z-10">
-              <div className="mb-14 border-l-8 border-neon-purple pl-10">
-                <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-3">Initialize Enquiry Node</h3>
-                <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase italic font-mono">Routing through SYNK_SECURE_GATEWAY_v4</p>
+              <div className="mb-12 border-l-8 border-neon-purple pl-8">
+                <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter">Payload Composer</h3>
+                <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase italic font-mono">Syncing with SYNK_SECURE_GATEWAY_v4</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] flex items-center gap-4 font-mono">
-                       <Terminal size={14} className="text-neon-blue" /> Identity Signature
+              <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-3 font-mono">
+                       <Terminal size={12} className="text-neon-blue" /> Op Signature
                     </label>
                     <input 
                       type="text" 
-                      placeholder="FULL_NAME" 
+                      placeholder="NAME_REQUIRED" 
                       required 
-                      className="w-full bg-royal-950 border-2 border-white/10 p-8 rounded-[1.5rem] text-white focus:border-white outline-none transition-all placeholder:text-slate-800 font-black text-lg shadow-inner" 
+                      className="w-full bg-royal-950 border-2 border-white/10 p-6 rounded-xl text-white focus:border-white outline-none transition-all placeholder:text-slate-800 font-black shadow-inner" 
                       value={formData.name} 
                       onChange={e => setFormData({...formData, name: e.target.value})} 
                     />
                   </div>
                   
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] flex items-center gap-4 font-mono">
-                       <Activity size={14} className="text-neon-purple" /> Return Protocol
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-3 font-mono">
+                       <Activity size={12} className="text-neon-purple" /> Call-Back ID
                     </label>
                     <input 
                       type="email" 
-                      placeholder="EMAIL_ADDRESS" 
+                      placeholder="EMAIL_REQUIRED" 
                       required 
-                      className="w-full bg-royal-950 border-2 border-white/10 p-8 rounded-[1.5rem] text-white focus:border-white outline-none transition-all placeholder:text-slate-800 font-black text-lg shadow-inner" 
+                      className="w-full bg-royal-950 border-2 border-white/10 p-6 rounded-xl text-white focus:border-white outline-none transition-all placeholder:text-slate-800 font-black shadow-inner" 
                       value={formData.email} 
                       onChange={e => setFormData({...formData, email: e.target.value})} 
                     />
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] flex items-center gap-4 font-mono">
-                     <ShieldCheck size={14} className="text-neon-blue" /> Department Routing
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-3 font-mono">
+                     <Globe size={12} className="text-neon-blue" /> Grid Department
                   </label>
                   <select 
-                    className="w-full bg-royal-950 border-2 border-white/10 p-8 rounded-[1.5rem] text-white focus:border-white outline-none transition-all font-black text-lg appearance-none cursor-pointer shadow-inner" 
+                    className="w-full bg-royal-950 border-2 border-white/10 p-6 rounded-xl text-white focus:border-white outline-none transition-all font-black appearance-none cursor-pointer shadow-inner" 
                     value={formData.dept} 
                     onChange={e => setFormData({...formData, dept: e.target.value})}
                   >
-                    <option value="hello">General Enquiries (Sovereign Node)</option>
-                    <option value="sales">Consultancy Sales (Architectural Node)</option>
-                    <option value="tech">Tech Division Support (Engineering Node)</option>
+                    <option value="hello">General Enquiries (Hello@)</option>
+                    <option value="sales">Consultancy Architecture (Sales@)</option>
+                    <option value="tech">Engineering Division (Tech@)</option>
                   </select>
                 </div>
 
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em] flex items-center gap-4 font-mono">
-                     <Zap size={14} className="text-neon-purple" /> Instruction Payload
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.5em] flex items-center gap-3 font-mono">
+                     <ArrowRight size={12} className="text-neon-purple" /> Composition
                   </label>
                   <textarea 
-                    placeholder="Describe structural requirements..." 
-                    rows={6} 
-                    className="w-full bg-royal-950 border-2 border-white/10 p-10 rounded-[2.5rem] text-white resize-none focus:border-white outline-none transition-all placeholder:text-slate-800 font-black text-xl shadow-inner" 
+                    placeholder="Describe structural constraints or requirements..." 
+                    rows={5} 
+                    required
+                    className="w-full bg-royal-950 border-2 border-white/10 p-8 rounded-2xl text-white resize-none focus:border-white outline-none transition-all placeholder:text-slate-800 font-black text-lg shadow-inner" 
                     value={formData.msg} 
                     onChange={e => setFormData({...formData, msg: e.target.value})}
                   ></textarea>
@@ -155,13 +184,17 @@ const Contact: React.FC = () => {
 
                 <button 
                   type="submit" 
-                  className="slim-orbital-btn w-full py-10 text-black bg-white font-black text-[12px] tracking-[0.8em] uppercase mt-10 hover:shadow-[0_0_60px_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-6 group active:scale-95"
+                  className="slim-orbital-btn w-full py-8 text-black bg-white font-black text-[11px] tracking-[0.6em] uppercase flex items-center justify-center gap-6 group active:scale-95 shadow-3xl"
                 >
-                  <span>Deploy Enquiry Protocol</span>
-                  <ArrowRight size={24} className="group-hover:translate-x-3 transition-transform" />
+                  <Send size={20} className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                  <span>Deploy to Email Client</span>
                 </button>
               </form>
             </div>
+          </div>
+          
+          <div className="mt-8 text-center text-[9px] font-black text-slate-600 uppercase tracking-[0.6em] animate-pulse">
+            Neural link stable // Sovereign protection active
           </div>
         </div>
       </div>
