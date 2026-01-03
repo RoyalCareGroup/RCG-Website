@@ -1,6 +1,6 @@
 {
   "name": "royal-care-group-mainframe",
-  "version": "10.12.43",
+  "version": "10.12.46",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "dependencies": {
     "react": "^19.0.0",
