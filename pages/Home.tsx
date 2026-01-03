@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { DecodingText } from '../components/DecodingText.tsx';
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
+import { BrandLogo } from '../components/BrandLogo.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Home = () => {
@@ -78,6 +79,11 @@ const Home = () => {
                   <p className="text-sm md:text-lg text-slate-200 font-bold leading-relaxed tracking-wide">
                     By integrating elite strategic design with bespoke AI development, we empower providers to transcend complexity. We exist to replace administrative debt with sovereign logic.
                   </p>
+                </div>
+
+                {/* Identity Anchor Node */}
+                <div className="flex justify-center pt-2 transform scale-75 opacity-80 hover:opacity-100 hover:scale-90 transition-all duration-700">
+                  <BrandLogo size="sm" />
                 </div>
 
                 <div className="pt-4 flex items-center justify-center gap-8">
