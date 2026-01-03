@@ -6,7 +6,7 @@ import {
   Globe, Navigation, TrendingUp, Cpu, History,
   AlertTriangle, CheckCircle2, ChevronRight, Gauge,
   PieChart as PieChartIcon, Briefcase, DollarSign, FileSearch,
-  Command, Layers, Maximize2
+  Command, Layers, Maximize2, Microscope
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, Tooltip, YAxis, 
@@ -16,22 +16,7 @@ import { sendChatMessage } from '../services/geminiService.ts';
 import { ChatSender, ChatMessage } from '../types/index.ts';
 import { BackupButton } from './BackupButton.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
-
-const COMPLIANCE_TREND = [
-  { name: 'Jan', score: 82 },
-  { name: 'Feb', score: 85 },
-  { name: 'Mar', score: 81 },
-  { name: 'Apr', score: 88 },
-  { name: 'May', score: 92 },
-  { name: 'Jun', score: 94 },
-  { name: 'Jul', score: 99 },
-];
-
-const RECOVERY_DATA = [
-  { name: 'Slippage', value: 400, fill: '#ef4444' },
-  { name: 'Recovered', value: 300, fill: '#06b6d4' },
-  { name: 'Potential', value: 200, fill: '#d946ef' },
-];
+import { DecodingText } from './DecodingText.tsx';
 
 const IntelligenceHub: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -45,10 +30,14 @@ const IntelligenceHub: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'monitor' | 'chat' | 'audit'>('monitor');
+  const [scrollY, setScrollY] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [messages, isLoading]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -68,60 +57,81 @@ const IntelligenceHub: React.FC = () => {
   };
 
   return (
-    <div className="pt-40 pb-32 px-6 sm:px-16 lg:px-24 xl:px-32 min-h-screen bg-royal-950 flex flex-col items-center font-sans font-black">
-      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
-        <div className="lg:col-span-3 space-y-8 hidden lg:block">
-          <div className="orbital-tile p-10 flex flex-col gap-10 bg-royal-900/40 border-2 border-white/10 shadow-3xl">
-            <div className="flex items-center gap-5">
-              <div className="p-4 bg-neon-blue/15 rounded-xl border-2 border-neon-blue/30 shadow-2xl">
-                <Globe className="text-neon-blue animate-pulse" size={28} />
+    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-4 sm:px-12 lg:px-16 xl:px-24 font-sans font-bold relative">
+      
+      {/* --- ATMOSPHERE NODES --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[#334155]"></div>
+        <div 
+          className="absolute inset-0 parallax-layer opacity-[0.04]"
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 2px,transparent 2px), linear-gradient(90deg,rgba(255,255,255,0.06) 2px,transparent_2px)',
+            backgroundSize: '120px 120px',
+            transform: `translateY(${scrollY * -0.05}px)` 
+          }}
+        ></div>
+        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 relative z-10 pt-24 lg:pt-32 pb-12 lg:pb-24">
+        
+        {/* Sidebar Controls - Condensed */}
+        <div className="lg:col-span-3 space-y-4 lg:space-y-6 animate-hero-reveal">
+          <div className="orbital-tile p-5 lg:p-8 flex flex-col gap-4 lg:gap-6 bg-black border-2 border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+            <div className="flex items-center gap-3 lg:gap-4">
+              <div className="p-2.5 lg:p-3 bg-royal-950 rounded-lg border-2 border-white/5 shadow-2xl">
+                <Globe className="text-neon-blue animate-spin-slow" size={20} />
               </div>
               <div>
-                <div className="text-[10px] text-slate-500 uppercase tracking-[0.5em] mb-2 leading-none">Grid Ops</div>
-                <div className="text-[14px] text-white font-black uppercase tracking-tight">NODE_v10.12</div>
+                <div className="text-[8px] lg:text-[9px] text-slate-600 uppercase tracking-[0.4em] mb-0.5 font-black">Grid Ops</div>
+                <div className="text-[11px] lg:text-[13px] text-white font-black uppercase tracking-tight">NODE_v10.12</div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="text-[10px] text-slate-600 uppercase tracking-[0.6em] mb-6 pl-4 border-l-4 border-royal-800">Controls</div>
+            <div className="flex lg:flex-col gap-2 lg:gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
               {[
-                { label: 'Monitor', id: 'monitor', icon: <Gauge size={18} /> },
-                { label: 'Scout', id: 'chat', icon: <Terminal size={18} /> },
-                { label: 'Audit', id: 'audit', icon: <ShieldCheck size={18} /> }
+                { label: 'Monitor', id: 'monitor', icon: <Gauge size={14} /> },
+                { label: 'Scout', id: 'chat', icon: <Terminal size={14} /> },
+                { label: 'Audit', id: 'audit', icon: <ShieldCheck size={14} /> }
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`w-full flex items-center justify-between px-8 py-5 rounded-xl border-2 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 ${
+                  className={`flex-1 min-w-[100px] lg:w-full flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4 rounded-lg lg:rounded-xl border-2 transition-all duration-500 text-[9px] font-black uppercase tracking-[0.3em] ${
                     activeTab === tab.id 
-                      ? 'bg-neon-blue/20 border-neon-blue text-white shadow-3xl' 
-                      : 'bg-black border-white/5 text-slate-600 hover:text-white'
+                      ? 'bg-white text-black border-white shadow-3xl' 
+                      : 'bg-black border-white/5 text-slate-600 hover:text-white hover:border-white/20'
                   }`}
                 >
-                  <div className="flex items-center gap-5">
-                    <span className={activeTab === tab.id ? 'text-neon-blue' : 'text-slate-700'}>{tab.icon}</span>
+                  <div className="flex items-center gap-3 lg:gap-4">
+                    <span className={activeTab === tab.id ? 'text-black' : 'text-slate-700'}>{tab.icon}</span>
                     {tab.label}
                   </div>
                 </button>
               ))}
             </div>
           </div>
-          <BackupButton />
+          <div className="opacity-50 hover:opacity-100 transition-opacity flex justify-center lg:block scale-90">
+            <BackupButton />
+          </div>
         </div>
 
-        <div className="lg:col-span-9 flex flex-col h-[850px]">
-          <div className="flex-grow bg-black rounded-[3rem] border-2 border-white/10 flex flex-col overflow-hidden shadow-3xl relative">
-            <div className="p-10 border-b-2 border-white/5 flex items-center justify-between bg-royal-950/80">
-               <div className="flex items-center gap-10">
-                  <div className="p-5 bg-black rounded-2xl border-2 border-white/10 shadow-2xl">
-                    {activeTab === 'chat' ? <Terminal className="text-neon-purple" size={32} /> : activeTab === 'monitor' ? <Gauge className="text-neon-blue" size={32} /> : <ShieldCheck className="text-neon-purple" size={32} />}
+        {/* Main Interface Hub - Condensed height and padding */}
+        <div className="lg:col-span-9 flex flex-col min-h-[450px] lg:h-[650px] animate-hero-reveal">
+          <div className="flex-grow bg-black rounded-[1.5rem] lg:rounded-[2rem] border-2 border-white/10 flex flex-col overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.9)] relative">
+            <div className="p-5 lg:p-8 border-b-2 border-white/5 flex items-center justify-between bg-[#050505]">
+               <div className="flex items-center gap-4 lg:gap-8">
+                  <div className="p-3 lg:p-4 bg-royal-950 rounded-lg lg:rounded-[1.2rem] border-2 border-white/10 shadow-2xl group hover:border-neon-blue transition-all">
+                    {activeTab === 'chat' ? <Terminal className="text-neon-purple animate-pulse" size={24} /> : activeTab === 'monitor' ? <Gauge className="text-neon-blue" size={24} /> : <ShieldCheck className="text-neon-purple" size={24} />}
                   </div>
                   <div>
-                    <h2 className="text-white font-black uppercase text-2xl tracking-[0.5em] leading-none mb-2">
+                    <h2 className="text-white font-black uppercase text-lg lg:text-xl tracking-tighter leading-none mb-1">
                       {activeTab === 'chat' ? 'Neural Node' : activeTab === 'monitor' ? 'Operational Hub' : 'Audit Engine'}
                     </h2>
-                    <p className="text-[12px] text-slate-600 tracking-[0.4em] uppercase font-black">
-                       RCG_INTELLIGENCE_LAYER_STABLE
+                    <p className="text-[8px] lg:text-[9px] text-slate-600 tracking-[0.4em] uppercase font-black italic">
+                       RCG_LAYER_STABLE // AU_EAST_CLOUD
                     </p>
                   </div>
                </div>
@@ -129,36 +139,57 @@ const IntelligenceHub: React.FC = () => {
 
             {activeTab === 'chat' && (
               <>
-                <div ref={scrollRef} className="flex-grow overflow-y-auto p-12 space-y-12 scrollbar-hide bg-[#010617]/40">
+                <div ref={scrollRef} className="flex-grow overflow-y-auto p-5 lg:p-10 space-y-6 lg:space-y-8 scrollbar-hide bg-[#020617]/30">
                   {messages.map((m) => (
-                    <div key={m.id} className={`flex gap-10 ${m.sender === ChatSender.USER ? 'flex-row-reverse' : 'flex-row'} animate-in fade-in slide-in-from-bottom-5`}>
-                      <div className={`w-20 h-20 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-3xl border-2 ${
-                        m.sender === ChatSender.USER ? 'bg-neon-blue/20 border-neon-blue text-neon-blue' : 'bg-royal-950 border-white/10 text-neon-purple'
+                    <div key={m.id} className={`flex gap-3 lg:gap-8 ${m.sender === ChatSender.USER ? 'flex-row-reverse' : 'flex-row'} animate-in fade-in slide-in-from-bottom-5 duration-700`}>
+                      <div className={`w-10 h-10 lg:w-16 lg:h-16 rounded-lg lg:rounded-[1rem] flex items-center justify-center flex-shrink-0 shadow-3xl border-2 transition-all ${
+                        m.sender === ChatSender.USER ? 'bg-black border-neon-blue text-neon-blue shadow-[0_0_40px_rgba(6,182,212,0.2)]' : 'bg-black border-white/10 text-neon-purple'
                       }`}>
-                        {m.sender === ChatSender.USER ? <User size={40} /> : <Bot size={40} />}
+                        {m.sender === ChatSender.USER ? <User size={20} /> : <Bot size={20} />}
                       </div>
-                      <div className={`max-w-[80%] p-12 rounded-[2.5rem] relative overflow-hidden transition-all duration-700 ${
-                        m.sender === ChatSender.USER ? 'bg-royal-900 text-white border-2 border-white/10' : 'bg-black text-slate-200 border-2 border-white/10'
+                      <div className={`max-w-[90%] lg:max-w-[80%] p-4 lg:p-8 rounded-[1.2rem] lg:rounded-[1.8rem] relative overflow-hidden transition-all duration-1000 ${
+                        m.sender === ChatSender.USER ? 'bg-[#080808] text-white border-2 border-white/20' : 'bg-black text-slate-300 border-2 border-white/5 shadow-inner'
                       }`}>
-                        <div className="text-[12px] font-black uppercase tracking-[0.6em] text-slate-600 mb-8 border-b-2 border-white/5 pb-5">
-                          {m.sender === ChatSender.USER ? 'OPERATOR_ACTIVE' : 'SYNK_CORE_UPLINK'}
+                        <div className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.4em] text-slate-600 mb-3 lg:mb-6 border-b-2 border-white/5 pb-3 lg:pb-4 flex items-center gap-2 lg:gap-3">
+                          <Activity size={8} className={m.sender === ChatSender.USER ? 'text-neon-blue' : 'text-neon-purple'} />
+                          {m.sender === ChatSender.USER ? 'OPERATOR' : 'SYNK_CORE'}
                         </div>
-                        <div className="text-xl leading-relaxed font-black italic">"{m.text}"</div>
+                        <div className="text-sm lg:text-lg leading-relaxed font-bold italic opacity-90 break-words">
+                           <DecodingText text={m.text} stagger={4} className="text-white" />
+                        </div>
                       </div>
                     </div>
                   ))}
+                  {isLoading && (
+                    <div className="flex gap-3 lg:gap-8 animate-pulse">
+                      <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-lg lg:rounded-[1rem] bg-black border-2 border-white/10 flex items-center justify-center">
+                        <Loader2 className="animate-spin text-neon-blue" size={20} />
+                      </div>
+                      <div className="bg-black border-2 border-white/5 p-4 lg:p-8 rounded-[1.2rem] lg:rounded-[1.8rem] w-40 lg:w-56 flex items-center justify-center">
+                         <div className="flex gap-2">
+                           <div className="w-1.5 h-1.5 rounded-full bg-neon-blue animate-bounce"></div>
+                           <div className="w-1.5 h-1.5 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                           <div className="w-1.5 h-1.5 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                         </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="p-12 bg-black border-t-2 border-white/5">
-                   <form onSubmit={handleSendMessage} className="max-w-5xl mx-auto relative">
+                <div className="p-4 lg:p-8 bg-[#050505] border-t-2 border-white/5">
+                   <form onSubmit={handleSendMessage} className="max-w-6xl mx-auto relative group">
                       <input 
                         value={input} 
                         onChange={(e) => setInput(e.target.value)} 
-                        placeholder="INPUT_COMMAND_PAYLOAD..." 
-                        className="w-full bg-royal-950 border-2 border-white/10 rounded-[2rem] py-10 pl-12 pr-44 focus:outline-none focus:border-neon-blue transition-all text-white text-2xl font-black shadow-inner" 
+                        placeholder="INPUT_COMMAND..." 
+                        className="w-full bg-black border-2 border-white/10 rounded-lg lg:rounded-[1.5rem] py-4 lg:py-7 pl-4 lg:pl-10 pr-20 lg:pr-32 focus:outline-none focus:border-white transition-all text-white text-base lg:text-xl font-black shadow-inner placeholder:text-slate-900" 
                       />
-                      <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                         <button type="submit" disabled={isLoading || !input.trim()} className="bg-white p-6 rounded-2xl text-black hover:bg-neon-blue hover:text-white transition-all shadow-2xl active:scale-95">
-                          <Send size={32} />
+                      <div className="absolute right-2 lg:right-3 top-1/2 -translate-y-1/2">
+                         <button 
+                            type="submit" 
+                            disabled={isLoading || !input.trim()} 
+                            className="bg-white p-3 lg:p-5 rounded-lg lg:rounded-[1.2rem] text-black hover:bg-neon-blue hover:text-white transition-all shadow-3xl active:scale-95 disabled:opacity-20"
+                         >
+                            <Send size={18} lg:size={24} />
                          </button>
                       </div>
                    </form>
@@ -166,8 +197,12 @@ const IntelligenceHub: React.FC = () => {
               </>
             )}
             {activeTab === 'monitor' && (
-              <div className="flex-grow p-12 flex items-center justify-center text-center">
-                 <h2 className="text-4xl text-slate-800 uppercase tracking-[0.5em] font-black italic animate-pulse">Live Grid Monitoring Active...</h2>
+              <div className="flex-grow p-6 lg:p-10 flex flex-col items-center justify-center text-center space-y-6 lg:space-y-10">
+                 <div className="relative">
+                    <div className="w-24 h-24 lg:w-36 lg:h-36 border-4 lg:border-6 border-dashed border-white/5 rounded-full animate-spin-slow"></div>
+                    <Microscope className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20" size={36} lg:size={56} />
+                 </div>
+                 <h2 className="text-xl lg:text-3xl text-slate-800 uppercase tracking-[0.6em] lg:tracking-[0.8em] font-black italic animate-pulse">Monitoring Active...</h2>
               </div>
             )}
           </div>

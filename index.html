@@ -11,7 +11,7 @@
     </script>
 
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     
     <title>Royal Care Group | Structural Intelligence for NDIS</title>
@@ -79,12 +79,16 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&family=Outfit:wght@800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-      body { 
+      * { box-sizing: border-box; }
+      html, body { 
         background-color: #020617; 
         color: #f1f5f9; 
         margin: 0; 
+        padding: 0;
+        width: 100%;
         overflow-x: hidden;
         font-weight: 700; 
+        -webkit-font-smoothing: antialiased;
       }
       
       .heading-tech {
@@ -113,14 +117,15 @@
         font-family: 'Inter', sans-serif;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 0.4em;
-        font-size: 0.65rem;
-        padding: 0.8rem 2.2rem;
+        letter-spacing: 0.3em;
+        font-size: 0.6rem;
+        padding: 0.7rem 1.8rem;
         border: 1px solid rgba(255, 255, 255, 0.8);
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         border-radius: 0.75rem;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         backdrop-filter: blur(10px);
+        max-width: 100%;
       }
 
       .circuit-capsule:hover {
@@ -157,7 +162,7 @@
       .banner-pop {
         background: #050505 !important;
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 2.5rem;
+        border-radius: 2rem;
       }
 
       .cyber-grid {
@@ -169,6 +174,11 @@
       ::-webkit-scrollbar-track { background: #020617; }
       ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+      
+      /* Mobile text sizing fix */
+      @media (max-width: 640px) {
+        .heading-wow { letter-spacing: -0.05em !important; }
+      }
     </style>
 <script type="importmap">
 {
