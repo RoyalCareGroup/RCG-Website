@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -28,30 +28,15 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
-// CRITICAL: Immediate Sonic Handshake (Wakes up hardware and browser)
-const sonicWake = (ctx: AudioContext) => {
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
-  
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(440, ctx.currentTime);
-  
-  gainNode.gain.setValueAtTime(0.01, ctx.currentTime); // Almost inaudible but real signal
-  gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
-  
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + 0.1);
-};
-
 const VisitorIdentity = () => {
   const [name, setName] = useState<string | null>(localStorage.getItem('rcg_visitor_name'));
   const [ip, setIp] = useState<string | null>(localStorage.getItem('rcg_visitor_ip'));
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState('');
   const [isGreeting, setIsGreeting] = useState(false);
+  const [audioState, setAudioState] = useState<'IDLE' | 'LOCKED' | 'UNLOCKED'>('IDLE');
+  
+  const ctxRef = useRef<AudioContext | null>(null);
 
   const identifyNode = async () => {
     try {
@@ -65,15 +50,19 @@ const VisitorIdentity = () => {
     }
   };
 
-  const speakWelcome = async (operatorName: string, warmedCtx: AudioContext) => {
+  const speakWelcome = async (operatorName: string) => {
     setIsGreeting(true);
+    if (!ctxRef.current) return;
+    
+    const warmedCtx = ctxRef.current;
+
     try {
-      identifyNode(); // BG fetch
+      identifyNode(); // Background sync
       
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite strategic warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite visionary warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your strategic coordinates. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -88,41 +77,65 @@ const VisitorIdentity = () => {
         const source = warmedCtx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(warmedCtx.destination);
-        source.onended = () => { 
-          setIsGreeting(false); 
-          warmedCtx.close(); 
+        
+        source.onended = () => {
+          setIsGreeting(false);
+          setAudioState('IDLE');
+          warmedCtx.close();
+          ctxRef.current = null;
         };
+        
         source.start();
       } else {
         setIsGreeting(false);
         warmedCtx.close();
       }
     } catch (err) {
-      console.error("Neural handshake timeout:", err);
+      console.error("Audio Pipeline Error:", err);
       setIsGreeting(false);
       warmedCtx.close();
+      setAudioState('LOCKED');
     }
   };
 
-  const saveName = async (e: React.FormEvent) => {
+  const initializeUplink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
+    // 1. ANCHOR GESTURE IMMEDIATELY
     const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-    const warmedCtx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
+    const ctx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
     
-    // 1. Mandatory synchronous resume
-    await warmedCtx.resume();
-    // 2. Immediate Sonic Wake (zero latency hardware authorization)
-    sonicWake(warmedCtx);
+    try {
+      await ctx.resume();
+      
+      // 2. Play a distinct confirmation "Ping" to confirm hardware is open
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // High clear ping
+      gain.gain.setValueAtTime(0.02, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+      
+      ctxRef.current = ctx;
+      setAudioState('UNLOCKED');
 
-    const finalName = tempName.trim();
-    setIsEditing(false);
-    setName(finalName);
-    localStorage.setItem('rcg_visitor_name', finalName);
+      const finalName = tempName.trim();
+      setIsEditing(false);
+      setName(finalName);
+      localStorage.setItem('rcg_visitor_name', finalName);
 
-    // 3. Begin AI Synthesis
-    speakWelcome(finalName, warmedCtx);
+      // 3. Trigger Synthesis
+      speakWelcome(finalName);
+
+    } catch (err) {
+      setAudioState('LOCKED');
+      console.error("Hardware Handshake Failed:", err);
+    }
   };
 
   return (
@@ -135,20 +148,24 @@ const VisitorIdentity = () => {
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${audioState === 'UNLOCKED' ? 'text-neon-green' : 'text-slate-600'}`}>
+                <div className={`w-1 h-1 rounded-full ${audioState === 'UNLOCKED' ? 'bg-neon-green animate-pulse' : 'bg-slate-700'}`}></div>
+                Audio_{audioState}
+              </div>
            </div>
            <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4">
              Welcome, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
              <Fingerprint size={32} className={`text-neon-purple shrink-0 ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
            </div>
            {isGreeting && (
-             <div className="flex items-center gap-4 mt-4 px-6 py-2 bg-neon-purple/5 rounded-full border border-neon-purple/20">
-                <div className="flex gap-1.5">
+             <div className="flex items-center gap-4 mt-4 px-8 py-3 bg-neon-purple/10 rounded-full border border-neon-purple/20 shadow-[0_0_20px_rgba(217,70,239,0.1)]">
+                <div className="flex gap-2">
                    <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
                    <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                    <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                 </div>
-                <div className="text-[9px] font-black text-neon-purple uppercase tracking-[0.5em]">Aurelia Speaking...</div>
-                <Volume2 size={12} className="text-neon-purple animate-pulse" />
+                <div className="text-[10px] font-black text-neon-purple uppercase tracking-[0.6em]">Aurelia Transmitting</div>
+                <Volume2 size={14} className="text-neon-purple animate-pulse" />
              </div>
            )}
            {!isGreeting && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 group-hover:text-white transition-colors">Click name to re-authenticate</div>}
@@ -156,7 +173,7 @@ const VisitorIdentity = () => {
       ) : (
         <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
           {isEditing || !name ? (
-            <form onSubmit={saveName} className="space-y-6">
+            <form onSubmit={initializeUplink} className="space-y-6">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4">Identification_Protocol</div>
               <input 
                 autoFocus
@@ -164,16 +181,20 @@ const VisitorIdentity = () => {
                 value={tempName}
                 onChange={(e) => setTempName(e.target.value)}
                 placeholder="INPUT_OPERATOR_NAME..."
-                className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner disabled:opacity-50"
+                className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
               />
               <button 
                 type="submit" 
                 disabled={isGreeting || !tempName.trim()}
-                className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20"
+                className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
               >
-                {isGreeting ? <Loader2 className="animate-spin" size={14} /> : null}
-                {isGreeting ? 'Aurelia Speaking...' : 'Initialize Uplink'}
+                {isGreeting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />}
+                {isGreeting ? 'Synthesizing...' : 'Initialize Uplink'}
               </button>
+              <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
+                 <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
+                 <div className="flex items-center gap-1"><Volume2 size={8}/> Audio Ready</div>
+              </div>
             </form>
           ) : null}
         </div>

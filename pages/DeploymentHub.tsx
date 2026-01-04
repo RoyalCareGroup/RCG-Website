@@ -92,7 +92,7 @@ const DeploymentHub: React.FC = () => {
            <div className="space-y-4">
               {[
                 { cmd: 'git add .', desc: 'Stage all structural updates' },
-                { cmd: `git commit -m "fix: sonic_wake_hardware_handshake // v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
+                { cmd: `git commit -m "fix: persistent_handshake_cache_bust // v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
                 { cmd: 'git push origin main', desc: 'Push to Cloudflare Edge' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col md:flex-row items-center gap-4 group">
