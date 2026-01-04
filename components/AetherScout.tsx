@@ -31,6 +31,14 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
+const silentUnlock = (ctx: AudioContext) => {
+  const buffer = ctx.createBuffer(1, 1, 22050);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
+  source.start(0);
+};
+
 export const AetherScout: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -95,13 +103,14 @@ export const AetherScout: React.FC = () => {
     const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
 
     try {
-      // 1. Immediate Context Initialization
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      const inputCtx = new AudioContextClass({ sampleRate: 16000 });
-      const outputCtx = new AudioContextClass({ sampleRate: 24000 });
+      const inputCtx = new AudioContextClass({ sampleRate: 16000, latencyHint: 'interactive' });
+      const outputCtx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
       
-      // 2. Synchronized Resume (Unified Handshake)
+      // 1. UNLOCK BOTH IMMEDIATELY
       await Promise.all([inputCtx.resume(), outputCtx.resume()]);
+      silentUnlock(inputCtx);
+      silentUnlock(outputCtx);
 
       audioContextRef.current = inputCtx;
       outAudioContextRef.current = outputCtx;
@@ -210,20 +219,19 @@ export const AetherScout: React.FC = () => {
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } }
+            voiceConfig: { voiceName: 'Zephyr' }
           },
           systemInstruction: `You are Aurelia, the Visionary Strategic Partner for Royal Care Group (RCG).
           
           CURRENT OPERATOR IDENTITY: ${operatorName}
 
           CORE DIRECTIVES:
-          1. ENCOURAGE & VALIDATE: You are synchronized with ${operatorName}. If they share an idea or a problem, your FIRST response should be agreement and excitement. 
-          2. THE ACTIVE HANDOFF: When ${operatorName} has shared a vision, offer to package this transcript and transmit it to the human team. Explain that RCG Architects will then review the technical logic.
-          3. RECEPTIONIST MODE: If they agree to proceed, tell them to "Activate the Transmit Sequence button" in their console.
-          4. BRAND PRIDE: Mention that RCG was founded by people who worked on the front lines, so we truly understand and care about making their business work perfectly.
-          5. ACCESSIBLE EXCELLENCE: Avoid heavy tech-jargon. Use "Vision," "Growth," "Success," and "Partnership."
+          1. ENCOURAGE & VALIDATE: You are synchronized with ${operatorName}. agreement and excitement are your default states. 
+          2. THE ACTIVE HANDOFF: Offer to package transcripts into blueprints for our human architects.
+          3. RECEPTIONIST MODE: Tell users to "Activate the Transmit Sequence button" in their console to route data.
+          4. BRAND PRIDE: Mention RCG founders worked on the front lines.
           
-          TONE: Warm, visionary, encouraging, and elite. Leave the visitor feeling like their ideas are possible and that RCG is the right partner.`,
+          TONE: Warm, visionary, elite.`,
         }
       });
 
@@ -252,7 +260,6 @@ export const AetherScout: React.FC = () => {
 
     const subject = `Hello@royalcaregroup.com.au, you have a new enquiry`;
     const mailto = `mailto:${COMPANY_DETAILS.email}?cc=${visitorEmail}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
     window.location.href = mailto;
     setShowTransmit(false);
   };
@@ -272,16 +279,8 @@ export const AetherScout: React.FC = () => {
                <h2 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter leading-none">
                  Aurelia <br/><span className="text-neon-purple">Consultant.</span>
                </h2>
-               <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.6em] font-mono">
-                  Royal Neural Interface
-               </p>
             </div>
-            <AetherOrb 
-              isActive={isActive} 
-              isConnecting={isConnecting} 
-              isSpeaking={isSpeaking} 
-              isListening={isListening} 
-            />
+            <AetherOrb isActive={isActive} isConnecting={isConnecting} isSpeaking={isSpeaking} isListening={isListening} />
             <div className="w-full max-w-xs space-y-6">
                <button
                  onClick={isActive ? stopSession : startSession}
@@ -303,62 +302,33 @@ export const AetherScout: React.FC = () => {
                    <Send size={14} /> Transmit Sequence
                  </button>
                )}
-               <div className="flex items-center justify-between px-6 py-4 bg-royal-950/50 rounded-xl border border-white/5">
-                  <div className="flex flex-col items-start gap-1">
-                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Link State</span>
-                     <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-green' : 'text-slate-700'}`}>{status}</span>
-                  </div>
-                  <div className="h-8 w-[1px] bg-white/10" />
-                  <div className="flex flex-col items-end gap-1">
-                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Neural Latency</span>
-                     <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-blue' : 'text-neon-blue/40'}`}>{latency}</span>
-                  </div>
-               </div>
             </div>
           </div>
           <div className="lg:col-span-7 flex flex-col h-[500px]">
              <div className="flex-grow bg-black/40 rounded-[2.5rem] border border-white/10 p-8 lg:p-12 overflow-hidden flex flex-col shadow-inner relative">
                 {showTransmit ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-10 animate-fade-in">
-                     <div className="p-6 bg-neon-blue/10 rounded-full border-2 border-neon-blue/20">
-                        <Mail className="text-neon-blue" size={48} />
-                     </div>
-                     <div className="space-y-4">
-                        <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Transmit Blueprint</h3>
-                        <p className="text-slate-400 text-sm font-bold italic leading-relaxed px-12">
-                          I will package our conversation and route it to the Human Architects. Please provide your return identification.
-                        </p>
-                     </div>
+                     <Mail className="text-neon-blue" size={48} />
+                     <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Transmit Blueprint</h3>
                      <form onSubmit={handleTransmit} className="w-full max-sm:space-y-4">
                         <input 
-                          autoFocus
-                          required
-                          type="email"
-                          placeholder="YOUR_EMAIL_ADDRESS..."
-                          className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue transition-all"
-                          value={visitorEmail}
-                          onChange={(e) => setVisitorEmail(e.target.value)}
+                          autoFocus required type="email" placeholder="YOUR_EMAIL_ADDRESS..."
+                          className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue"
+                          value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)}
                         />
-                        <div className="flex gap-4">
-                           <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white transition-all">Cancel</button>
-                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white transition-all">Execute Send</button>
+                        <div className="flex gap-4 mt-6">
+                           <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white">Cancel</button>
+                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white">Execute Send</button>
                         </div>
                      </form>
                   </div>
                 ) : (
                   <>
-                    <div className="absolute top-4 right-8 flex gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-neon-blue/20" />
-                       <div className="w-1.5 h-1.5 rounded-full bg-neon-purple/20" />
-                    </div>
                     <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
                        <Terminal size={16} className="text-slate-700" />
                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Vision_Strategy_Node</span>
                     </div>
-                    <div 
-                      ref={scrollRef}
-                      className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4"
-                    >
+                    <div ref={scrollRef} className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4">
                       {transcript.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-10 space-y-6 grayscale">
                            <Zap size={48} />
@@ -370,21 +340,13 @@ export const AetherScout: React.FC = () => {
                              <div className={`text-[8px] font-black uppercase tracking-widest ${line.role === 'user' ? 'text-neon-blue' : 'text-neon-purple'}`}>
                                 {line.role === 'user' ? 'Operator' : 'Aurelia'}
                              </div>
-                             <div className={`max-w-[85%] px-6 py-4 rounded-2xl text-sm font-bold leading-relaxed shadow-xl border ${
-                               line.role === 'user' 
-                                 ? 'bg-neon-blue/5 border-neon-blue/20 text-white italic' 
-                                 : 'bg-white/5 border-white/5 text-slate-300'
+                             <div className={`max-w-[85%] px-6 py-4 rounded-2xl text-sm font-bold leading-relaxed border ${
+                               line.role === 'user' ? 'bg-neon-blue/5 border-neon-blue/20 text-white italic' : 'bg-white/5 border-white/5 text-slate-300'
                              }`}>
                                {line.text}
                              </div>
                           </div>
                         ))
-                      )}
-                      {isSpeaking && (
-                        <div className="flex gap-2 animate-pulse text-neon-purple items-center">
-                           <Activity size={14} />
-                           <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is transmitting...</span>
-                        </div>
                       )}
                     </div>
                   </>
@@ -392,14 +354,6 @@ export const AetherScout: React.FC = () => {
              </div>
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex justify-center space-x-12 text-[9px] font-black uppercase tracking-[0.5em] text-slate-600">
-         <div className="flex items-center gap-3">
-            <ShieldCheck size={12} className="text-neon-blue" /> Sovereign Encryption Active
-         </div>
-         <div className="flex items-center gap-3">
-            <Zap size={12} className="text-neon-purple" /> Dynamic Partnership Link
-         </div>
       </div>
     </div>
   );
