@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, Terminal, Activity, RefreshCcw,
@@ -190,9 +191,9 @@ const DeploymentHub: React.FC = () => {
            
            <div className="space-y-4">
               {[
-                { cmd: 'git add .', desc: 'Stage all modified files for sync' },
-                { cmd: `git commit -m "deploy: sync update v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
-                { cmd: 'git push origin main', desc: 'Force push to production edge' }
+                { cmd: 'git add .', desc: 'Stage all structural updates' },
+                { cmd: `git commit -m "deploy: sync update v${COMPANY_DETAILS.appVersion} // ip_tracking_enabled"`, desc: 'Audit log creation' },
+                { cmd: 'git push origin main', desc: 'Push to Cloudflare Edge' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col md:flex-row items-stretch md:items-center gap-4 group">
                    <div className="flex-1 bg-royal-950 p-6 rounded-xl border border-white/10 font-mono text-neon-blue text-sm flex items-center justify-between group-hover:border-neon-blue transition-all shadow-inner">
@@ -214,7 +215,7 @@ const DeploymentHub: React.FC = () => {
            
            <div className="mt-12 p-8 bg-royal-950/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest italic max-w-xl">
-                * Note: Paste commands into the "Terminal" tab (located next to Console/Output) and hit Enter after each.
+                * Note: The Cloudflare build cycle will initialize automatically upon the final push command.
               </div>
               <div className="flex items-center gap-4">
                  <div className="px-5 py-2 bg-green-500/10 border border-green-500/30 text-green-500 rounded-lg text-[9px] font-black tracking-widest uppercase">

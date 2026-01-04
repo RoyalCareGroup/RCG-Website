@@ -2,26 +2,172 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Zap, ShieldCheck, Cpu, Network, Activity, Shield, Gauge, 
-  ArrowRight, Layers, Target, GraduationCap, Microscope,
-  TrendingUp, SearchCode, Command, ChevronRight, Boxes,
-  Sparkles, Wrench, Users, BrainCircuit, Rocket, Calendar,
-  Layout, FileSearch, Radio
+  Zap, ArrowRight, Rocket, Calendar,
+  Layout, FileSearch, Radio, Sparkles,
+  Fingerprint, Loader2, Globe
 } from 'lucide-react';
-import { DecodingText } from '../components/DecodingText.tsx';
+import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
-import { BrandLogo } from '../components/BrandLogo.tsx';
-import { COMPANY_DETAILS } from '../config.ts';
+
+// Audio decoding utilities for raw PCM from Gemini TTS
+function decode(base64: string) {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+  return bytes;
+}
+
+async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
+  const dataInt16 = new Int16Array(data.buffer);
+  const frameCount = dataInt16.length / numChannels;
+  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+  for (let channel = 0; channel < numChannels; channel++) {
+    const channelData = buffer.getChannelData(channel);
+    for (let i = 0; i < frameCount; i++) channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+  }
+  return buffer;
+}
+
+const VisitorIdentity = () => {
+  const [name, setName] = useState<string | null>(localStorage.getItem('rcg_visitor_name'));
+  const [ip, setIp] = useState<string | null>(localStorage.getItem('rcg_visitor_ip'));
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempName, setTempName] = useState('');
+  const [isGreeting, setIsGreeting] = useState(false);
+  const [isFetchingIp, setIsFetchingIp] = useState(false);
+
+  // Identify IP for the Neural Link
+  const identifyNode = async () => {
+    setIsFetchingIp(true);
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      localStorage.setItem('rcg_visitor_ip', data.ip);
+      setIp(data.ip);
+      return data.ip;
+    } catch (err) {
+      console.warn("Grid Trace failed. Defaulting to local node.");
+      return "LOCAL_NODE";
+    } finally {
+      setIsFetchingIp(false);
+    }
+  };
+
+  const speakWelcome = async (operatorName: string, nodeIp: string) => {
+    // Protocol Lock Check
+    if (isGreeting) return;
+    
+    setIsGreeting(true);
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-preview-tts",
+        contents: [{ parts: [{ text: `Say with visionary warmth and elite professionalism: Welcome back, ${operatorName}. Neural link established via node ${nodeIp}. I have successfully mapped your strategic coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
+        config: {
+          responseModalities: [Modality.AUDIO],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Zephyr' },
+            },
+          },
+        },
+      });
+
+      const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+      if (base64Audio) {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+        const audioBuffer = await decodeAudioData(decode(base64Audio), audioCtx, 24000, 1);
+        const source = audioCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioCtx.destination);
+        
+        // Ensure state reset only after audio finishes playing for a truly "1 at a time" feel
+        source.onended = () => {
+          setIsGreeting(false);
+        };
+        
+        source.start();
+      } else {
+        setIsGreeting(false);
+      }
+    } catch (err) {
+      console.error("Verbal greeting failed:", err);
+      setIsGreeting(false);
+    }
+  };
+
+  const saveName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Strict Concurrency Lock: Prevent multiple uplinks
+    if (isGreeting || isFetchingIp || !tempName.trim()) return;
+
+    const finalName = tempName.trim();
+    const nodeIp = await identifyNode();
+    
+    localStorage.setItem('rcg_visitor_name', finalName);
+    setName(finalName);
+    setIsEditing(false);
+    
+    // Trigger singular verbal manifest
+    await speakWelcome(finalName, nodeIp);
+  };
+
+  return (
+    <div className="mb-12 animate-hero-reveal">
+      {name && !isEditing ? (
+        <div 
+          className={`flex flex-col items-center gap-4 group ${isGreeting ? 'cursor-wait' : 'cursor-pointer'}`} 
+          onClick={() => !isGreeting && setIsEditing(true)}
+        >
+           <div className="flex items-center gap-3">
+              <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
+              {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
+           </div>
+           <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5">
+             Welcome, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
+             <Fingerprint size={32} className={`text-neon-purple ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
+           </div>
+           {isGreeting && (
+             <div className="flex items-center gap-3 mt-4">
+                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className="text-[9px] font-black text-neon-purple uppercase tracking-[0.5em]">Aurelia is transmitting...</div>
+             </div>
+           )}
+           {!isGreeting && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 group-hover:text-white transition-colors">Click name to re-authenticate</div>}
+        </div>
+      ) : (
+        <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+          {isEditing || !name ? (
+            <form onSubmit={saveName} className="space-y-6">
+              <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4">Identification_Protocol</div>
+              <input 
+                autoFocus
+                disabled={isFetchingIp || isGreeting}
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                placeholder="INPUT_OPERATOR_NAME..."
+                className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner disabled:opacity-50"
+              />
+              <button 
+                type="submit" 
+                disabled={isGreeting || isFetchingIp || !tempName.trim()}
+                className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20"
+              >
+                {isGreeting || isFetchingIp ? <Loader2 className="animate-spin" size={14} /> : null}
+                {isFetchingIp ? 'Identifying Grid Node...' : isGreeting ? 'Transmitting Welcome...' : 'Initialize Link'}
+              </button>
+            </form>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Home = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const featurePortal = [
     {
       title: "Plan Your Future",
@@ -55,30 +201,20 @@ const Home = () => {
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen selection:bg-neon-blue/20 px-4 sm:px-12 lg:px-20 xl:px-24 font-sans relative">
       
-      {/* --- HERO SECTION --- */}
-      <section className="relative min-h-[85vh] flex flex-col justify-center items-center text-center pt-32 pb-24 z-10">
-        <div className="max-w-6xl mx-auto w-full space-y-12 animate-hero-reveal">
-          <div className="space-y-8">
-            <div className="brand-heading-group cursor-default group inline-block">
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-none">
-                <span className="heading-specular heading-structural-test block mb-4">Design. Dev.</span>
-                <span className="heading-specular heading-intelligence-test">Deployment.</span>
-              </h1>
-            </div>
-
-            <div className="max-w-4xl mx-auto relative group bg-black/60 backdrop-blur-2xl p-10 md:p-16 border-[0.5px] border-white/10 rounded-[4rem] shadow-2xl">
-              <div className="space-y-10">
-                <p className="text-2xl md:text-3xl lg:text-5xl text-white font-display font-black leading-tight tracking-tight italic max-w-4xl mx-auto">
-                  "Royal Care Group architects the unified operating system of the NDIS."
-                </p>
-                
-                <div className="space-y-6 pt-8 border-t border-white/5 max-w-2xl mx-auto">
-                  <p className="text-lg md:text-xl text-slate-300 font-bold leading-relaxed tracking-wide">
-                    We bridge the gap between human care and technical precision. Choose a command node below to begin.
-                  </p>
+      {/* --- MINIMAL IMPACT HERO SECTION --- */}
+      <section className="relative min-h-[75vh] flex flex-col justify-center items-center text-center pt-40 pb-20 z-10">
+        <div className="max-w-6xl mx-auto w-full">
+          <VisitorIdentity />
+          
+          <div className="mt-12 animate-hero-reveal delay-200">
+             <div className="inline-flex items-center gap-6 px-10 py-4 bg-black/40 backdrop-blur-md rounded-2xl border border-white/5 shadow-3xl">
+                <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_10px_#10b981]"></div>
+                   <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Grid_Active</span>
                 </div>
-              </div>
-            </div>
+                <div className="w-[1px] h-4 bg-white/10"></div>
+                <span className="text-[10px] text-white font-black uppercase tracking-[0.4em]">Choose a command node to begin</span>
+             </div>
           </div>
         </div>
       </section>

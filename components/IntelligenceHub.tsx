@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Terminal, Send, Bot, User, Users, Loader2, Sparkles, 
@@ -6,7 +7,7 @@ import {
   Globe, Navigation, TrendingUp, Cpu, History,
   AlertTriangle, CheckCircle2, ChevronRight, Gauge,
   PieChart as PieChartIcon, Briefcase, DollarSign, FileSearch,
-  Command, Layers, Maximize2, Microscope
+  Command, Layers, Maximize2, Microscope, Mail
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, Tooltip, YAxis, 
@@ -19,11 +20,13 @@ import { COMPANY_DETAILS } from '../config.ts';
 import { DecodingText } from './DecodingText.tsx';
 
 const IntelligenceHub: React.FC = () => {
+  const operatorName = localStorage.getItem('rcg_visitor_name') || 'Authorized Operator';
+  
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       id: '0',
       sender: ChatSender.BOT, 
-      text: `Neural interface established. RCG Structural Intelligence Node v${COMPANY_DETAILS.appVersion} online.\n\nIndustry Grounding Status: ACTIVE\nRegulatory Parity: 2024/25 GUIDEBOARD\n\nI am authorized to assist with Systematizing Your NDIS Knowledge (SYNK). State your protocol.`,
+      text: `Welcome back, ${operatorName}. Neural interface established. RCG Structural Intelligence Node v${COMPANY_DETAILS.appVersion} online.\n\nIndustry Grounding Status: ACTIVE\nRegulatory Parity: 2024/25 GUIDEBOARD\n\nI am authorized to assist with Systematizing Your NDIS Knowledge (SYNK). State your protocol.`,
       timestamp: new Date()
     }
   ]);
@@ -54,6 +57,26 @@ const IntelligenceHub: React.FC = () => {
     } catch (err) {
       setMessages(prev => [...prev, { id: 'err', sender: ChatSender.BOT, text: "CRITICAL: Link Failure.", timestamp: new Date() }]);
     } finally { setIsLoading(false); }
+  };
+
+  const transmitTranscript = () => {
+    const email = prompt("To route this blueprint to our human architects, please provide your return identification (Email Address):");
+    if (!email || !email.includes('@')) return;
+
+    const opName = localStorage.getItem('rcg_visitor_name') || 'Authorized Operator';
+    const body = `ROYAL CARE GROUP - NEURAL CHAT TRANSCRIPT\n` +
+      `-----------------------------------------------\n` +
+      `OPERATOR: ${opName}\n` +
+      `VISITOR EMAIL: ${email}\n` +
+      `TIMESTAMP: ${new Date().toLocaleString()}\n\n` +
+      `TRANSCRIPT PAYLOAD:\n` +
+      messages.map(m => `[${m.sender === ChatSender.USER ? 'OPERATOR' : 'SYNK_CORE'}]: ${m.text}`).join('\n\n') +
+      `\n-----------------------------------------------\n` +
+      `TRANSMITTED VIA NEURAL HUB HUB v10.12`;
+
+    const subject = `Hello@royalcaregroup.com.au, you have a new enquiry`;
+    const mailto = `mailto:${COMPANY_DETAILS.email}?cc=${email}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
   };
 
   return (
@@ -112,6 +135,15 @@ const IntelligenceHub: React.FC = () => {
                 </button>
               ))}
             </div>
+            
+            {messages.length > 2 && (
+              <button 
+                onClick={transmitTranscript}
+                className="w-full mt-4 py-4 bg-royal-950 border border-neon-blue/40 text-neon-blue rounded-xl font-black text-[9px] uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-neon-blue hover:text-white transition-all shadow-xl"
+              >
+                <Mail size={14} /> Transmit Logic
+              </button>
+            )}
           </div>
           <div className="opacity-50 hover:opacity-100 transition-opacity flex justify-center lg:block scale-90">
             <BackupButton />

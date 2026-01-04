@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { COMPANY_DETAILS } from '../config.ts';
 import { CheckCircle2, Globe, Users, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
@@ -34,21 +35,30 @@ const About: React.FC = () => {
 
       <div className="max-w-6xl mx-auto relative z-10 pt-48 pb-32">
         <div className="mb-24 animate-hero-reveal">
-          <div className="circuit-capsule mb-10 border-2 border-white/80 bg-black px-10 py-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-            <Users size={14} className="mr-3 text-neon-purple" /> Organizational DNA
+          <div className="circuit-capsule mb-10 border-2 border-white/80 bg-black px-10 py-4 shadow-[0_0_30px_rgba(255,255,255,0.1)] inline-flex items-center">
+            <Users size={14} className="mr-3 text-neon-purple" /> Organizational Manifesto
           </div>
-          <div className="brand-heading-group cursor-default">
-            <h1 className="text-5xl md:text-7xl xl:text-8xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85]">
-              <span className="heading-specular heading-structural-test">Experience-Led</span>
-              <span className="heading-specular heading-intelligence-test">Intelligence.</span>
+          
+          <div className="brand-heading-group cursor-default block">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl tracking-tight leading-none mb-12">
+              <span className="heading-specular heading-structural-test block mb-4">Design. Dev.</span>
+              <span className="heading-specular heading-intelligence-test">Deployment.</span>
             </h1>
           </div>
-          <div className="max-w-2xl relative group banner-pop bg-black p-10 shadow-2xl border-2 border-white/10 mt-10">
-            <DecodingText 
-              text="Royal Care Group is a national NDIS Business Management Consultancy and Tech Division, built on a foundation of direct industry immersion."
-              className="text-xl md:text-2xl text-white font-black leading-tight tracking-wide opacity-100 italic"
-              stagger={8}
-            />
+
+          <div className="max-w-4xl relative group banner-pop bg-black p-10 md:p-16 border-[0.5px] border-white/10 rounded-[4rem] shadow-2xl mt-12 overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent opacity-50"></div>
+             <div className="relative z-10 space-y-10">
+              <p className="text-2xl md:text-3xl lg:text-5xl text-white font-display font-black leading-tight tracking-tight italic max-w-4xl mx-auto">
+                "Royal Care Group architects the unified operating system of the NDIS."
+              </p>
+              
+              <div className="space-y-6 pt-8 border-t border-white/5 max-w-2xl mx-auto">
+                <p className="text-lg md:text-xl text-slate-300 font-bold leading-relaxed tracking-wide">
+                  Royal Care Group is a national NDIS Business Management Consultancy and Tech Division, built on a foundation of direct industry immersion.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -57,6 +67,8 @@ const About: React.FC = () => {
             <Users size={400} className="text-white" />
           </div>
           <div className="relative z-10 space-y-12 text-xl leading-relaxed font-black">
+            <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter">Experience-Led Intelligence.</h3>
+            
             <p className="text-white opacity-90">We identified a critical failure in the industry: most "solutions" were built by tech people who didn't understand the work. We reversed that model.</p>
             
             <p className="text-white opacity-60">Our team transitioned from front-line care delivery into structural engineering. We've spent years in the living rooms of participants and the boardrooms of national providers.</p>

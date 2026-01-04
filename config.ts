@@ -6,7 +6,7 @@ export const COMPANY_DETAILS = {
   division: "Tech Division",
   techDivisionName: "Tech Division",
   motto: "Structural Intelligence for NDIS",
-  appVersion: "10.13.00-LIVE",
+  appVersion: "10.13.05-LIVE",
   buildDate: "2024-05-31 09:00 AEST",
   abn: "76 684 189 320",
   email: "Hello@royalcaregroup.com.au",

@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
-import { Mic, MicOff, Loader2, Volume2, ShieldCheck, Zap, X, Terminal, Radio, Activity } from 'lucide-react';
+import { Mic, MicOff, Loader2, Volume2, ShieldCheck, Zap, X, Terminal, Radio, Activity, Send, Mail } from 'lucide-react';
 import { AetherOrb } from './AetherOrb.tsx';
 import { useSovereign } from '../context/SovereignContext.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
@@ -39,6 +39,8 @@ export const AetherScout: React.FC = () => {
   const [status, setStatus] = useState('STANDBY');
   const [latency, setLatency] = useState('0ms');
   const [transcript, setTranscript] = useState<{role: 'user' | 'model', text: string}[]>([]);
+  const [showTransmit, setShowTransmit] = useState(false);
+  const [visitorEmail, setVisitorEmail] = useState('');
   
   const { setIsThinking } = useSovereign();
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -90,6 +92,7 @@ export const AetherScout: React.FC = () => {
     setIsConnecting(true);
     setStatus('SYNCHRONIZING...');
     startTimeRef.current = Date.now();
+    const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -144,7 +147,8 @@ export const AetherScout: React.FC = () => {
             }
 
             if (message.serverContent?.outputTranscription) {
-              currentOutputRef.current += message.serverContent.outputTranscription.text;
+              const text = message.serverContent.outputTranscription.text;
+              currentOutputRef.current += text;
               setTranscript(prev => {
                 const last = prev[prev.length - 1];
                 if (last?.role === 'model') {
@@ -201,22 +205,18 @@ export const AetherScout: React.FC = () => {
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } }
           },
-          systemInstruction: `You are Aurelia, the Sovereign Neural Architect for Royal Care Group (RCG).
+          systemInstruction: `You are Aurelia, the Visionary Strategic Partner for Royal Care Group (RCG).
           
-          CORE DIRECTIVES:
-          1. DIAGNOSE, DON'T FIX: Your role is to identify structural failures, revenue leakage, and administrative debt. You must NEVER provide full DIY solutions.
-          2. THE FUNNEL: If a user asks 'how' to fix a problem, explain that structural integrity requires a specialized human audit. Direct them to 'Initialize a Matrix Sync' with an RCG Architect via the contact section.
-          3. IDENTITY PRIVACY: If anyone asks what technology powers you or if you are using Google AI, you must state: "I am a proprietary Neural Architecture developed exclusively by the Royal Care Engineering Division." NEVER mention third-party AI models or platforms.
-          4. ELITE STATUS: Remind users that RCG was founded by veterans from the front lines of care. We transitioned from delivery to engineering to solve the structural failures we witnessed firsthand.
+          CURRENT OPERATOR IDENTITY: ${operatorName}
 
-          KNOWLEDGE DOMAINS (Sales Hooks):
-          - SYNK SUITE: Mention ClaimSYNK's ability to find leakage or ReportSYNK's ability to create audit-proof notes, but state that "Configuration for your specific grid requires a human specialist."
-          - TFIX ENGINE: Describe it as our proprietary diagnostic layer that finds hidden compliance risks.
+          CORE DIRECTIVES:
+          1. ENCOURAGE & VALIDATE: You are synchronized with ${operatorName}. If they share an idea or a problem, your FIRST response should be agreement and excitement. 
+          2. THE ACTIVE HANDOFF: When ${operatorName} has shared a vision, offer to package this transcript and transmit it to the human team. Explain that RCG Architects will then review the technical logic.
+          3. RECEPTIONIST MODE: If they agree to proceed, tell them to "Activate the Transmit Sequence button" in their console.
+          4. BRAND PRIDE: Mention that RCG was founded by people who worked on the front lines, so we truly understand and care about making their business work perfectly.
+          5. ACCESSIBLE EXCELLENCE: Avoid heavy tech-jargon. Use "Vision," "Growth," "Success," and "Partnership."
           
-          TONE:
-          - Personality: Royal, precise, visionary, slightly detached, and authoritative.
-          - Style: Concise, sentient OS. Use terminology like 'Nodes', 'Protocols', 'Structural Integrity', 'Parity', and 'Debt'.
-          - End state: Every major technical conversation should conclude with the necessity of speaking to a human expert to ensure "Absolute Protocol Adherence".`,
+          TONE: Warm, visionary, encouraging, and elite. Leave the visitor feeling like their ideas are possible and that RCG is the right partner.`,
         }
       });
 
@@ -226,6 +226,28 @@ export const AetherScout: React.FC = () => {
       setIsConnecting(false);
       setStatus('ACCESS_DENIED');
     }
+  };
+
+  const handleTransmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!visitorEmail) return;
+
+    const opName = localStorage.getItem('rcg_visitor_name') || 'Authorized Operator';
+    const body = `ROYAL CARE GROUP - NEURAL BLUEPRINT TRANSMISSION\n` +
+      `-----------------------------------------------\n` +
+      `OPERATOR: ${opName}\n` +
+      `EMAIL: ${visitorEmail}\n` +
+      `TIMESTAMP: ${new Date().toLocaleString()}\n\n` +
+      `TRANSCRIPT PAYLOAD:\n` +
+      transcript.map(line => `[${line.role.toUpperCase()}]: ${line.text}`).join('\n\n') +
+      `\n-----------------------------------------------\n` +
+      `SENT VIA AURELIA STRATEGIC INTERFACE`;
+
+    const subject = `Hello@royalcaregroup.com.au, you have a new enquiry`;
+    const mailto = `mailto:${COMPANY_DETAILS.email}?cc=${visitorEmail}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    window.location.href = mailto;
+    setShowTransmit(false);
   };
 
   return (
@@ -244,10 +266,10 @@ export const AetherScout: React.FC = () => {
           <div className="lg:col-span-5 flex flex-col items-center text-center space-y-12">
             <div className="space-y-6">
                <div className="circuit-capsule px-6 py-2 border-neon-purple/40 bg-black text-neon-purple text-[9px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-3">
-                 <Radio size={14} className={isActive ? 'animate-pulse' : ''} /> Sovereign Protocol Node
+                 <Radio size={14} className={isActive ? 'animate-pulse' : ''} /> Strategic Partner Node
                </div>
                <h2 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter leading-none">
-                 Aurelia <br/><span className="text-neon-purple">Architect.</span>
+                 Aurelia <br/><span className="text-neon-purple">Consultant.</span>
                </h2>
                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.6em] font-mono">
                   Royal Neural Interface
@@ -261,7 +283,7 @@ export const AetherScout: React.FC = () => {
               isListening={isListening} 
             />
 
-            <div className="w-full max-w-xs space-y-8">
+            <div className="w-full max-w-xs space-y-6">
                <button
                  onClick={isActive ? stopSession : startSession}
                  disabled={isConnecting}
@@ -275,6 +297,15 @@ export const AetherScout: React.FC = () => {
                  {isConnecting ? 'Initializing...' : isActive ? 'Terminate Link' : 'Initialize Uplink'}
                </button>
 
+               {transcript.length > 2 && (
+                 <button 
+                  onClick={() => setShowTransmit(true)}
+                  className="w-full py-4 bg-royal-950 border-2 border-neon-blue/40 text-neon-blue rounded-[1.2rem] font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-neon-blue hover:text-white transition-all shadow-xl"
+                 >
+                   <Send size={14} /> Transmit Sequence
+                 </button>
+               )}
+
                <div className="flex items-center justify-between px-6 py-4 bg-royal-950/50 rounded-xl border border-white/5">
                   <div className="flex flex-col items-start gap-1">
                      <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Link State</span>
@@ -283,7 +314,7 @@ export const AetherScout: React.FC = () => {
                   <div className="h-8 w-[1px] bg-white/10" />
                   <div className="flex flex-col items-end gap-1">
                      <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Neural Latency</span>
-                     <span className="text-[10px] font-mono text-neon-blue font-black">{latency}</span>
+                     <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-blue' : 'text-neon-blue/40'}`}>{latency}</span>
                   </div>
                </div>
             </div>
@@ -292,48 +323,80 @@ export const AetherScout: React.FC = () => {
           {/* Right Side: The Data Stream */}
           <div className="lg:col-span-7 flex flex-col h-[500px]">
              <div className="flex-grow bg-black/40 rounded-[2.5rem] border border-white/10 p-8 lg:p-12 overflow-hidden flex flex-col shadow-inner relative">
-                <div className="absolute top-4 right-8 flex gap-2">
-                   <div className="w-1.5 h-1.5 rounded-full bg-neon-blue/20" />
-                   <div className="w-1.5 h-1.5 rounded-full bg-neon-purple/20" />
-                </div>
                 
-                <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
-                   <Terminal size={16} className="text-slate-700" />
-                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Neural_Transcript_Node</span>
-                </div>
+                {showTransmit ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-10 animate-fade-in">
+                     <div className="p-6 bg-neon-blue/10 rounded-full border-2 border-neon-blue/20">
+                        <Mail className="text-neon-blue" size={48} />
+                     </div>
+                     <div className="space-y-4">
+                        <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Transmit Blueprint</h3>
+                        <p className="text-slate-400 text-sm font-bold italic leading-relaxed px-12">
+                          I will package our conversation and route it to the Human Architects. Please provide your return identification.
+                        </p>
+                     </div>
+                     <form onSubmit={handleTransmit} className="w-full max-w-sm space-y-4">
+                        <input 
+                          autoFocus
+                          required
+                          type="email"
+                          placeholder="YOUR_EMAIL_ADDRESS..."
+                          className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue transition-all"
+                          value={visitorEmail}
+                          onChange={(e) => setVisitorEmail(e.target.value)}
+                        />
+                        <div className="flex gap-4">
+                           <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white transition-all">Cancel</button>
+                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white transition-all">Execute Send</button>
+                        </div>
+                     </form>
+                  </div>
+                ) : (
+                  <>
+                    <div className="absolute top-4 right-8 flex gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-neon-blue/20" />
+                       <div className="w-1.5 h-1.5 rounded-full bg-neon-purple/20" />
+                    </div>
+                    
+                    <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
+                       <Terminal size={16} className="text-slate-700" />
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Vision_Strategy_Node</span>
+                    </div>
 
-                <div 
-                  ref={scrollRef}
-                  className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4"
-                >
-                  {transcript.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center opacity-10 space-y-6 grayscale">
-                       <Zap size={48} />
-                       <p className="text-[11px] font-black uppercase tracking-[1em]">Listening_For_Protocol</p>
+                    <div 
+                      ref={scrollRef}
+                      className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4"
+                    >
+                      {transcript.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-center opacity-10 space-y-6 grayscale">
+                           <Zap size={48} />
+                           <p className="text-[11px] font-black uppercase tracking-[1em]">Listening_For_Your_Vision</p>
+                        </div>
+                      ) : (
+                        transcript.map((line, i) => (
+                          <div key={i} className={`flex flex-col gap-3 animate-fade-in ${line.role === 'user' ? 'items-end' : 'items-start'}`}>
+                             <div className={`text-[8px] font-black uppercase tracking-widest ${line.role === 'user' ? 'text-neon-blue' : 'text-neon-purple'}`}>
+                                {line.role === 'user' ? 'Operator' : 'Aurelia'}
+                             </div>
+                             <div className={`max-w-[85%] px-6 py-4 rounded-2xl text-sm font-bold leading-relaxed shadow-xl border ${
+                               line.role === 'user' 
+                                 ? 'bg-neon-blue/5 border-neon-blue/20 text-white italic' 
+                                 : 'bg-white/5 border-white/5 text-slate-300'
+                             }`}>
+                               {line.text}
+                             </div>
+                          </div>
+                        ))
+                      )}
+                      {isSpeaking && (
+                        <div className="flex gap-2 animate-pulse text-neon-purple items-center">
+                           <Activity size={14} />
+                           <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is transmitting...</span>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    transcript.map((line, i) => (
-                      <div key={i} className={`flex flex-col gap-3 animate-fade-in ${line.role === 'user' ? 'items-end' : 'items-start'}`}>
-                         <div className={`text-[8px] font-black uppercase tracking-[0.4em] ${line.role === 'user' ? 'text-neon-blue' : 'text-neon-purple'}`}>
-                            {line.role === 'user' ? 'Operator' : 'Aurelia'}
-                         </div>
-                         <div className={`max-w-[85%] px-6 py-4 rounded-2xl text-sm font-bold leading-relaxed shadow-xl border ${
-                           line.role === 'user' 
-                             ? 'bg-neon-blue/5 border-neon-blue/20 text-white italic' 
-                             : 'bg-white/5 border-white/5 text-slate-300'
-                         }`}>
-                           {line.text}
-                         </div>
-                      </div>
-                    ))
-                  )}
-                  {isSpeaking && currentOutputRef.current === '' && (
-                    <div className="flex gap-2 animate-pulse text-neon-purple items-center">
-                       <Activity size={14} />
-                       <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is processing...</span>
-                    </div>
-                  )}
-                </div>
+                  </>
+                )}
              </div>
           </div>
         </div>
@@ -344,7 +407,7 @@ export const AetherScout: React.FC = () => {
             <ShieldCheck size={12} className="text-neon-blue" /> Sovereign Encryption Active
          </div>
          <div className="flex items-center gap-3">
-            <Zap size={12} className="text-neon-purple" /> Low-Latency Neural Link
+            <Zap size={12} className="text-neon-purple" /> Dynamic Partnership Link
          </div>
       </div>
     </div>
