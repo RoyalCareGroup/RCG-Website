@@ -36,9 +36,8 @@ const VisitorIdentity = () => {
   const [isGreeting, setIsGreeting] = useState(false);
   const [isFetchingIp, setIsFetchingIp] = useState(false);
 
-  // Identify IP for the Neural Link
+  // Identify IP for the Neural Link (Now backgrounded)
   const identifyNode = async () => {
-    setIsFetchingIp(true);
     try {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
@@ -46,20 +45,20 @@ const VisitorIdentity = () => {
       setIp(data.ip);
       return data.ip;
     } catch (err) {
-      console.warn("Grid Trace failed. Defaulting to local node.");
       return "LOCAL_NODE";
-    } finally {
-      setIsFetchingIp(false);
     }
   };
 
-  const speakWelcome = async (operatorName: string, nodeIp: string, preWarmedCtx: AudioContext) => {
+  const speakWelcome = async (operatorName: string, warmedCtx: AudioContext) => {
     setIsGreeting(true);
     try {
+      // Get IP in parallel without blocking the speech synthesis start
+      const nodeIpPromise = identifyNode();
+      
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with visionary warmth and elite professionalism: Welcome back, ${operatorName}. Neural link established via node ${nodeIp}. I have successfully mapped your strategic coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with visionary warmth: Welcome back, ${operatorName}. Neural link established. I have successfully mapped your strategic coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -72,35 +71,42 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        const audioBuffer = await decodeAudioData(decode(base64Audio), preWarmedCtx, 24000, 1);
-        const source = preWarmedCtx.createBufferSource();
+        const audioBuffer = await decodeAudioData(decode(base64Audio), warmedCtx, 24000, 1);
+        const source = warmedCtx.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(preWarmedCtx.destination);
+        source.connect(warmedCtx.destination);
         
         source.onended = () => {
           setIsGreeting(false);
-          preWarmedCtx.close();
+          warmedCtx.close();
         };
         
         source.start();
       } else {
         setIsGreeting(false);
-        preWarmedCtx.close();
+        warmedCtx.close();
       }
+      
+      // Ensure IP is resolved eventually
+      await nodeIpPromise;
+
     } catch (err) {
       console.error("Verbal greeting failed:", err);
       setIsGreeting(false);
-      preWarmedCtx.close();
+      warmedCtx.close();
     }
   };
 
   const saveName = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isGreeting || isFetchingIp || !tempName.trim()) return;
+    if (isGreeting || !tempName.trim()) return;
 
-    // CRITICAL FIX: Initialize and resume AudioContext IMMEDIATELY on click
+    // 1. Synchronous Action: Prep the AudioContext immediately
     const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
     const warmedCtx = new AudioContextClass({ sampleRate: 24000 });
+    
+    // 2. Synchronous Resume (Browser Handshake)
+    // We do NOT await identifyNode() here anymore to avoid the Fetch Gap
     await warmedCtx.resume();
 
     const finalName = tempName.trim();
@@ -108,11 +114,8 @@ const VisitorIdentity = () => {
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
 
-    // Now safe to do the async IP fetch because the audio context is already "authorized"
-    const nodeIp = await identifyNode();
-    
-    // Trigger singular verbal manifest
-    await speakWelcome(finalName, nodeIp, warmedCtx);
+    // 3. Trigger speech engine using the pre-authorized context
+    speakWelcome(finalName, warmedCtx);
   };
 
   return (
@@ -147,7 +150,7 @@ const VisitorIdentity = () => {
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4">Identification_Protocol</div>
               <input 
                 autoFocus
-                disabled={isFetchingIp || isGreeting}
+                disabled={isGreeting}
                 value={tempName}
                 onChange={(e) => setTempName(e.target.value)}
                 placeholder="INPUT_OPERATOR_NAME..."
@@ -155,11 +158,11 @@ const VisitorIdentity = () => {
               />
               <button 
                 type="submit" 
-                disabled={isGreeting || isFetchingIp || !tempName.trim()}
+                disabled={isGreeting || !tempName.trim()}
                 className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20"
               >
-                {isGreeting || isFetchingIp ? <Loader2 className="animate-spin" size={14} /> : null}
-                {isFetchingIp ? 'Tracing Grid Node...' : isGreeting ? 'Aurelia Speaking...' : 'Initialize Uplink'}
+                {isGreeting ? <Loader2 className="animate-spin" size={14} /> : null}
+                {isGreeting ? 'Aurelia Speaking...' : 'Initialize Uplink'}
               </button>
             </form>
           ) : null}
@@ -203,7 +206,6 @@ const Home = () => {
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen selection:bg-neon-blue/20 px-4 sm:px-12 lg:px-20 xl:px-24 font-sans relative">
       
-      {/* --- MINIMAL IMPACT HERO SECTION --- */}
       <section className="relative min-h-[75vh] flex flex-col justify-center items-center text-center pt-40 pb-20 z-10">
         <div className="max-w-6xl mx-auto w-full">
           <VisitorIdentity />
@@ -221,7 +223,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- FEATURE PORTAL GRID --- */}
       <section className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {featurePortal.map((item, i) => (
@@ -255,7 +256,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- SECONDARY SERVICES LINK --- */}
       <section className="py-24 relative z-10 border-t border-white/5">
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <div className="space-y-6 flex flex-col items-center">
@@ -275,7 +275,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- THE ROADMAP --- */}
       <section className="py-24 relative z-10 border-t border-white/5">
         <div className="max-w-6xl mx-auto w-full">
            <div className="bg-gradient-to-b from-black/90 to-royal-950/40 backdrop-blur-3xl border-[0.5px] border-neon-blue/20 rounded-[4rem] p-12 lg:p-20 relative overflow-hidden shadow-2xl group flex flex-col items-center text-center">

@@ -95,13 +95,13 @@ export const AetherScout: React.FC = () => {
     const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
 
     try {
+      // 1. Immediate Context Initialization
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioContextClass({ sampleRate: 16000 });
       const outputCtx = new AudioContextClass({ sampleRate: 24000 });
       
-      // CRITICAL: Explicitly resume on user gesture
-      await inputCtx.resume();
-      await outputCtx.resume();
+      // 2. Synchronized Resume (Unified Handshake)
+      await Promise.all([inputCtx.resume(), outputCtx.resume()]);
 
       audioContextRef.current = inputCtx;
       outAudioContextRef.current = outputCtx;
@@ -329,7 +329,7 @@ export const AetherScout: React.FC = () => {
                           I will package our conversation and route it to the Human Architects. Please provide your return identification.
                         </p>
                      </div>
-                     <form onSubmit={handleTransmit} className="w-full max-w-sm space-y-4">
+                     <form onSubmit={handleTransmit} className="w-full max-sm:space-y-4">
                         <input 
                           autoFocus
                           required
