@@ -192,7 +192,7 @@ const DeploymentHub: React.FC = () => {
            <div className="space-y-4">
               {[
                 { cmd: 'git add .', desc: 'Stage all structural updates' },
-                { cmd: `git commit -m "deploy: sync update v${COMPANY_DETAILS.appVersion} // ip_tracking_enabled"`, desc: 'Audit log creation' },
+                { cmd: `git commit -m "fix: audio_context_gesture_uplink // v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
                 { cmd: 'git push origin main', desc: 'Push to Cloudflare Edge' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col md:flex-row items-stretch md:items-center gap-4 group">

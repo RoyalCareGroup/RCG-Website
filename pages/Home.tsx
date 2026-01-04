@@ -59,6 +59,15 @@ const VisitorIdentity = () => {
     
     setIsGreeting(true);
     try {
+      // 1. Initialize Context immediately to capture the user gesture permission
+      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const audioCtx = new AudioContextClass({ sampleRate: 24000 });
+      
+      // Ensure the context is resumed (Crucial for Live Browser playback)
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -75,15 +84,15 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
         const audioBuffer = await decodeAudioData(decode(base64Audio), audioCtx, 24000, 1);
         const source = audioCtx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(audioCtx.destination);
         
-        // Ensure state reset only after audio finishes playing for a truly "1 at a time" feel
+        // Ensure state reset only after audio finishes playing
         source.onended = () => {
           setIsGreeting(false);
+          audioCtx.close();
         };
         
         source.start();
@@ -99,15 +108,17 @@ const VisitorIdentity = () => {
   const saveName = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Strict Concurrency Lock: Prevent multiple uplinks
+    // Strict Concurrency Lock
     if (isGreeting || isFetchingIp || !tempName.trim()) return;
 
     const finalName = tempName.trim();
-    const nodeIp = await identifyNode();
     
-    localStorage.setItem('rcg_visitor_name', finalName);
-    setName(finalName);
+    // Set UI state early
     setIsEditing(false);
+    setName(finalName);
+    localStorage.setItem('rcg_visitor_name', finalName);
+
+    const nodeIp = await identifyNode();
     
     // Trigger singular verbal manifest
     await speakWelcome(finalName, nodeIp);
@@ -124,15 +135,15 @@ const VisitorIdentity = () => {
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
            </div>
-           <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5">
+           <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4">
              Welcome, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
-             <Fingerprint size={32} className={`text-neon-purple ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
+             <Fingerprint size={32} className={`text-neon-purple shrink-0 ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
            </div>
            {isGreeting && (
              <div className="flex items-center gap-3 mt-4">
-                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                 <div className="text-[9px] font-black text-neon-purple uppercase tracking-[0.5em]">Aurelia is transmitting...</div>
              </div>
            )}
@@ -157,7 +168,7 @@ const VisitorIdentity = () => {
                 className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20"
               >
                 {isGreeting || isFetchingIp ? <Loader2 className="animate-spin" size={14} /> : null}
-                {isFetchingIp ? 'Identifying Grid Node...' : isGreeting ? 'Transmitting Welcome...' : 'Initialize Link'}
+                {isFetchingIp ? 'Tracing Grid Node...' : isGreeting ? 'Aurelia Speaking...' : 'Initialize Uplink'}
               </button>
             </form>
           ) : null}
