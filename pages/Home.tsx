@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
+import { useSovereign } from '../context/SovereignContext.tsx';
 
-// Audio decoding utilities for raw PCM from Gemini TTS
 function decode(base64: string) {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
@@ -36,19 +36,17 @@ const VisitorIdentity = () => {
   const [isGreeting, setIsGreeting] = useState(false);
   const [handshakeStatus, setHandshakeStatus] = useState('STANDBY');
   
-  const ctxRef = useRef<AudioContext | null>(null);
-  const heartbeatRef = useRef<OscillatorNode | null>(null);
+  const { initializeAudio, getAudioContext } = useSovereign();
 
   const speakWelcome = async (operatorName: string) => {
-    if (!ctxRef.current) return;
-    const warmedCtx = ctxRef.current;
-
+    setIsGreeting(true);
+    setHandshakeStatus('NEURAL_FETCH');
+    
     try {
-      setHandshakeStatus('NEURAL_FETCH');
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite strategic warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite visionary warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your strategic coordinates. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -59,85 +57,40 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        // Stop heartbeat just before speaking
-        if (heartbeatRef.current) {
-          heartbeatRef.current.stop();
-          heartbeatRef.current = null;
-        }
-
+        const ctx = getAudioContext();
         setHandshakeStatus('UPLINK_STABLE');
-        const audioBuffer = await decodeAudioData(decode(base64Audio), warmedCtx, 24000, 1);
-        const source = warmedCtx.createBufferSource();
+        const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
+        const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(warmedCtx.destination);
+        source.connect(ctx.destination);
         source.onended = () => {
           setIsGreeting(false);
           setHandshakeStatus('COMPLETED');
-          warmedCtx.close();
-          ctxRef.current = null;
         };
         source.start();
-      } else {
-        throw new Error("No audio data returned");
       }
     } catch (err) {
-      console.error("Audio Pipeline Error:", err);
-      setHandshakeStatus('LINK_FAILURE');
+      console.error("Home Speech Error:", err);
       setIsGreeting(false);
-      if (heartbeatRef.current) heartbeatRef.current.stop();
-      if (warmedCtx) warmedCtx.close();
+      setHandshakeStatus('LINK_FAIL');
     }
   };
 
-  const initializeUplink = async (e: React.FormEvent) => {
+  const handleInitialize = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
-    setIsGreeting(true);
-    setHandshakeStatus('HARDWARE_SYNC');
+    setHandshakeStatus('HARDWARE_BONDING');
+    // 1. Critical synchronous handshake
+    await initializeAudio();
+    
+    const finalName = tempName.trim();
+    setName(finalName);
+    localStorage.setItem('rcg_visitor_name', finalName);
+    setIsEditing(false);
 
-    try {
-      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
-      await ctx.resume();
-
-      // 1. SOUND CONFIRMATION (Audible beep to confirm hardware bond)
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.1);
-
-      // 2. SILENT HEARTBEAT (Keeps AudioContext active during network delay)
-      const heartbeat = ctx.createOscillator();
-      const silentGain = ctx.createGain();
-      heartbeat.type = 'sine';
-      heartbeat.frequency.setValueAtTime(1, ctx.currentTime); // Inaudible frequency
-      silentGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      heartbeat.connect(silentGain);
-      silentGain.connect(ctx.destination);
-      heartbeat.start();
-      heartbeatRef.current = heartbeat;
-
-      ctxRef.current = ctx;
-
-      const finalName = tempName.trim();
-      setIsEditing(false);
-      setName(finalName);
-      localStorage.setItem('rcg_visitor_name', finalName);
-
-      // 3. Begin Neural Cycle
-      speakWelcome(finalName);
-    } catch (err) {
-      setHandshakeStatus('SYNC_DENIED');
-      setIsGreeting(false);
-      console.error("Hardware Handshake Failed:", err);
-    }
+    // 2. Trigger Neural Logic
+    speakWelcome(finalName);
   };
 
   return (
@@ -150,9 +103,9 @@ const VisitorIdentity = () => {
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
-              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${isGreeting ? 'text-neon-green' : 'text-slate-600'}`}>
-                <div className={`w-1 h-1 rounded-full ${isGreeting ? 'bg-neon-green animate-pulse' : 'bg-slate-700'}`}></div>
-                STATUS: {handshakeStatus}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black text-neon-green uppercase tracking-widest">
+                <div className="w-1 h-1 rounded-full bg-neon-green animate-pulse"></div>
+                {handshakeStatus}
               </div>
            </div>
            <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4">
@@ -174,31 +127,29 @@ const VisitorIdentity = () => {
         </div>
       ) : (
         <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
-          {isEditing || !name ? (
-            <form onSubmit={initializeUplink} className="space-y-6">
-              <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4">Identification_Protocol</div>
-              <input 
-                autoFocus
-                disabled={isGreeting}
-                value={tempName}
-                onChange={(e) => setTempName(e.target.value)}
-                placeholder="INPUT_OPERATOR_NAME..."
-                className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
-              />
-              <button 
-                type="submit" 
-                disabled={isGreeting || !tempName.trim()}
-                className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
-              >
-                {isGreeting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />}
-                {isGreeting ? 'Negotiating Link...' : 'Initialize Uplink'}
-              </button>
-              <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
-                 <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
-                 <div className="flex items-center gap-1"><Activity size={8}/> Hardware Ready</div>
-              </div>
-            </form>
-          ) : null}
+          <form onSubmit={handleInitialize} className="space-y-6">
+            <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4 text-center">Identification_Protocol</div>
+            <input 
+              autoFocus
+              disabled={isGreeting}
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              placeholder="INPUT_OPERATOR_NAME..."
+              className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
+            />
+            <button 
+              type="submit" 
+              disabled={isGreeting || !tempName.trim()}
+              className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
+            >
+              {isGreeting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />}
+              {isGreeting ? 'Negotiating Link...' : 'Initialize Uplink'}
+            </button>
+            <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
+               <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
+               <div className="flex items-center gap-1"><Activity size={8}/> Audio Bonded</div>
+            </div>
+          </form>
         </div>
       )}
     </div>

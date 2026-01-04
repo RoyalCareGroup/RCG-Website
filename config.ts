@@ -6,8 +6,8 @@ export const COMPANY_DETAILS = {
   division: "Tech Division",
   techDivisionName: "Tech Division",
   motto: "Structural Intelligence for NDIS",
-  appVersion: "10.13.12-LIVE",
-  buildDate: "2024-05-31 18:00 AEST",
+  appVersion: "10.13.13-LIVE",
+  buildDate: "2024-05-31 20:30 AEST",
   abn: "76 684 189 320",
   email: "Hello@royalcaregroup.com.au",
   emailGeneral: "Hello@royalcaregroup.com.au",
@@ -16,7 +16,6 @@ export const COMPANY_DETAILS = {
   productionUrl: "https://www.royalcaregroup.com.au",
   cloudflareEndpoint: "rcg-website-8s2.pages.dev",
   googleAdsId: "AW-17820482706",
-  googleAIPs: ["216.239.32.21", "216.239.34.21", "216.239.36.21", "216.239.38.21"],
   socials: {
     linkedin: "https://linkedin.com/company/royalcaregroup"
   },
