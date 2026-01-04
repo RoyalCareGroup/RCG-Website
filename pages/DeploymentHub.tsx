@@ -70,7 +70,7 @@ const DeploymentHub: React.FC = () => {
                    <div className="p-4 bg-royal-950 border-2 border-neon-blue rounded-xl shadow-2xl"><Wifi className="text-neon-blue animate-pulse" size={32} /></div>
                    <h3 className="text-white text-3xl font-display font-black uppercase tracking-tight">Sync Diagnostic</h3>
                 </div>
-                <button onClick={verifyPipeline} disabled={verifying} className="p-4 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all"><RefreshCcw size={20} className={verifying ? 'animate-spin' : ''} /></button>
+                <button onClick={verifyPipeline} disabled={verifying} className="p-4 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all hover:border-white transition-all"><RefreshCcw size={20} className={verifying ? 'animate-spin' : ''} /></button>
              </div>
              <div className="bg-royal-950/80 border border-royal-800 rounded-2xl p-8 mb-10 font-mono text-[12px] space-y-3 overflow-y-auto max-h-[300px]">
                 {diagnosticReport.map((line, i) => (<div key={i} className="flex gap-4"><span className="text-neon-blue opacity-50">{" >> "}</span><span className="text-slate-400">{line}</span></div>))}
@@ -92,7 +92,7 @@ const DeploymentHub: React.FC = () => {
            <div className="space-y-4">
               {[
                 { cmd: 'git add .', desc: 'Stage all structural updates' },
-                { cmd: `git commit -m "fix: persistent_handshake_cache_bust // v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
+                { cmd: `git commit -m "fix: holographic_pulse_handshake // v${COMPANY_DETAILS.appVersion}"`, desc: 'Audit log creation' },
                 { cmd: 'git push origin main', desc: 'Push to Cloudflare Edge' }
               ].map((item, i) => (
                 <div key={i} className="flex flex-col md:flex-row items-center gap-4 group">

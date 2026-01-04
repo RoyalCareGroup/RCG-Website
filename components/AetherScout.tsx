@@ -31,20 +31,6 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
-// CRITICAL: Immediate Sonic Handshake
-const sonicWake = (ctx: AudioContext) => {
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(440, ctx.currentTime);
-  gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + 0.1);
-};
-
 export const AetherScout: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -104,7 +90,7 @@ export const AetherScout: React.FC = () => {
 
   const startSession = async () => {
     setIsConnecting(true);
-    setStatus('SYNCHRONIZING...');
+    setStatus('HARDWARE_SYNC');
     startTimeRef.current = Date.now();
     const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
 
@@ -113,10 +99,29 @@ export const AetherScout: React.FC = () => {
       const inputCtx = new AudioContextClass({ sampleRate: 16000, latencyHint: 'interactive' });
       const outputCtx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
       
-      // 1. UNLOCK BOTH IMMEDIATELY WITH SONIC WAKE
+      // 1. Mandatory synchronous resume
       await Promise.all([inputCtx.resume(), outputCtx.resume()]);
-      sonicWake(inputCtx);
-      sonicWake(outputCtx);
+
+      // 2. AUDIBLE PING (Confirm link started)
+      const osc = outputCtx.createOscillator();
+      const gain = outputCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, outputCtx.currentTime);
+      gain.gain.setValueAtTime(0.02, outputCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, outputCtx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(outputCtx.destination);
+      osc.start();
+      osc.stop(outputCtx.currentTime + 0.1);
+
+      // 3. SILENT HEARTBEAT (Maintain channel authority)
+      const pulse = outputCtx.createOscillator();
+      const silent = outputCtx.createGain();
+      pulse.frequency.value = 1;
+      silent.gain.value = 0.0001;
+      pulse.connect(silent);
+      silent.connect(outputCtx.destination);
+      pulse.start();
 
       audioContextRef.current = inputCtx;
       outAudioContextRef.current = outputCtx;
@@ -130,7 +135,7 @@ export const AetherScout: React.FC = () => {
           onopen: () => {
             setIsActive(true);
             setIsConnecting(false);
-            setStatus('ACTIVE_UPLINK');
+            setStatus('UPLINK_STABLE');
             setLatency(`${Date.now() - startTimeRef.current}ms`);
             
             const source = inputCtx.createMediaStreamSource(stream);
@@ -298,7 +303,7 @@ export const AetherScout: React.FC = () => {
                  }`}
                >
                  {isConnecting ? <Loader2 className="animate-spin" size={18} /> : isActive ? <MicOff size={18} /> : <Mic size={18} />}
-                 {isConnecting ? 'Initializing...' : isActive ? 'Terminate Link' : 'Initialize Uplink'}
+                 {isConnecting ? 'Linking Node...' : isActive ? 'Terminate Link' : 'Initialize Uplink'}
                </button>
                {transcript.length > 2 && (
                  <button 

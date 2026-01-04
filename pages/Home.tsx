@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2, ShieldCheck
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -34,35 +34,21 @@ const VisitorIdentity = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState('');
   const [isGreeting, setIsGreeting] = useState(false);
-  const [audioState, setAudioState] = useState<'IDLE' | 'LOCKED' | 'UNLOCKED'>('IDLE');
+  const [handshakeStatus, setHandshakeStatus] = useState('STANDBY');
   
   const ctxRef = useRef<AudioContext | null>(null);
-
-  const identifyNode = async () => {
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      localStorage.setItem('rcg_visitor_ip', data.ip);
-      setIp(data.ip);
-      return data.ip;
-    } catch (err) {
-      return "LOCAL_NODE";
-    }
-  };
+  const heartbeatRef = useRef<OscillatorNode | null>(null);
 
   const speakWelcome = async (operatorName: string) => {
-    setIsGreeting(true);
     if (!ctxRef.current) return;
-    
     const warmedCtx = ctxRef.current;
 
     try {
-      identifyNode(); // Background sync
-      
+      setHandshakeStatus('NEURAL_FETCH');
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite visionary warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your strategic coordinates. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite strategic warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -73,28 +59,33 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
+        // Stop heartbeat just before speaking
+        if (heartbeatRef.current) {
+          heartbeatRef.current.stop();
+          heartbeatRef.current = null;
+        }
+
+        setHandshakeStatus('UPLINK_STABLE');
         const audioBuffer = await decodeAudioData(decode(base64Audio), warmedCtx, 24000, 1);
         const source = warmedCtx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(warmedCtx.destination);
-        
         source.onended = () => {
           setIsGreeting(false);
-          setAudioState('IDLE');
+          setHandshakeStatus('COMPLETED');
           warmedCtx.close();
           ctxRef.current = null;
         };
-        
         source.start();
       } else {
-        setIsGreeting(false);
-        warmedCtx.close();
+        throw new Error("No audio data returned");
       }
     } catch (err) {
       console.error("Audio Pipeline Error:", err);
+      setHandshakeStatus('LINK_FAILURE');
       setIsGreeting(false);
-      warmedCtx.close();
-      setAudioState('LOCKED');
+      if (heartbeatRef.current) heartbeatRef.current.stop();
+      if (warmedCtx) warmedCtx.close();
     }
   };
 
@@ -102,38 +93,49 @@ const VisitorIdentity = () => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
-    // 1. ANCHOR GESTURE IMMEDIATELY
-    const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
-    
+    setIsGreeting(true);
+    setHandshakeStatus('HARDWARE_SYNC');
+
     try {
+      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
       await ctx.resume();
-      
-      // 2. Play a distinct confirmation "Ping" to confirm hardware is open
+
+      // 1. SOUND CONFIRMATION (Audible beep to confirm hardware bond)
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime); // High clear ping
-      gain.gain.setValueAtTime(0.02, ctx.currentTime);
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.1);
-      
+
+      // 2. SILENT HEARTBEAT (Keeps AudioContext active during network delay)
+      const heartbeat = ctx.createOscillator();
+      const silentGain = ctx.createGain();
+      heartbeat.type = 'sine';
+      heartbeat.frequency.setValueAtTime(1, ctx.currentTime); // Inaudible frequency
+      silentGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      heartbeat.connect(silentGain);
+      silentGain.connect(ctx.destination);
+      heartbeat.start();
+      heartbeatRef.current = heartbeat;
+
       ctxRef.current = ctx;
-      setAudioState('UNLOCKED');
 
       const finalName = tempName.trim();
       setIsEditing(false);
       setName(finalName);
       localStorage.setItem('rcg_visitor_name', finalName);
 
-      // 3. Trigger Synthesis
+      // 3. Begin Neural Cycle
       speakWelcome(finalName);
-
     } catch (err) {
-      setAudioState('LOCKED');
+      setHandshakeStatus('SYNC_DENIED');
+      setIsGreeting(false);
       console.error("Hardware Handshake Failed:", err);
     }
   };
@@ -148,9 +150,9 @@ const VisitorIdentity = () => {
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
-              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${audioState === 'UNLOCKED' ? 'text-neon-green' : 'text-slate-600'}`}>
-                <div className={`w-1 h-1 rounded-full ${audioState === 'UNLOCKED' ? 'bg-neon-green animate-pulse' : 'bg-slate-700'}`}></div>
-                Audio_{audioState}
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${isGreeting ? 'text-neon-green' : 'text-slate-600'}`}>
+                <div className={`w-1 h-1 rounded-full ${isGreeting ? 'bg-neon-green animate-pulse' : 'bg-slate-700'}`}></div>
+                STATUS: {handshakeStatus}
               </div>
            </div>
            <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4">
@@ -189,11 +191,11 @@ const VisitorIdentity = () => {
                 className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
               >
                 {isGreeting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />}
-                {isGreeting ? 'Synthesizing...' : 'Initialize Uplink'}
+                {isGreeting ? 'Negotiating Link...' : 'Initialize Uplink'}
               </button>
               <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
                  <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
-                 <div className="flex items-center gap-1"><Volume2 size={8}/> Audio Ready</div>
+                 <div className="flex items-center gap-1"><Activity size={8}/> Hardware Ready</div>
               </div>
             </form>
           ) : null}
