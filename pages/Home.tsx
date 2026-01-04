@@ -53,21 +53,9 @@ const VisitorIdentity = () => {
     }
   };
 
-  const speakWelcome = async (operatorName: string, nodeIp: string) => {
-    // Protocol Lock Check
-    if (isGreeting) return;
-    
+  const speakWelcome = async (operatorName: string, nodeIp: string, preWarmedCtx: AudioContext) => {
     setIsGreeting(true);
     try {
-      // 1. Initialize Context immediately to capture the user gesture permission
-      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      const audioCtx = new AudioContextClass({ sampleRate: 24000 });
-      
-      // Ensure the context is resumed (Crucial for Live Browser playback)
-      if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-      }
-
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -84,44 +72,47 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        const audioBuffer = await decodeAudioData(decode(base64Audio), audioCtx, 24000, 1);
-        const source = audioCtx.createBufferSource();
+        const audioBuffer = await decodeAudioData(decode(base64Audio), preWarmedCtx, 24000, 1);
+        const source = preWarmedCtx.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(audioCtx.destination);
+        source.connect(preWarmedCtx.destination);
         
-        // Ensure state reset only after audio finishes playing
         source.onended = () => {
           setIsGreeting(false);
-          audioCtx.close();
+          preWarmedCtx.close();
         };
         
         source.start();
       } else {
         setIsGreeting(false);
+        preWarmedCtx.close();
       }
     } catch (err) {
       console.error("Verbal greeting failed:", err);
       setIsGreeting(false);
+      preWarmedCtx.close();
     }
   };
 
   const saveName = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Strict Concurrency Lock
     if (isGreeting || isFetchingIp || !tempName.trim()) return;
 
+    // CRITICAL FIX: Initialize and resume AudioContext IMMEDIATELY on click
+    const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+    const warmedCtx = new AudioContextClass({ sampleRate: 24000 });
+    await warmedCtx.resume();
+
     const finalName = tempName.trim();
-    
-    // Set UI state early
     setIsEditing(false);
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
 
+    // Now safe to do the async IP fetch because the audio context is already "authorized"
     const nodeIp = await identifyNode();
     
     // Trigger singular verbal manifest
-    await speakWelcome(finalName, nodeIp);
+    await speakWelcome(finalName, nodeIp, warmedCtx);
   };
 
   return (

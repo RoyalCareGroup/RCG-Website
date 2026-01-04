@@ -95,12 +95,19 @@ export const AetherScout: React.FC = () => {
     const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+      const inputCtx = new AudioContextClass({ sampleRate: 16000 });
+      const outputCtx = new AudioContextClass({ sampleRate: 24000 });
       
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-      outAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      // CRITICAL: Explicitly resume on user gesture
+      await inputCtx.resume();
+      await outputCtx.resume();
+
+      audioContextRef.current = inputCtx;
+      outAudioContextRef.current = outputCtx;
       
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-09-2025',
@@ -111,8 +118,8 @@ export const AetherScout: React.FC = () => {
             setStatus('ACTIVE_UPLINK');
             setLatency(`${Date.now() - startTimeRef.current}ms`);
             
-            const source = audioContextRef.current!.createMediaStreamSource(stream);
-            const scriptProcessor = audioContextRef.current!.createScriptProcessor(4096, 1, 1);
+            const source = inputCtx.createMediaStreamSource(stream);
+            const scriptProcessor = inputCtx.createScriptProcessor(4096, 1, 1);
             
             scriptProcessor.onaudioprocess = (e) => {
               const inputData = e.inputBuffer.getChannelData(0);
@@ -130,7 +137,7 @@ export const AetherScout: React.FC = () => {
             };
 
             source.connect(scriptProcessor);
-            scriptProcessor.connect(audioContextRef.current!.destination);
+            scriptProcessor.connect(inputCtx.destination);
           },
           onmessage: async (message: LiveServerMessage) => {
             if (message.serverContent?.inputTranscription) {
@@ -169,7 +176,7 @@ export const AetherScout: React.FC = () => {
             const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             if (base64Audio) {
               setIsSpeaking(true);
-              const ctx = outAudioContextRef.current!;
+              const ctx = outputCtx;
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
               const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
               const source = ctx.createBufferSource();
@@ -252,17 +259,11 @@ export const AetherScout: React.FC = () => {
 
   return (
     <div className="relative group">
-      {/* High-Tech Background Plate */}
       <div className="bg-black/60 backdrop-blur-3xl border-2 border-white/10 rounded-[4rem] p-12 lg:p-20 shadow-[0_80px_160px_rgba(0,0,0,0.9)] overflow-hidden">
-        
-        {/* Internal Grid Decoration */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] [background-size:32px_32px]"></div>
         </div>
-
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          
-          {/* Left Side: The Interface */}
           <div className="lg:col-span-5 flex flex-col items-center text-center space-y-12">
             <div className="space-y-6">
                <div className="circuit-capsule px-6 py-2 border-neon-purple/40 bg-black text-neon-purple text-[9px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-3">
@@ -275,14 +276,12 @@ export const AetherScout: React.FC = () => {
                   Royal Neural Interface
                </p>
             </div>
-
             <AetherOrb 
               isActive={isActive} 
               isConnecting={isConnecting} 
               isSpeaking={isSpeaking} 
               isListening={isListening} 
             />
-
             <div className="w-full max-w-xs space-y-6">
                <button
                  onClick={isActive ? stopSession : startSession}
@@ -296,7 +295,6 @@ export const AetherScout: React.FC = () => {
                  {isConnecting ? <Loader2 className="animate-spin" size={18} /> : isActive ? <MicOff size={18} /> : <Mic size={18} />}
                  {isConnecting ? 'Initializing...' : isActive ? 'Terminate Link' : 'Initialize Uplink'}
                </button>
-
                {transcript.length > 2 && (
                  <button 
                   onClick={() => setShowTransmit(true)}
@@ -305,7 +303,6 @@ export const AetherScout: React.FC = () => {
                    <Send size={14} /> Transmit Sequence
                  </button>
                )}
-
                <div className="flex items-center justify-between px-6 py-4 bg-royal-950/50 rounded-xl border border-white/5">
                   <div className="flex flex-col items-start gap-1">
                      <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Link State</span>
@@ -319,11 +316,8 @@ export const AetherScout: React.FC = () => {
                </div>
             </div>
           </div>
-
-          {/* Right Side: The Data Stream */}
           <div className="lg:col-span-7 flex flex-col h-[500px]">
              <div className="flex-grow bg-black/40 rounded-[2.5rem] border border-white/10 p-8 lg:p-12 overflow-hidden flex flex-col shadow-inner relative">
-                
                 {showTransmit ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-10 animate-fade-in">
                      <div className="p-6 bg-neon-blue/10 rounded-full border-2 border-neon-blue/20">
@@ -357,12 +351,10 @@ export const AetherScout: React.FC = () => {
                        <div className="w-1.5 h-1.5 rounded-full bg-neon-blue/20" />
                        <div className="w-1.5 h-1.5 rounded-full bg-neon-purple/20" />
                     </div>
-                    
                     <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
                        <Terminal size={16} className="text-slate-700" />
                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Vision_Strategy_Node</span>
                     </div>
-
                     <div 
                       ref={scrollRef}
                       className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4"
@@ -401,7 +393,6 @@ export const AetherScout: React.FC = () => {
           </div>
         </div>
       </div>
-
       <div className="mt-8 flex justify-center space-x-12 text-[9px] font-black uppercase tracking-[0.5em] text-slate-600">
          <div className="flex items-center gap-3">
             <ShieldCheck size={12} className="text-neon-blue" /> Sovereign Encryption Active
