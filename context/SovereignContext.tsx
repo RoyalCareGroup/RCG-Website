@@ -8,7 +8,7 @@ interface SovereignContextType {
   lastPulse: { x: number, y: number, id: number } | null;
   getAudioContext: () => AudioContext;
   audioReady: boolean;
-  initializeAudio: () => Promise<void>;
+  initializeAudio: () => Promise<boolean>;
   stopHeartbeat: () => void;
 }
 
@@ -24,7 +24,10 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const getAudioContext = useCallback(() => {
     if (!masterCtxRef.current) {
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-      masterCtxRef.current = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
+      masterCtxRef.current = new AudioContextClass({ 
+        sampleRate: 24000, 
+        latencyHint: 'interactive' 
+      });
     }
     return masterCtxRef.current!;
   }, []);
@@ -39,36 +42,46 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     }
   }, []);
 
-  const initializeAudio = useCallback(async () => {
-    const ctx = getAudioContext();
-    if (ctx.state === 'suspended') {
-      await ctx.resume();
+  const initializeAudio = useCallback(async (): Promise<boolean> => {
+    try {
+      const ctx = getAudioContext();
+      
+      // Forces a synchronous check/resume
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
+      // Proactive hardware bond (Audible 880Hz confirmation)
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.01, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+
+      // SILENT HEARTBEAT: Keeps the hardware gate open indefinitely 
+      // during the long Gemini API fetch (Browser won't discard activation)
+      stopHeartbeat();
+      const heartbeat = ctx.createOscillator();
+      const silentGain = ctx.createGain();
+      heartbeat.frequency.setValueAtTime(1, ctx.currentTime);
+      silentGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      heartbeat.connect(silentGain);
+      silentGain.connect(ctx.destination);
+      heartbeat.start();
+      heartbeatRef.current = heartbeat;
+
+      setAudioReady(true);
+      return true;
+    } catch (err) {
+      console.error("Hardware Initialization Failure:", err);
+      setAudioReady(false);
+      return false;
     }
-
-    // 1. Initial Handshake Tone
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    gain.gain.setValueAtTime(0.01, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.1);
-
-    // 2. Persistent Heartbeat (Keeps the audio gate OPEN during network latency)
-    stopHeartbeat(); // Clear previous
-    const heartbeat = ctx.createOscillator();
-    const silentGain = ctx.createGain();
-    heartbeat.frequency.setValueAtTime(1, ctx.currentTime); // Inaudible
-    silentGain.gain.setValueAtTime(0.0001, ctx.currentTime); // Virtually silent
-    heartbeat.connect(silentGain);
-    silentGain.connect(ctx.destination);
-    heartbeat.start();
-    heartbeatRef.current = heartbeat;
-
-    setAudioReady(true);
   }, [getAudioContext, stopHeartbeat]);
 
   const triggerPulse = useCallback((x: number, y: number) => {

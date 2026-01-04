@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal, Power
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal, Power, AlertCircle
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -34,20 +34,20 @@ const VisitorIdentity = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState('');
   const [isGreeting, setIsGreeting] = useState(false);
-  const [handshakeStatus, setHandshakeStatus] = useState('STANDBY');
+  const [handshakeStatus, setHandshakeStatus] = useState('OFFLINE');
   const [hasWoken, setHasWoken] = useState(false);
   
   const { initializeAudio, getAudioContext, stopHeartbeat } = useSovereign();
 
   const speakWelcome = async (operatorName: string) => {
     setIsGreeting(true);
-    setHandshakeStatus('NEURAL_SYNC');
+    setHandshakeStatus('API_RESONANCE'); // Specifically naming the API fetch stage
     
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite strategic warmth: Neural link established. Welcome back, ${operatorName}. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite strategic warmth: Neural link established. Welcome back, ${operatorName}. Command nodes are now active.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -58,9 +58,10 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        // Stop heartbeat just as we start speaking
-        stopHeartbeat();
+        // Final Handshake check
         const ctx = getAudioContext();
+        if (ctx.state === 'suspended') await ctx.resume();
+
         setHandshakeStatus('STREAMING');
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
         const source = ctx.createBufferSource();
@@ -69,38 +70,58 @@ const VisitorIdentity = () => {
         source.onended = () => {
           setIsGreeting(false);
           setHandshakeStatus('COMPLETED');
+          stopHeartbeat();
         };
         source.start();
+      } else {
+        throw new Error("EMPTY_API_BUFFER");
       }
-    } catch (err) {
-      console.error("Home Speech Error:", err);
+    } catch (err: any) {
+      console.error("Neural Greeting Critical Failure:", err);
       setIsGreeting(false);
-      setHandshakeStatus('LINK_FAIL');
+      
+      // Determine error type for HUD
+      if (err?.message?.includes("API_KEY")) setHandshakeStatus('KEY_REJECTED');
+      else if (err?.message?.includes("fetch")) setHandshakeStatus('NET_FAILURE');
+      else setHandshakeStatus('LINK_FAIL');
+      
       stopHeartbeat();
     }
+  };
+
+  const handleWakeSequence = async () => {
+    if (isGreeting || !name) return;
+    setHandshakeStatus('HARDWARE_BOND');
+    
+    // Step 1: Prove Audio Hardware works with a synchronous beep
+    const ready = await initializeAudio();
+    if (!ready) {
+      setHandshakeStatus('DEVICE_DENIED');
+      return;
+    }
+
+    setHasWoken(true);
+    // Step 2: Begin neural fetch (heartbeat keeps hardware awake)
+    speakWelcome(name);
   };
 
   const handleInitialize = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
-    setHandshakeStatus('HARDWARE_BOND');
-    await initializeAudio();
-    
     const finalName = tempName.trim();
+    setHandshakeStatus('HARDWARE_BOND');
+    const ready = await initializeAudio();
+    if (!ready) {
+      setHandshakeStatus('DEVICE_DENIED');
+      return;
+    }
+
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
     setIsEditing(false);
     setHasWoken(true);
     speakWelcome(finalName);
-  };
-
-  const handleWakeSequence = async () => {
-    if (isGreeting || !name) return;
-    setHandshakeStatus('HARDWARE_BOND');
-    await initializeAudio();
-    setHasWoken(true);
-    speakWelcome(name);
   };
 
   return (
@@ -110,8 +131,16 @@ const VisitorIdentity = () => {
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
-              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${handshakeStatus === 'LINK_FAIL' ? 'text-red-500' : 'text-neon-green'}`}>
-                <div className={`w-1 h-1 rounded-full ${handshakeStatus === 'LINK_FAIL' ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
+              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 text-[7px] font-black uppercase tracking-widest transition-all ${
+                handshakeStatus.includes('FAIL') || handshakeStatus.includes('DENIED') || handshakeStatus.includes('REJECTED')
+                  ? 'bg-red-500/20 text-red-500 border-red-500/30' 
+                  : 'text-neon-green bg-neon-green/5 border-neon-green/20'
+              }`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  handshakeStatus.includes('FAIL') || handshakeStatus.includes('DENIED') || handshakeStatus.includes('REJECTED')
+                    ? 'bg-red-500' 
+                    : 'bg-neon-green animate-pulse'
+                }`}></div>
                 {handshakeStatus}
               </div>
            </div>
@@ -125,31 +154,43 @@ const VisitorIdentity = () => {
            </div>
 
            {!hasWoken && !isGreeting && (
-             <button 
-               onClick={handleWakeSequence}
-               className="mt-4 px-10 py-5 bg-white text-black rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-neon-blue hover:text-white transition-all shadow-[0_20px_50px_rgba(0,0,0,0.4)] active:scale-95 group"
-             >
-                <Power size={16} className="text-neon-purple group-hover:text-white" />
-                Initialize Wake Sequence
-             </button>
+             <div className="flex flex-col items-center gap-4 mt-4">
+               <button 
+                 onClick={handleWakeSequence}
+                 className="px-12 py-6 bg-white text-black rounded-2xl font-black text-[12px] uppercase tracking-[0.4em] flex items-center gap-5 hover:bg-neon-blue hover:text-white transition-all shadow-[0_30px_60px_rgba(0,0,0,0.6)] active:scale-95 group"
+               >
+                  <Power size={18} className="text-neon-purple group-hover:text-white group-hover:rotate-90 transition-transform" />
+                  Initialize Aurelia Presence
+               </button>
+               <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest opacity-40">System requires user gesture to bond audio hardware</span>
+             </div>
            )}
 
            {isGreeting && (
-             <div className="flex items-center gap-4 mt-4 px-8 py-3 bg-neon-purple/10 rounded-full border border-neon-purple/20 shadow-[0_0_20px_rgba(217,70,239,0.1)]">
-                <div className="flex gap-2">
-                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-                <div className="text-[10px] font-black text-neon-purple uppercase tracking-[0.6em]">Aurelia Transmitting</div>
-                <Volume2 size={14} className="text-neon-purple animate-pulse" />
+             <div className="flex flex-col items-center gap-4 mt-4 animate-in fade-in duration-500">
+               <div className="flex items-center gap-5 px-10 py-4 bg-neon-purple/10 rounded-full border border-neon-purple/30 shadow-[0_0_30px_rgba(217,70,239,0.15)]">
+                  <div className="flex gap-2">
+                     <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                     <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                     <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                  <div className="text-[10px] font-black text-neon-purple uppercase tracking-[0.6em]">Streaming Neural Logic</div>
+                  <Volume2 size={16} className="text-neon-purple animate-pulse" />
+               </div>
+               <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest italic">Encrypted Connection Established</span>
              </div>
            )}
-           {!isGreeting && hasWoken && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2">Uplink Stable // Click name to edit</div>}
+
+           {handshakeStatus === 'LINK_FAIL' && (
+             <div className="mt-4 flex items-center gap-3 text-red-500 bg-red-500/5 px-6 py-3 rounded-xl border border-red-500/20">
+                <AlertCircle size={14} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Logic Bridge Timed Out. Try a Hard Refresh.</span>
+             </div>
+           )}
         </div>
       ) : (
-        <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
-          <form onSubmit={handleInitialize} className="space-y-6">
+        <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[3rem] border border-white/5 shadow-3xl">
+          <form onSubmit={handleInitialize} className="space-y-8">
             <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] mb-4 text-center">Identification_Protocol</div>
             <input 
               autoFocus
@@ -157,19 +198,19 @@ const VisitorIdentity = () => {
               value={tempName}
               onChange={(e) => setTempName(e.target.value)}
               placeholder="INPUT_OPERATOR_NAME..."
-              className="w-full bg-royal-950 border border-white/10 p-6 rounded-2xl text-center text-white font-mono text-sm uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
+              className="w-full bg-royal-950 border-2 border-white/10 p-7 rounded-[2rem] text-center text-white font-mono text-base uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
             />
             <button 
               type="submit" 
               disabled={isGreeting || !tempName.trim()}
-              className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-20 shadow-xl"
+              className="w-full py-6 bg-white text-black font-black text-[11px] uppercase tracking-[0.5em] rounded-2xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-4 disabled:opacity-20 shadow-3xl"
             >
-              {isGreeting ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} />}
-              {isGreeting ? 'Negotiating Link...' : 'Initialize Uplink'}
+              {isGreeting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="text-neon-purple" />}
+              {isGreeting ? 'Syncing Node...' : 'Establish Neural Link'}
             </button>
-            <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
-               <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
-               <div className="flex items-center gap-1"><Activity size={8}/> Heartbeat Ready</div>
+            <div className="flex justify-center gap-6 text-[8px] font-black text-slate-700 uppercase tracking-[0.3em]">
+               <div className="flex items-center gap-2"><ShieldCheck size={10} className="text-neon-blue"/> Sovereignty Active</div>
+               <div className="flex items-center gap-2"><Activity size={10} className="text-neon-purple"/> Heartbeat Ready</div>
             </div>
           </form>
         </div>
