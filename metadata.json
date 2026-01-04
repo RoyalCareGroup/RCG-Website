@@ -1,6 +1,6 @@
 {
   "name": "Royal Care Group - Structural Intelligence Hub",
-  "version": "10.12.71",
+  "version": "10.12.72",
   "requestFramePermissions": [
     "microphone",
     "camera",
