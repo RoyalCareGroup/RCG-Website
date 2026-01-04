@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe
+  Fingerprint, Loader2, Globe, Volume2
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -28,13 +28,22 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
-// CRITICAL: Permanently authorizes AudioContext for the session
-const silentUnlock = (ctx: AudioContext) => {
-  const buffer = ctx.createBuffer(1, 1, 22050);
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(ctx.destination);
-  source.start(0);
+// CRITICAL: Immediate Sonic Handshake (Wakes up hardware and browser)
+const sonicWake = (ctx: AudioContext) => {
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+  
+  gainNode.gain.setValueAtTime(0.01, ctx.currentTime); // Almost inaudible but real signal
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.1);
 };
 
 const VisitorIdentity = () => {
@@ -59,13 +68,12 @@ const VisitorIdentity = () => {
   const speakWelcome = async (operatorName: string, warmedCtx: AudioContext) => {
     setIsGreeting(true);
     try {
-      // Fetch IP in background
-      identifyNode();
+      identifyNode(); // BG fetch
       
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite visionary warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your strategic coordinates. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite strategic warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your coordinates. Your vision is our blueprint. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -80,14 +88,17 @@ const VisitorIdentity = () => {
         const source = warmedCtx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(warmedCtx.destination);
-        source.onended = () => { setIsGreeting(false); warmedCtx.close(); };
+        source.onended = () => { 
+          setIsGreeting(false); 
+          warmedCtx.close(); 
+        };
         source.start();
       } else {
         setIsGreeting(false);
         warmedCtx.close();
       }
     } catch (err) {
-      console.error("Verbal greeting failed:", err);
+      console.error("Neural handshake timeout:", err);
       setIsGreeting(false);
       warmedCtx.close();
     }
@@ -97,20 +108,20 @@ const VisitorIdentity = () => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
-    // 1. INSTANT AUTHORIZATION (Zero-delay stack)
     const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
     const warmedCtx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
     
-    // Force resume AND play a silent buffer immediately
+    // 1. Mandatory synchronous resume
     await warmedCtx.resume();
-    silentUnlock(warmedCtx);
+    // 2. Immediate Sonic Wake (zero latency hardware authorization)
+    sonicWake(warmedCtx);
 
     const finalName = tempName.trim();
     setIsEditing(false);
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
 
-    // 2. Trigger async chain using the pre-blessed context
+    // 3. Begin AI Synthesis
     speakWelcome(finalName, warmedCtx);
   };
 
@@ -130,11 +141,14 @@ const VisitorIdentity = () => {
              <Fingerprint size={32} className={`text-neon-purple shrink-0 ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
            </div>
            {isGreeting && (
-             <div className="flex items-center gap-3 mt-4">
-                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                <div className="text-[9px] font-black text-neon-purple uppercase tracking-[0.5em]">Aurelia is transmitting...</div>
+             <div className="flex items-center gap-4 mt-4 px-6 py-2 bg-neon-purple/5 rounded-full border border-neon-purple/20">
+                <div className="flex gap-1.5">
+                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                   <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+                <div className="text-[9px] font-black text-neon-purple uppercase tracking-[0.5em]">Aurelia Speaking...</div>
+                <Volume2 size={12} className="text-neon-purple animate-pulse" />
              </div>
            )}
            {!isGreeting && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 group-hover:text-white transition-colors">Click name to re-authenticate</div>}

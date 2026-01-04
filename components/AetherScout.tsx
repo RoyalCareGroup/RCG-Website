@@ -31,12 +31,18 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
-const silentUnlock = (ctx: AudioContext) => {
-  const buffer = ctx.createBuffer(1, 1, 22050);
-  const source = ctx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(ctx.destination);
-  source.start(0);
+// CRITICAL: Immediate Sonic Handshake
+const sonicWake = (ctx: AudioContext) => {
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+  gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.1);
 };
 
 export const AetherScout: React.FC = () => {
@@ -107,10 +113,10 @@ export const AetherScout: React.FC = () => {
       const inputCtx = new AudioContextClass({ sampleRate: 16000, latencyHint: 'interactive' });
       const outputCtx = new AudioContextClass({ sampleRate: 24000, latencyHint: 'interactive' });
       
-      // 1. UNLOCK BOTH IMMEDIATELY
+      // 1. UNLOCK BOTH IMMEDIATELY WITH SONIC WAKE
       await Promise.all([inputCtx.resume(), outputCtx.resume()]);
-      silentUnlock(inputCtx);
-      silentUnlock(outputCtx);
+      sonicWake(inputCtx);
+      sonicWake(outputCtx);
 
       audioContextRef.current = inputCtx;
       outAudioContextRef.current = outputCtx;
@@ -302,6 +308,17 @@ export const AetherScout: React.FC = () => {
                    <Send size={14} /> Transmit Sequence
                  </button>
                )}
+               <div className="flex items-center justify-between px-6 py-4 bg-royal-950/50 rounded-xl border border-white/5">
+                  <div className="flex flex-col items-start gap-1">
+                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Link State</span>
+                     <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-green' : 'text-slate-700'}`}>{status}</span>
+                  </div>
+                  <div className="h-8 w-[1px] bg-white/10" />
+                  <div className="flex flex-col items-end gap-1">
+                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Neural Latency</span>
+                     <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-blue' : 'text-neon-blue/40'}`}>{latency}</span>
+                  </div>
+               </div>
             </div>
           </div>
           <div className="lg:col-span-7 flex flex-col h-[500px]">
@@ -313,17 +330,21 @@ export const AetherScout: React.FC = () => {
                      <form onSubmit={handleTransmit} className="w-full max-sm:space-y-4">
                         <input 
                           autoFocus required type="email" placeholder="YOUR_EMAIL_ADDRESS..."
-                          className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue"
+                          className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue transition-all"
                           value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)}
                         />
                         <div className="flex gap-4 mt-6">
-                           <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white">Cancel</button>
-                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white">Execute Send</button>
+                           <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white transition-all">Cancel</button>
+                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white transition-all">Execute Send</button>
                         </div>
                      </form>
                   </div>
                 ) : (
                   <>
+                    <div className="absolute top-4 right-8 flex gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-neon-blue/20" />
+                       <div className="w-1.5 h-1.5 rounded-full bg-neon-purple/20" />
+                    </div>
                     <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
                        <Terminal size={16} className="text-slate-700" />
                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Vision_Strategy_Node</span>
@@ -348,12 +369,27 @@ export const AetherScout: React.FC = () => {
                           </div>
                         ))
                       )}
+                      {isSpeaking && (
+                        <div className="flex gap-3 animate-pulse text-neon-purple items-center">
+                           <Activity size={14} />
+                           <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is transmitting...</span>
+                           <Volume2 size={12} />
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
              </div>
           </div>
         </div>
+      </div>
+      <div className="mt-8 flex justify-center space-x-12 text-[9px] font-black uppercase tracking-[0.5em] text-slate-600">
+         <div className="flex items-center gap-3">
+            <ShieldCheck size={12} className="text-neon-blue" /> Sovereign Encryption Active
+         </div>
+         <div className="flex items-center gap-3">
+            <Zap size={12} className="text-neon-purple" /> Dynamic Partnership Link
+         </div>
       </div>
     </div>
   );
