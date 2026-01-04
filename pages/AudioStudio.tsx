@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Radio, Terminal, Volume2, Loader2, Zap, ShieldCheck, Activity } from 'lucide-react';
 import { GoogleGenAI, Modality } from '@google/genai';
@@ -48,12 +49,23 @@ const AudioStudio: React.FC = () => {
   }, [transcript, currentModelText, currentUserText]);
 
   const stopSession = () => {
-    if (sessionRef.current) sessionRef.current.close();
-    if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
-    if (audioContextsRef.current) { audioContextsRef.current.input.close(); audioContextsRef.current.output.close(); }
-    sourcesRef.current.forEach(source => source.stop());
+    if (sessionRef.current) {
+      sessionRef.current.close();
+      sessionRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (audioContextsRef.current) {
+      if (audioContextsRef.current.input.state !== 'closed') audioContextsRef.current.input.close().catch(console.error);
+      if (audioContextsRef.current.output.state !== 'closed') audioContextsRef.current.output.close().catch(console.error);
+      audioContextsRef.current = null;
+    }
+    sourcesRef.current.forEach(source => { try { source.stop(); } catch(e) {} });
     sourcesRef.current.clear();
-    setIsConnected(false); setIsConnecting(false);
+    setIsConnected(false);
+    setIsConnecting(false);
   };
 
   const startSession = async () => {

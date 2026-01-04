@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
@@ -6,10 +7,6 @@ import Home from './pages/Home.tsx';
 import Tech from './pages/Tech.tsx';
 import IntelligenceHub from './pages/IntelligenceHub.tsx';
 import ServicesPage from './pages/ServicesPage.tsx';
-import CreativeStudio from './pages/CreativeStudio.tsx';
-import WebLab from './pages/WebLab.tsx';
-import VideoStudio from './pages/VideoStudio.tsx';
-import AudioStudio from './pages/AudioStudio.tsx';
 import About from './pages/About.tsx';
 import CaseStudies from './pages/CaseStudies.tsx';
 import Contact from './pages/Contact.tsx';
@@ -22,8 +19,19 @@ import Governance from './pages/Governance.tsx';
 import DeploymentHub from './pages/DeploymentHub.tsx';
 import CommandCenter from './pages/CommandCenter.tsx';
 import AdminLogin from './components/AdminLogin.tsx';
+import CreativeStudio from './pages/CreativeStudio.tsx';
+import WebLab from './pages/WebLab.tsx';
+import VideoStudio from './pages/VideoStudio.tsx';
+import AudioStudio from './pages/AudioStudio.tsx';
+import ArchitectPage from './pages/ArchitectPage.tsx';
+import SandboxPage from './pages/SandboxPage.tsx';
+import AureliaPage from './pages/AureliaPage.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 import { CustomCursor } from './components/CustomCursor.tsx';
+import { MatrixXRay } from './components/MatrixXRay.tsx';
+import { SystemTicker } from './components/SystemTicker.tsx';
+import { SovereignGrid } from './components/SovereignGrid.tsx';
+import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle } from 'lucide-react';
 
@@ -81,43 +89,84 @@ const GoogleTagTracker = () => {
   return null;
 };
 
-const App: React.FC = () => {
+const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
+  const { triggerPulse } = useSovereign();
+  const handleInteraction = (e: React.MouseEvent) => {
+    triggerPulse(e.clientX, e.clientY);
+  };
+  return <div onClick={handleInteraction} className="min-h-screen flex flex-col">{children}</div>;
+};
+
+const AppContent: React.FC = () => {
   return (
-    <Router>
+    <GridInteractionLayer>
       <SovereignSync />
       <FaviconPulse />
       <GoogleTagTracker />
+      
+      {/* BASE BACKGROUND COLOR LAYER (z-0) */}
+      <div className="fixed inset-0 bg-[#334155] z-0" />
+      
+      {/* NEURAL X-RAY CANVAS LAYER (z-[1]) */}
+      <MatrixXRay />
+
+      {/* SOVEREIGN GRID INTERACTIVE DATA ART (z-[2]) */}
+      <SovereignGrid />
+
+      {/* CUSTOM CURSOR - ALWAYS TOP (z-99999) */}
       <CustomCursor />
-      <div className="min-h-screen bg-royal-950 text-slate-200 flex flex-col selection:bg-neon-blue/30 selection:text-white">
+
+      {/* MAIN APPLICATION SURFACE (z-10) */}
+      <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
+        <SystemTicker />
         <LiveStatusHUD />
-        <Header />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/consultancy" element={<Consultancy />} />
-            <Route path="/governance" element={<Governance />} />
-            <Route path="/tech" element={<Tech />} />
-            <Route path="/intelligence" element={<IntelligenceHub />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/casestudies" element={<CaseStudies />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/socials" element={<Socials />} />
-            <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
-            <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
-            <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />
-            <Route path="/creative" element={<SovereignRoute><CreativeStudio /></SovereignRoute>} />
-            <Route path="/weblab" element={<SovereignRoute><WebLab /></SovereignRoute>} />
-            <Route path="/video" element={<SovereignRoute><VideoStudio /></SovereignRoute>} />
-            <Route path="/audio" element={<SovereignRoute><AudioStudio /></SovereignRoute>} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        <Footer />
+        
+        <div className="flex-grow flex flex-col pointer-events-auto">
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<AdminLogin />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/consultancy" element={<Consultancy />} />
+              <Route path="/governance" element={<Governance />} />
+              <Route path="/tech" element={<Tech />} />
+              <Route path="/intelligence" element={<IntelligenceHub />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/casestudies" element={<CaseStudies />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/socials" element={<Socials />} />
+              
+              {/* Feature Portal Routes */}
+              <Route path="/architect" element={<ArchitectPage />} />
+              <Route path="/sandbox" element={<SandboxPage />} />
+              <Route path="/aurelia" element={<AureliaPage />} />
+
+              <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
+              <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
+              <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />
+              <Route path="/creative" element={<SovereignRoute><CreativeStudio /></SovereignRoute>} />
+              <Route path="/weblab" element={<SovereignRoute><WebLab /></SovereignRoute>} />
+              <Route path="/video" element={<SovereignRoute><VideoStudio /></SovereignRoute>} />
+              <Route path="/audio" element={<SovereignRoute><AudioStudio /></SovereignRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </div>
+    </GridInteractionLayer>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <SovereignProvider>
+        <AppContent />
+      </SovereignProvider>
     </Router>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -5,7 +6,7 @@ import {
   Database, Terminal, Shield, Workflow, Wrench, 
   ArrowRight, Gauge, Command, Layers,
   Boxes, Code2, Globe, CheckCircle2,
-  AlertCircle, Layout, Plus, Minus
+  AlertCircle, Layout, Plus, Minus, Microscope
 } from 'lucide-react';
 import { TechDemo } from '../components/TechDemo.tsx';
 import { SynkCrmLogo } from '../components/logos/SynkCrmLogo.tsx';
@@ -79,11 +80,10 @@ const Tech: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-4 sm:px-8 lg:px-16 xl:px-24 font-sans font-bold relative">
+    <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-4 sm:px-8 lg:px-16 xl:px-24 font-sans font-bold relative">
       
       {/* --- ATMOSPHERE NODES --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-[#334155]"></div>
         <div 
           className="absolute inset-0 parallax-layer opacity-[0.04]"
           style={{ 
@@ -210,11 +210,5 @@ const Tech: React.FC = () => {
     </div>
   );
 };
-
-const Microscope = ({ size, className }: { size: number, className: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/>
-  </svg>
-);
 
 export default Tech;
