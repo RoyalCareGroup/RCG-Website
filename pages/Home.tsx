@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal, Power
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -35,18 +35,19 @@ const VisitorIdentity = () => {
   const [tempName, setTempName] = useState('');
   const [isGreeting, setIsGreeting] = useState(false);
   const [handshakeStatus, setHandshakeStatus] = useState('STANDBY');
+  const [hasWoken, setHasWoken] = useState(false);
   
-  const { initializeAudio, getAudioContext } = useSovereign();
+  const { initializeAudio, getAudioContext, stopHeartbeat } = useSovereign();
 
   const speakWelcome = async (operatorName: string) => {
     setIsGreeting(true);
-    setHandshakeStatus('NEURAL_FETCH');
+    setHandshakeStatus('NEURAL_SYNC');
     
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite visionary warmth: Welcome back, ${operatorName}. Neural link established. I have mapped your strategic coordinates. Choose a command node to begin.` }] }],
+        contents: [{ parts: [{ text: `Say with elite strategic warmth: Neural link established. Welcome back, ${operatorName}. Choose a command node to begin.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -57,8 +58,10 @@ const VisitorIdentity = () => {
 
       const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
+        // Stop heartbeat just as we start speaking
+        stopHeartbeat();
         const ctx = getAudioContext();
-        setHandshakeStatus('UPLINK_STABLE');
+        setHandshakeStatus('STREAMING');
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
@@ -73,6 +76,7 @@ const VisitorIdentity = () => {
       console.error("Home Speech Error:", err);
       setIsGreeting(false);
       setHandshakeStatus('LINK_FAIL');
+      stopHeartbeat();
     }
   };
 
@@ -80,38 +84,56 @@ const VisitorIdentity = () => {
     e.preventDefault();
     if (isGreeting || !tempName.trim()) return;
 
-    setHandshakeStatus('HARDWARE_BONDING');
-    // 1. Critical synchronous handshake
+    setHandshakeStatus('HARDWARE_BOND');
     await initializeAudio();
     
     const finalName = tempName.trim();
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
     setIsEditing(false);
-
-    // 2. Trigger Neural Logic
+    setHasWoken(true);
     speakWelcome(finalName);
+  };
+
+  const handleWakeSequence = async () => {
+    if (isGreeting || !name) return;
+    setHandshakeStatus('HARDWARE_BOND');
+    await initializeAudio();
+    setHasWoken(true);
+    speakWelcome(name);
   };
 
   return (
     <div className="mb-12 animate-hero-reveal">
       {name && !isEditing ? (
-        <div 
-          className={`flex flex-col items-center gap-4 group ${isGreeting ? 'cursor-wait' : 'cursor-pointer'}`} 
-          onClick={() => !isGreeting && setIsEditing(true)}
-        >
+        <div className="flex flex-col items-center gap-6">
            <div className="flex items-center gap-3">
               <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
               {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black text-neon-green uppercase tracking-widest">
-                <div className="w-1 h-1 rounded-full bg-neon-green animate-pulse"></div>
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/5 text-[7px] font-black uppercase tracking-widest ${handshakeStatus === 'LINK_FAIL' ? 'text-red-500' : 'text-neon-green'}`}>
+                <div className={`w-1 h-1 rounded-full ${handshakeStatus === 'LINK_FAIL' ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
                 {handshakeStatus}
               </div>
            </div>
-           <div className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4">
+           
+           <div 
+             className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4 cursor-pointer hover:opacity-80 transition-opacity"
+             onClick={() => !isGreeting && setIsEditing(true)}
+           >
              Welcome, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
              <Fingerprint size={32} className={`text-neon-purple shrink-0 ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
            </div>
+
+           {!hasWoken && !isGreeting && (
+             <button 
+               onClick={handleWakeSequence}
+               className="mt-4 px-10 py-5 bg-white text-black rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] flex items-center gap-4 hover:bg-neon-blue hover:text-white transition-all shadow-[0_20px_50px_rgba(0,0,0,0.4)] active:scale-95 group"
+             >
+                <Power size={16} className="text-neon-purple group-hover:text-white" />
+                Initialize Wake Sequence
+             </button>
+           )}
+
            {isGreeting && (
              <div className="flex items-center gap-4 mt-4 px-8 py-3 bg-neon-purple/10 rounded-full border border-neon-purple/20 shadow-[0_0_20px_rgba(217,70,239,0.1)]">
                 <div className="flex gap-2">
@@ -123,7 +145,7 @@ const VisitorIdentity = () => {
                 <Volume2 size={14} className="text-neon-purple animate-pulse" />
              </div>
            )}
-           {!isGreeting && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 group-hover:text-white transition-colors">Click name to re-authenticate</div>}
+           {!isGreeting && hasWoken && <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2">Uplink Stable // Click name to edit</div>}
         </div>
       ) : (
         <div className="max-w-md mx-auto bg-black/40 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
@@ -147,7 +169,7 @@ const VisitorIdentity = () => {
             </button>
             <div className="flex justify-center gap-4 text-[7px] font-black text-slate-600 uppercase tracking-widest">
                <div className="flex items-center gap-1"><ShieldCheck size={8}/> Encrypted</div>
-               <div className="flex items-center gap-1"><Activity size={8}/> Audio Bonded</div>
+               <div className="flex items-center gap-1"><Activity size={8}/> Heartbeat Ready</div>
             </div>
           </form>
         </div>
