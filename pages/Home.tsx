@@ -34,10 +34,10 @@ const VisitorIdentity = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempName, setTempName] = useState('');
   const [isGreeting, setIsGreeting] = useState(false);
-  const [handshakeStatus, setHandshakeStatus] = useState('OFFLINE');
+  const [handshakeStatus, setHandshakeStatus] = useState('AWAITING_UPLINK');
   const [hasWoken, setHasWoken] = useState(false);
   
-  const { initializeAudio, getAudioContext, stopHeartbeat } = useSovereign();
+  const { initializeAudio, getAudioContext, stopHeartbeat, audioReady } = useSovereign();
 
   useEffect(() => {
     if (!ip) {
@@ -59,7 +59,7 @@ const VisitorIdentity = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Neural link established. Welcome back, ${operatorName}. As a provider-led group, we know you're drowning in paperwork. Let's initialize your sovereign systems to automate that red tape immediately.` }] }],
+        contents: [{ parts: [{ text: `Neural link established. Welcome back, ${operatorName}. Let's initialize your sovereign systems to automate that red tape immediately.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -73,8 +73,6 @@ const VisitorIdentity = () => {
       const base64Audio = response.candidates?.[0]?.content?.parts[0]?.inlineData?.data;
       if (base64Audio) {
         const ctx = getAudioContext();
-        if (ctx.state === 'suspended') await ctx.resume();
-
         setHandshakeStatus('STREAMING');
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
         const source = ctx.createBufferSource();
@@ -82,7 +80,7 @@ const VisitorIdentity = () => {
         source.connect(ctx.destination);
         source.onended = () => {
           setIsGreeting(false);
-          setHandshakeStatus('COMPLETED');
+          setHandshakeStatus('CONNECTED');
           stopHeartbeat();
         };
         source.start();
@@ -91,7 +89,6 @@ const VisitorIdentity = () => {
       console.error("Neural Greeting Failure:", err);
       setIsGreeting(false);
       setHandshakeStatus('LINK_FAIL');
-      stopHeartbeat();
     }
   };
 
@@ -100,7 +97,7 @@ const VisitorIdentity = () => {
     setHandshakeStatus('HARDWARE_BOND');
     const ready = await initializeAudio();
     if (!ready) {
-      setHandshakeStatus('DEVICE_DENIED');
+      setHandshakeStatus('BROWSER_BLOCKED');
       return;
     }
     setHasWoken(true);
@@ -112,18 +109,18 @@ const VisitorIdentity = () => {
     if (isGreeting || !tempName.trim()) return;
 
     const finalName = tempName.trim();
-    setHandshakeStatus('HARDWARE_BOND');
-    const ready = await initializeAudio();
-    if (!ready) {
-      setHandshakeStatus('DEVICE_DENIED');
-      return;
-    }
-
     setName(finalName);
     localStorage.setItem('rcg_visitor_name', finalName);
     setIsEditing(false);
-    setHasWoken(true);
-    speakWelcome(finalName);
+    
+    // Attempt automatic bond but remain on STANDBY if browser blocks
+    const ready = await initializeAudio();
+    if (ready) {
+      setHasWoken(true);
+      speakWelcome(finalName);
+    } else {
+      setHandshakeStatus('AWAITING_CLICK');
+    }
   };
 
   return (
@@ -136,7 +133,7 @@ const VisitorIdentity = () => {
                 {ip || 'TRACING...'}
               </div>
               <div className={`flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/5 text-[6px] sm:text-[7px] font-black uppercase tracking-widest transition-all ${
-                handshakeStatus.includes('FAIL') ? 'bg-red-500/20 text-red-500' : 'text-neon-green bg-neon-green/5'
+                handshakeStatus.includes('FAIL') || handshakeStatus.includes('BLOCKED') ? 'bg-red-500/20 text-red-500' : 'text-neon-green bg-neon-green/5'
               }`}>
                 <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${handshakeStatus.includes('FAIL') ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
                 {handshakeStatus}
@@ -152,14 +149,15 @@ const VisitorIdentity = () => {
            </div>
 
            {!hasWoken && !isGreeting && (
-             <div className="flex flex-col items-center gap-3 mt-2">
+             <div className="flex flex-col items-center gap-3 mt-4">
                <button 
                  onClick={handleWakeSequence}
-                 className="px-6 py-3 sm:px-10 sm:py-5 bg-white text-black rounded-lg sm:rounded-xl font-black text-[9px] sm:text-[11px] uppercase tracking-[0.3em] flex items-center gap-4 hover:bg-neon-blue hover:text-white transition-all shadow-[0_15px_30px_rgba(0,0,0,0.4)] active:scale-95 group"
+                 className="px-8 py-4 sm:px-12 sm:py-6 bg-white text-black rounded-xl sm:rounded-[1.5rem] font-black text-[10px] sm:text-[12px] uppercase tracking-[0.4em] flex items-center gap-6 hover:bg-neon-blue hover:text-white transition-all shadow-[0_20px_50px_rgba(0,0,0,0.5)] active:scale-95 group border-2 border-transparent hover:border-white/20"
                >
-                  <Power size={14} className="text-neon-purple group-hover:text-white group-hover:rotate-90 transition-transform sm:w-[16px] sm:h-[16px]" />
-                  Connect with Aurelia
+                  <Power size={18} className="text-neon-purple group-hover:text-white group-hover:rotate-90 transition-transform" />
+                  Unlock Structural Audio
                </button>
+               <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest opacity-40 animate-pulse">Click to bypass browser hardware block</span>
              </div>
            )}
 

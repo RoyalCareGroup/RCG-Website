@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 
@@ -60,7 +59,6 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const [lastPulse, setLastPulse] = useState<{ x: number, y: number, id: number } | null>(null);
   const [audioReady, setAudioReady] = useState(false);
   
-  // Aurelia State
   const [aureliaActive, setAureliaActive] = useState(false);
   const [aureliaConnecting, setAureliaConnecting] = useState(false);
   const [aureliaSpeaking, setAureliaSpeaking] = useState(false);
@@ -93,6 +91,36 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     }
   }, []);
 
+  const initializeAudio = useCallback(async (): Promise<boolean> => {
+    try {
+      const ctx = getAudioContext();
+      
+      // CRITICAL: Force resume on interaction
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+      
+      // Hardware Bond (Oscillator keeps context alive)
+      if (!heartbeatRef.current) {
+        const heartbeat = ctx.createOscillator();
+        const silentGain = ctx.createGain();
+        heartbeat.frequency.setValueAtTime(1, ctx.currentTime);
+        silentGain.gain.setValueAtTime(0.00001, ctx.currentTime);
+        heartbeat.connect(silentGain);
+        silentGain.connect(ctx.destination);
+        heartbeat.start();
+        heartbeatRef.current = heartbeat;
+      }
+
+      setAudioReady(true);
+      return true;
+    } catch (err) {
+      console.error("Hardware bond failure:", err);
+      setAudioReady(false);
+      return false;
+    }
+  }, [getAudioContext]);
+
   const stopAurelia = useCallback(() => {
     if (sessionRef.current) {
       sessionRef.current.close();
@@ -112,42 +140,18 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     setIsThinking(false);
   }, []);
 
-  // Force cleanup on refresh/unmount
-  useEffect(() => {
-    return () => stopAurelia();
-  }, [stopAurelia]);
-
-  const initializeAudio = useCallback(async (): Promise<boolean> => {
-    try {
-      const ctx = getAudioContext();
-      if (ctx.state === 'suspended') await ctx.resume();
-      
-      const heartbeat = ctx.createOscillator();
-      const silentGain = ctx.createGain();
-      heartbeat.frequency.setValueAtTime(1, ctx.currentTime);
-      silentGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      heartbeat.connect(silentGain);
-      silentGain.connect(ctx.destination);
-      heartbeat.start();
-      heartbeatRef.current = heartbeat;
-
-      setAudioReady(true);
-      return true;
-    } catch (err) {
-      console.error("Hardware bond failure:", err);
-      setAudioReady(false);
-      return false;
-    }
-  }, [getAudioContext]);
-
   const startAurelia = async () => {
     setAureliaConnecting(true);
     setAureliaStatus('HARDWARE_BOND');
     
-    await initializeAudio();
-    const ctx = getAudioContext();
-    const operatorName = localStorage.getItem('rcg_visitor_name') || 'Provider Operator';
+    const bonded = await initializeAudio();
+    if (!bonded) {
+      setAureliaConnecting(false);
+      setAureliaStatus('HARDWARE_DENIED');
+      return;
+    }
 
+    const ctx = getAudioContext();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -250,10 +254,7 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } }
           },
           systemInstruction: `You are Aurelia, the Visionary Strategic Partner for Royal Care Group. 
-          IDENTITY: Peer strategist to NDIS business owners. 
-          CONTEXT: You are a persistent HUD presence. You travel with the user through their organizational dashboard.
-          EMPATHY: Validate the administrative debt first. You've walked the regional care floors.
-          TONE: Elite, precise, and supportive. Use 'Regulatory Parity' and 'Operational Freedom'.`,
+          Peer strategist to NDIS business owners. Persistent HUD presence.`,
         }
       });
 
