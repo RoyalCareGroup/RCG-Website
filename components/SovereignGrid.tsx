@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { useSovereign } from '../context/SovereignContext.tsx';
 
@@ -24,31 +23,33 @@ export const SovereignGrid: React.FC = () => {
 
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
+    const isMobile = width < 768;
 
-    const nodeCount = Math.floor((width * height) / 25000);
+    // Dynamically calculate node count to keep performance high on mobile
+    const nodeCount = Math.floor((width * height) / (isMobile ? 45000 : 25000));
     nodes.current = Array.from({ length: nodeCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
       pulseSize: 0,
     }));
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       
-      const speedMultiplier = isThinking ? 3 : 1;
-      const opacityMultiplier = isThinking ? 2 : 1;
+      const speedMultiplier = isThinking ? 2.5 : 1;
+      const opacityMultiplier = isThinking ? 1.5 : 1;
 
       // Update and draw pulses
       pulses.current = pulses.current.filter(p => p.alpha > 0.01);
       pulses.current.forEach(p => {
-        p.radius += 5;
-        p.alpha *= 0.96;
+        p.radius += isMobile ? 3 : 5;
+        p.alpha *= 0.95;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(6, 182, 212, ${p.alpha * 0.3})`;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(6, 182, 212, ${p.alpha * 0.25})`;
+        ctx.lineWidth = isMobile ? 1 : 2;
         ctx.stroke();
       });
 
@@ -59,18 +60,19 @@ export const SovereignGrid: React.FC = () => {
         if (node.x < 0 || node.x > width) node.vx *= -1;
         if (node.y < 0 || node.y > height) node.vy *= -1;
 
-        // Connections
+        // Connections - limit distance on mobile to reduce drawing ops
+        const maxDist = isMobile ? 100 : 150;
         for (let j = i + 1; j < nodes.current.length; j++) {
           const other = nodes.current[j];
           const dx = node.x - other.x;
           const dy = node.y - other.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 150) {
+          if (dist < maxDist) {
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(other.x, other.y);
-            const alpha = (1 - dist / 150) * 0.15 * opacityMultiplier;
+            const alpha = (1 - dist / maxDist) * 0.12 * opacityMultiplier;
             ctx.strokeStyle = i % 2 === 0 
               ? `rgba(6, 182, 212, ${alpha})` 
               : `rgba(217, 70, 239, ${alpha})`;
@@ -81,12 +83,12 @@ export const SovereignGrid: React.FC = () => {
 
         // Draw node
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, isMobile ? 1 : 1.5, 0, Math.PI * 2);
         ctx.fillStyle = i % 2 === 0 ? '#06b6d4' : '#d946ef';
         ctx.fill();
         
-        if (isThinking) {
-          ctx.shadowBlur = 10;
+        if (isThinking && !isMobile) { // Disable shadows on mobile thinking to save GPU
+          ctx.shadowBlur = 8;
           ctx.shadowColor = i % 2 === 0 ? '#06b6d4' : '#d946ef';
           ctx.fill();
           ctx.shadowBlur = 0;
@@ -102,7 +104,7 @@ export const SovereignGrid: React.FC = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -120,7 +122,7 @@ export const SovereignGrid: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-[2]"
-      style={{ opacity: isThinking ? 0.8 : 0.5 }}
+      style={{ opacity: isThinking ? 0.7 : 0.4 }}
     />
   );
 };

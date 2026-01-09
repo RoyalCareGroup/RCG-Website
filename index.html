@@ -11,7 +11,7 @@
     </script>
 
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     
     <title>Royal Care Group | Structural Intelligence for NDIS</title>
@@ -68,8 +68,8 @@
                 '100%': { transform: 'translate(-5%, 5%) scale(0.9)' }
               },
               electrify: {
-                '0%, 100%': { filter: 'drop-shadow(0 0 2px rgba(6,182,212,0.1)) brightness(1)' },
-                '4%': { filter: 'drop-shadow(0 0 8px rgba(6,182,212,0.4)) brightness(1.1)', transform: 'translateX(0.5px)' }
+                '0%, 100%': { filter: drop-shadow(0 0 2px rgba(6,182,212,0.1)) brightness(1) },
+                '4%': { filter: drop-shadow(0 0 8px rgba(6,182,212,0.4)) brightness(1.1), transform: 'translateX(0.5px)' }
               },
               'neon-hum': {
                 '0%, 100%': { 'text-shadow': '0 0 6px #06b6d4, 0 0 12px rgba(6,182,212,0.2)' },
@@ -82,8 +82,9 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@200;400;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-      html, body, * { cursor: none !important; }
-      .show-cursor * { cursor: auto !important; }
+      /* Mobile fix: Only hide cursor when the desktop-only custom-cursor-active class is present on non-touch devices. */
+      .custom-cursor-active, .custom-cursor-active * { cursor: none !important; }
+      
       html, body { 
         background-color: #020617; 
         color: #f1f5f9; 
@@ -91,14 +92,15 @@
         width: 100%; overflow-x: hidden;
         font-weight: 700; 
         -webkit-font-smoothing: antialiased;
+        overscroll-behavior-y: none;
       }
       body::before {
         content: " ";
         display: block; position: fixed;
         top: 0; left: 0; bottom: 0; right: 0;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
         z-index: 9999; background-size: 100% 3px, 3px 100%;
-        pointer-events: none; opacity: 0.4;
+        pointer-events: none; opacity: 0.2;
       }
       .heading-specular {
         display: block; font-family: 'Outfit', sans-serif !important;
@@ -111,6 +113,11 @@
       .cyber-grid { background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0); background-size: 32px 32px; }
       ::-webkit-scrollbar { width: 4px; }
       ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+      
+      @media (max-width: 640px) {
+        .heading-structural-test { font-size: 1.25rem; letter-spacing: 0.2em; }
+        .heading-intelligence-test { font-size: 3rem; }
+      }
     </style>
 <script type="importmap">
 {
