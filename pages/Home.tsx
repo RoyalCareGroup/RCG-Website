@@ -17,13 +17,23 @@ function decode(base64: string) {
   return bytes;
 }
 
+/**
+ * PRODUCTION-GRADE PCM DECODER
+ * Handles buffer alignment and memory offsets for strict browsers
+ */
 async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
+  // Use byteOffset and length to ensure Int16Array views are correctly aligned
+  const length = Math.floor(data.byteLength / 2);
+  const dataInt16 = new Int16Array(data.buffer, data.byteOffset, length);
   const frameCount = dataInt16.length / numChannels;
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    for (let i = 0; i < frameCount; i++) {
+      // Normalize Int16 to Float32 [-1, 1]
+      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    }
   }
   return buffer;
 }
@@ -37,7 +47,7 @@ const VisitorIdentity = () => {
   const [handshakeStatus, setHandshakeStatus] = useState('AWAITING_UPLINK');
   const [hasWoken, setHasWoken] = useState(false);
   
-  const { initializeAudio, getAudioContext, stopHeartbeat, audioReady } = useSovereign();
+  const { initializeAudio, getAudioContext, stopHeartbeat } = useSovereign();
 
   useEffect(() => {
     if (!ip) {
@@ -55,7 +65,15 @@ const VisitorIdentity = () => {
     setIsGreeting(true);
     setHandshakeStatus('API_RESONANCE');
     
+    // CRITICAL: Force context resume at the start of the synthesis sequence
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume().catch(e => console.warn("Context resume failed:", e));
+    }
+
     try {
+      if (!process.env.API_KEY) throw new Error("API_KEY_MISSING");
+
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -70,9 +88,8 @@ const VisitorIdentity = () => {
         },
       });
 
-      const base64Audio = response.candidates?.[0]?.content?.parts[0]?.inlineData?.data;
+      const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
       if (base64Audio) {
-        const ctx = getAudioContext();
         setHandshakeStatus('STREAMING');
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
         const source = ctx.createBufferSource();
@@ -83,10 +100,12 @@ const VisitorIdentity = () => {
           setHandshakeStatus('CONNECTED');
           stopHeartbeat();
         };
-        source.start();
+        source.start(0);
+      } else {
+        throw new Error("EMPTY_AUDIO_PAYLOAD");
       }
     } catch (err: any) {
-      console.error("Neural Greeting Failure:", err);
+      console.error("Structural Greeting Error:", err);
       setIsGreeting(false);
       setHandshakeStatus('LINK_FAIL');
     }
@@ -113,7 +132,7 @@ const VisitorIdentity = () => {
     localStorage.setItem('rcg_visitor_name', finalName);
     setIsEditing(false);
     
-    // Attempt automatic bond but remain on STANDBY if browser blocks
+    setHandshakeStatus('HARDWARE_BOND');
     const ready = await initializeAudio();
     if (ready) {
       setHasWoken(true);
@@ -135,7 +154,7 @@ const VisitorIdentity = () => {
               <div className={`flex items-center gap-1 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/5 text-[6px] sm:text-[7px] font-black uppercase tracking-widest transition-all ${
                 handshakeStatus.includes('FAIL') || handshakeStatus.includes('BLOCKED') ? 'bg-red-500/20 text-red-500' : 'text-neon-green bg-neon-green/5'
               }`}>
-                <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${handshakeStatus.includes('FAIL') ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
+                <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${handshakeStatus.includes('FAIL') || handshakeStatus.includes('BLOCKED') ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
                 {handshakeStatus}
               </div>
            </div>
@@ -157,7 +176,7 @@ const VisitorIdentity = () => {
                   <Power size={18} className="text-neon-purple group-hover:text-white group-hover:rotate-90 transition-transform" />
                   Unlock Structural Audio
                </button>
-               <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest opacity-40 animate-pulse">Click to bypass browser hardware block</span>
+               <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest opacity-40 animate-pulse">Click to bypass hardware block</span>
              </div>
            )}
 
