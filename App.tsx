@@ -1,12 +1,10 @@
-
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
  * Version: 10.13.30-STABLE
- * Environment: Cloudflare Pages / SYNK Core
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
@@ -45,7 +43,7 @@ const SandboxPage = lazy(() => import('./pages/SandboxPage.tsx'));
 const AureliaPage = lazy(() => import('./pages/AureliaPage.tsx'));
 
 const NeuralFallback = () => (
-  <div className="fixed inset-0 z-[9999] bg-royal-950 flex flex-col items-center justify-center gap-6 animate-fade-in">
+  <div className="fixed inset-0 z-[9999] bg-royal-950 flex flex-col items-center justify-center gap-6">
     <div className="relative">
       <div className="w-24 h-24 rounded-full border-4 border-dashed border-neon-blue animate-spin-slow"></div>
       <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neon-blue animate-pulse" size={32} />
@@ -56,23 +54,6 @@ const NeuralFallback = () => (
     </div>
   </div>
 );
-
-const FaviconPulse = () => {
-  useEffect(() => {
-    const phases = [
-      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>",
-      "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946efcc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>"
-    ];
-    let step = 0;
-    const interval = setInterval(() => {
-      const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-      if (link) link.href = phases[step % phases.length];
-      step++;
-    }, 800);
-    return () => clearInterval(interval);
-  }, []);
-  return null;
-};
 
 const SovereignSync = () => {
   const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
@@ -123,7 +104,6 @@ const AppContent: React.FC = () => {
   return (
     <GridInteractionLayer>
       <SovereignSync />
-      <FaviconPulse />
       <GoogleTagTracker />
       
       <div className="fixed inset-0 bg-[#334155] z-0" />
@@ -134,8 +114,6 @@ const AppContent: React.FC = () => {
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
         <SystemTicker />
         <LiveStatusHUD />
-        
-        {/* Persistent Global AI Peer HUD */}
         <AetherSentinelHUD />
         
         <div className="flex-grow flex flex-col pointer-events-auto">

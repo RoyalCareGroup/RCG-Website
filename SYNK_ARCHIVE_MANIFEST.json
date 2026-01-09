@@ -1,0 +1,20 @@
+{
+  "marker_id": "GOLD_STABLE_V10.13.30_COMPACT",
+  "timestamp": "2024-06-08T12:00:00Z",
+  "status": "OPERATIONAL_NOMINAL",
+  "architecture": "Neural Sync Protocol (V10-COMPACT)",
+  "design_standard": {
+    "desktop_root_font": "15px",
+    "spacing_density": "High",
+    "display_header_max": "7xl",
+    "vertical_padding_scale": "0.6"
+  },
+  "core_features": [
+    "Aurelia Strategic Presence",
+    "SYNK Product Suite (CRM, Claim, Report, Form)",
+    "TFix Diagnostic Engine",
+    "Structural Intelligence Hub",
+    "Architectural Visualization Lab"
+  ],
+  "recovery_instruction": "To restore this state, upload all project files and ensure process.env.API_KEY is active."
+}

@@ -13,9 +13,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
-    <!-- Base href is CRITICAL for clean URLs (BrowserRouter) to find assets -->
-    <base href="/" />
-    
     <title>Royal Care Group | Structural Intelligence for NDIS</title>
     
     <meta name="title" content="Royal Care Group | Structural Intelligence for NDIS">
@@ -31,6 +28,10 @@
         darkMode: 'class',
         theme: {
           extend: {
+            spacing: {
+              '18': '4.5rem',
+              '22': '5.5rem',
+            },
             colors: {
               royal: { 
                 950: '#020617', 
@@ -84,9 +85,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@200;400;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-      /* Mobile fix: Only hide cursor when the desktop-only custom-cursor-active class is present on non-touch devices. */
       .custom-cursor-active, .custom-cursor-active * { cursor: none !important; }
-      
       html, body { 
         background-color: #020617; 
         color: #f1f5f9; 
@@ -96,6 +95,10 @@
         -webkit-font-smoothing: antialiased;
         overscroll-behavior-y: none;
       }
+      /* Compact Desktop Optimization */
+      @media (min-width: 1024px) {
+        html { font-size: 15px; }
+      }
       body::before {
         content: " ";
         display: block; position: fixed;
@@ -104,22 +107,7 @@
         z-index: 9999; background-size: 100% 3px, 3px 100%;
         pointer-events: none; opacity: 0.2;
       }
-      .heading-specular {
-        display: block; font-family: 'Outfit', sans-serif !important;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        paint-order: stroke fill;
-      }
-      .heading-structural-test { font-weight: 200; text-transform: uppercase; letter-spacing: 0.3em; line-height: 1.1; opacity: 0.8; }
-      .heading-intelligence-test { font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.85; margin-top: -0.05em; }
-      .orbital-tile { background: #000000 !important; border: 0.5px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
       .cyber-grid { background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0); background-size: 32px 32px; }
-      ::-webkit-scrollbar { width: 4px; }
-      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-      
-      @media (max-width: 640px) {
-        .heading-structural-test { font-size: 1.25rem; letter-spacing: 0.2em; }
-        .heading-intelligence-test { font-size: 3rem; }
-      }
     </style>
 <script type="importmap">
 {
@@ -140,6 +128,6 @@
 </head>
 <body class="antialiased selection:bg-neon-blue/20 cyber-grid font-sans font-bold">
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
