@@ -6,7 +6,7 @@
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
@@ -101,13 +101,13 @@ const SovereignRoute = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const GoogleTagTracker = () => {
-  const { pathname, hash } = useLocation();
+  const { pathname, search } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', 'AW-17820482706', { 'page_path': pathname + hash });
+      (window as any).gtag('config', 'AW-17820482706', { 'page_path': pathname + search });
     }
-  }, [pathname, hash]);
+  }, [pathname, search]);
   return null;
 };
 
