@@ -18,20 +18,19 @@ function decode(base64: string) {
 }
 
 /**
- * PRODUCTION-GRADE PCM DECODER
- * Handles buffer alignment and memory offsets for strict browsers
+ * PRODUCTION-GRADE ALIGNED PCM DECODER
  */
 async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
-  // Use byteOffset and length to ensure Int16Array views are correctly aligned
-  const length = Math.floor(data.byteLength / 2);
-  const dataInt16 = new Int16Array(data.buffer, data.byteOffset, length);
+  // CRITICAL: Slice to ensure correct byte boundary for Int16Array
+  const alignedBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+  const length = Math.floor(alignedBuffer.byteLength / 2);
+  const dataInt16 = new Int16Array(alignedBuffer, 0, length);
+  
   const frameCount = dataInt16.length / numChannels;
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
-
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < frameCount; i++) {
-      // Normalize Int16 to Float32 [-1, 1]
       channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
     }
   }
@@ -65,16 +64,16 @@ const VisitorIdentity = () => {
     setIsGreeting(true);
     setHandshakeStatus('API_RESONANCE');
     
-    // CRITICAL: Force context resume at the start of the synthesis sequence
     const ctx = getAudioContext();
     if (ctx.state === 'suspended') {
       await ctx.resume().catch(e => console.warn("Context resume failed:", e));
     }
 
     try {
-      if (!process.env.API_KEY) throw new Error("API_KEY_MISSING");
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) throw new Error("API_KEY_UNAVAILABLE");
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
         contents: [{ parts: [{ text: `Neural link established. Welcome back, ${operatorName}. Let's initialize your sovereign systems to automate that red tape immediately.` }] }],
@@ -88,7 +87,17 @@ const VisitorIdentity = () => {
         },
       });
 
-      const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+      // GUIDELINE: Iterate parts to find the audio part
+      let base64Audio = null;
+      if (response.candidates?.[0]?.content?.parts) {
+        for (const part of response.candidates[0].content.parts) {
+          if (part.inlineData?.data) {
+            base64Audio = part.inlineData.data;
+            break;
+          }
+        }
+      }
+
       if (base64Audio) {
         setHandshakeStatus('STREAMING');
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
@@ -102,7 +111,7 @@ const VisitorIdentity = () => {
         };
         source.start(0);
       } else {
-        throw new Error("EMPTY_AUDIO_PAYLOAD");
+        throw new Error("NO_AUDIO_PART_FOUND");
       }
     } catch (err: any) {
       console.error("Structural Greeting Error:", err);

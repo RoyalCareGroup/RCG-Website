@@ -43,13 +43,22 @@ function decode(base64: string) {
   return bytes;
 }
 
+/**
+ * PRODUCTION-READY ALIGNED PCM DECODER
+ */
 async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
+  // CRITICAL: Slice the buffer to ensure a fresh, properly aligned memory segment for Int16Array
+  const alignedBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+  const length = Math.floor(alignedBuffer.byteLength / 2);
+  const dataInt16 = new Int16Array(alignedBuffer, 0, length);
+  
   const frameCount = dataInt16.length / numChannels;
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    for (let i = 0; i < frameCount; i++) {
+      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    }
   }
   return buffer;
 }
@@ -95,12 +104,10 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     try {
       const ctx = getAudioContext();
       
-      // CRITICAL: Force resume on interaction
       if (ctx.state === 'suspended') {
         await ctx.resume();
       }
       
-      // Hardware Bond (Oscillator keeps context alive)
       if (!heartbeatRef.current) {
         const heartbeat = ctx.createOscillator();
         const silentGain = ctx.createGain();
@@ -215,21 +222,25 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
               });
             }
 
-            const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-            if (base64Audio) {
-              setAureliaSpeaking(true);
-              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
-              const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
-              const source = ctx.createBufferSource();
-              source.buffer = audioBuffer;
-              source.connect(ctx.destination);
-              source.start(nextStartTimeRef.current);
-              nextStartTimeRef.current += audioBuffer.duration;
-              sourcesRef.current.add(source);
-              source.onended = () => {
-                sourcesRef.current.delete(source);
-                if (sourcesRef.current.size === 0) setAureliaSpeaking(false);
-              };
+            const parts = message.serverContent?.modelTurn?.parts;
+            if (parts) {
+              for (const part of parts) {
+                if (part.inlineData?.data) {
+                  setAureliaSpeaking(true);
+                  nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
+                  const audioBuffer = await decodeAudioData(decode(part.inlineData.data), ctx, 24000, 1);
+                  const source = ctx.createBufferSource();
+                  source.buffer = audioBuffer;
+                  source.connect(ctx.destination);
+                  source.start(nextStartTimeRef.current);
+                  nextStartTimeRef.current += audioBuffer.duration;
+                  sourcesRef.current.add(source);
+                  source.onended = () => {
+                    sourcesRef.current.delete(source);
+                    if (sourcesRef.current.size === 0) setAureliaSpeaking(false);
+                  };
+                }
+              }
             }
 
             if (message.serverContent?.interrupted) {
