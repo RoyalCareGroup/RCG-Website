@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Calendar,
   Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal, Power, AlertCircle
+  Fingerprint, Loader2, Globe, Volume2, ShieldCheck, Activity, Terminal, Power, AlertCircle,
+  FileWarning, ShieldAlert, HeartHandshake, ClipboardCheck, History
 } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
@@ -39,26 +40,40 @@ const VisitorIdentity = () => {
   
   const { initializeAudio, getAudioContext, stopHeartbeat } = useSovereign();
 
+  useEffect(() => {
+    if (!ip) {
+      fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => {
+          setIp(data.ip);
+          localStorage.setItem('rcg_visitor_ip', data.ip);
+        })
+        .catch(() => setIp('UNTRACEABLE_NODE'));
+    }
+  }, [ip]);
+
   const speakWelcome = async (operatorName: string) => {
     setIsGreeting(true);
-    setHandshakeStatus('API_RESONANCE'); // Specifically naming the API fetch stage
+    setHandshakeStatus('API_RESONANCE');
     
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // Corrected TTS model and nested speech config
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `Say with elite strategic warmth: Neural link established. Welcome back, ${operatorName}. Command nodes are now active.` }] }],
+        contents: [{ parts: [{ text: `Neural link established. Welcome back, ${operatorName}. As a provider-led group, we know you're drowning in paperwork. Let's initialize your sovereign systems to automate that red tape immediately.` }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } },
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Kore' }
+            },
           },
         },
       });
 
-      const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+      const base64Audio = response.candidates?.[0]?.content?.parts[0]?.inlineData?.data;
       if (base64Audio) {
-        // Final Handshake check
         const ctx = getAudioContext();
         if (ctx.state === 'suspended') await ctx.resume();
 
@@ -73,18 +88,11 @@ const VisitorIdentity = () => {
           stopHeartbeat();
         };
         source.start();
-      } else {
-        throw new Error("EMPTY_API_BUFFER");
       }
     } catch (err: any) {
-      console.error("Neural Greeting Critical Failure:", err);
+      console.error("Neural Greeting Failure:", err);
       setIsGreeting(false);
-      
-      // Determine error type for HUD
-      if (err?.message?.includes("API_KEY")) setHandshakeStatus('KEY_REJECTED');
-      else if (err?.message?.includes("fetch")) setHandshakeStatus('NET_FAILURE');
-      else setHandshakeStatus('LINK_FAIL');
-      
+      setHandshakeStatus('LINK_FAIL');
       stopHeartbeat();
     }
   };
@@ -92,16 +100,12 @@ const VisitorIdentity = () => {
   const handleWakeSequence = async () => {
     if (isGreeting || !name) return;
     setHandshakeStatus('HARDWARE_BOND');
-    
-    // Step 1: Prove Audio Hardware works with a synchronous beep
     const ready = await initializeAudio();
     if (!ready) {
       setHandshakeStatus('DEVICE_DENIED');
       return;
     }
-
     setHasWoken(true);
-    // Step 2: Begin neural fetch (heartbeat keeps hardware awake)
     speakWelcome(name);
   };
 
@@ -129,18 +133,14 @@ const VisitorIdentity = () => {
       {name && !isEditing ? (
         <div className="flex flex-col items-center gap-6">
            <div className="flex items-center gap-3">
-              <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Mainframe_Greeting_Node</div>
-              {ip && <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase">ID: {ip}</div>}
+              <div className="text-[10px] font-black text-neon-blue uppercase tracking-[0.6em] opacity-40">Provider_Identity</div>
+              <div className="text-[8px] font-mono text-slate-500 bg-royal-950 px-2 py-0.5 rounded border border-white/5 uppercase tracking-widest animate-pulse">
+                {ip || 'TRACING_NODE...'}
+              </div>
               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 text-[7px] font-black uppercase tracking-widest transition-all ${
-                handshakeStatus.includes('FAIL') || handshakeStatus.includes('DENIED') || handshakeStatus.includes('REJECTED')
-                  ? 'bg-red-500/20 text-red-500 border-red-500/30' 
-                  : 'text-neon-green bg-neon-green/5 border-neon-green/20'
+                handshakeStatus.includes('FAIL') ? 'bg-red-500/20 text-red-500' : 'text-neon-green bg-neon-green/5'
               }`}>
-                <div className={`w-1.5 h-1.5 rounded-full ${
-                  handshakeStatus.includes('FAIL') || handshakeStatus.includes('DENIED') || handshakeStatus.includes('REJECTED')
-                    ? 'bg-red-500' 
-                    : 'bg-neon-green animate-pulse'
-                }`}></div>
+                <div className={`w-1.5 h-1.5 rounded-full ${handshakeStatus.includes('FAIL') ? 'bg-red-500' : 'bg-neon-green animate-pulse'}`}></div>
                 {handshakeStatus}
               </div>
            </div>
@@ -149,7 +149,7 @@ const VisitorIdentity = () => {
              className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter flex items-center gap-5 text-center px-4 cursor-pointer hover:opacity-80 transition-opacity"
              onClick={() => !isGreeting && setIsEditing(true)}
            >
-             Welcome, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
+             Welcome back, <span className="text-neon-blue underline decoration-white/10 underline-offset-[12px]">{name}.</span>
              <Fingerprint size={32} className={`text-neon-purple shrink-0 ${isGreeting ? 'animate-ping' : 'animate-pulse'}`} />
            </div>
 
@@ -160,9 +160,9 @@ const VisitorIdentity = () => {
                  className="px-12 py-6 bg-white text-black rounded-2xl font-black text-[12px] uppercase tracking-[0.4em] flex items-center gap-5 hover:bg-neon-blue hover:text-white transition-all shadow-[0_30px_60px_rgba(0,0,0,0.6)] active:scale-95 group"
                >
                   <Power size={18} className="text-neon-purple group-hover:text-white group-hover:rotate-90 transition-transform" />
-                  Initialize Aurelia Presence
+                  Connect with Aurelia
                </button>
-               <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest opacity-40">System requires user gesture to bond audio hardware</span>
+               <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest opacity-40 italic">One handshake to bridge the tech gap.</span>
              </div>
            )}
 
@@ -174,17 +174,9 @@ const VisitorIdentity = () => {
                      <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                      <div className="w-1.5 h-1.5 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                   </div>
-                  <div className="text-[10px] font-black text-neon-purple uppercase tracking-[0.6em]">Streaming Neural Logic</div>
+                  <div className="text-[10px] font-black text-neon-purple uppercase tracking-[0.6em]">Transmitting Provider Strategy</div>
                   <Volume2 size={16} className="text-neon-purple animate-pulse" />
                </div>
-               <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest italic">Encrypted Connection Established</span>
-             </div>
-           )}
-
-           {handshakeStatus === 'LINK_FAIL' && (
-             <div className="mt-4 flex items-center gap-3 text-red-500 bg-red-500/5 px-6 py-3 rounded-xl border border-red-500/20">
-                <AlertCircle size={14} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Logic Bridge Timed Out. Try a Hard Refresh.</span>
              </div>
            )}
         </div>
@@ -197,7 +189,7 @@ const VisitorIdentity = () => {
               disabled={isGreeting}
               value={tempName}
               onChange={(e) => setTempName(e.target.value)}
-              placeholder="INPUT_OPERATOR_NAME..."
+              placeholder="INPUT_PROVIDER_NAME..."
               className="w-full bg-royal-950 border-2 border-white/10 p-7 rounded-[2rem] text-center text-white font-mono text-base uppercase tracking-widest outline-none focus:border-neon-blue transition-all shadow-inner"
             />
             <button 
@@ -206,12 +198,8 @@ const VisitorIdentity = () => {
               className="w-full py-6 bg-white text-black font-black text-[11px] uppercase tracking-[0.5em] rounded-2xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-4 disabled:opacity-20 shadow-3xl"
             >
               {isGreeting ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="text-neon-purple" />}
-              {isGreeting ? 'Syncing Node...' : 'Establish Neural Link'}
+              {isGreeting ? 'Syncing...' : 'Join the Sovereign Grid'}
             </button>
-            <div className="flex justify-center gap-6 text-[8px] font-black text-slate-700 uppercase tracking-[0.3em]">
-               <div className="flex items-center gap-2"><ShieldCheck size={10} className="text-neon-blue"/> Sovereignty Active</div>
-               <div className="flex items-center gap-2"><Activity size={10} className="text-neon-purple"/> Heartbeat Ready</div>
-            </div>
           </form>
         </div>
       )}
@@ -222,32 +210,38 @@ const VisitorIdentity = () => {
 const Home = () => {
   const featurePortal = [
     {
-      title: "Plan Your Future",
-      subtitle: "Future-State Architect",
+      title: "Design Your Future",
+      subtitle: "Facility Architect",
       icon: <Layout size={32} className="text-neon-blue" />,
-      desc: "Describe your business goals and our AI will build a visual blueprint of your perfect facility.",
+      desc: "Visualize your scaling goals. We transform your capacity constraints into high-fidelity blueprints.",
       path: "/architect",
       btnText: "Build Your Vision",
       accent: "border-neon-blue/20"
     },
     {
-      title: "Audit Your Files",
+      title: "Kill the Red Tape",
       subtitle: "TFix Logic Sandbox",
       icon: <FileSearch size={32} className="text-neon-purple" />,
-      desc: "Upload a redacted document and witness a live AI scan for compliance errors and lost revenue.",
+      desc: "Upload a document and witness live AI scanning for compliance errors and revenue leakage.",
       path: "/sandbox",
-      btnText: "Initialize Scan",
+      btnText: "Start Audit Scan",
       accent: "border-neon-purple/20"
     },
     {
-      title: "Talk to Aurelia",
-      subtitle: "Royal Neural Architect",
+      title: "Talk Strategy",
+      subtitle: "The Aurelia Interface",
       icon: <Radio size={32} className="text-neon-green" />,
-      desc: "Speak directly with our Sovereign AI strategist to solve complex NDIS operational problems.",
+      desc: "Speak with our AI peer who understands the burden of NDIS compliance. Real talk, real solutions.",
       path: "/aurelia",
       btnText: "Start Conversation",
       accent: "border-neon-green/20"
     }
+  ];
+
+  const painNodes = [
+    { icon: <FileWarning className="text-neon-red" />, title: "Administrative Exhaustion", desc: "Constant policy shifts creating a paperwork death-spiral for front-line managers." },
+    { icon: <ShieldAlert className="text-neon-purple" />, title: "The Audit Shadow", desc: "The persistent fear of documentation gaps triggering a NDIS Commission clawback." },
+    { icon: <ClipboardCheck className="text-neon-blue" />, title: "Legacy Debt", desc: "Manual systems breaking under the weight of growth. It's time to build a sovereign OS." }
   ];
 
   return (
@@ -259,10 +253,44 @@ const Home = () => {
              <div className="inline-flex items-center gap-6 px-10 py-4 bg-black/40 backdrop-blur-md rounded-2xl border border-white/5 shadow-3xl">
                 <div className="flex items-center gap-3">
                    <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_10px_#10b981]"></div>
-                   <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Grid_Active</span>
+                   <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Grid_DNA_Verified</span>
                 </div>
                 <div className="w-[1px] h-4 bg-white/10"></div>
-                <span className="text-[10px] text-white font-black uppercase tracking-[0.4em]">Choose a command node to begin</span>
+                <span className="text-[10px] text-white font-black uppercase tracking-[0.4em]">Engineered by former providers, for current heroes</span>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Empathy Hero Node */}
+      <section className="py-24 relative z-10 border-t border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
+             <div className="space-y-10 animate-hero-reveal">
+                <div className="p-4 bg-royal-950 border border-white/10 rounded-2xl w-fit shadow-2xl">
+                   <HeartHandshake size={32} className="text-neon-purple" />
+                </div>
+                <h2 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-[0.85]">
+                   We carried the <br/><span className="text-neon-blue italic">weight too.</span>
+                </h2>
+                <div className="space-y-6 text-xl text-slate-400 font-bold italic leading-relaxed border-l-4 border-neon-purple pl-10">
+                   <p>"Royal Care Group didn't start in a tech lab. We started in regional SIL houses, delivery meetings, and commission audits."</p>
+                   <p className="text-white">We built the tech we needed to survive. Now we give it to you to help you thrive.</p>
+                </div>
+             </div>
+             
+             <div className="grid grid-cols-1 gap-6">
+                {painNodes.map((node, i) => (
+                  <div key={i} className="orbital-tile p-8 bg-black/40 border border-white/5 rounded-3xl group hover:border-white transition-all shadow-2xl flex items-center gap-8">
+                     <div className="p-5 bg-royal-950 rounded-2xl border border-white/10 group-hover:scale-110 transition-transform">
+                        {node.icon}
+                     </div>
+                     <div>
+                        <h4 className="text-white font-black uppercase text-xs tracking-widest mb-2">{node.title}</h4>
+                        <p className="text-slate-500 text-[14px] font-bold italic group-hover:text-slate-300 transition-colors">"{node.desc}"</p>
+                     </div>
+                  </div>
+                ))}
              </div>
           </div>
         </div>
@@ -305,16 +333,16 @@ const Home = () => {
         <div className="max-w-5xl mx-auto text-center space-y-12">
           <div className="space-y-6 flex flex-col items-center">
              <div className="circuit-capsule border-[0.5px] border-neon-purple/50 text-[9px] px-8 py-3 inline-flex bg-black shadow-2xl items-center gap-4">
-                <Sparkles size={14} className="text-neon-purple animate-pulse" /> National Service Nodes
+                <Sparkles size={14} className="text-neon-purple animate-pulse" /> Unified NDIS Infrastructure
              </div>
              <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.9] max-w-4xl">
-                We build the tools <br/><span className="text-neon-purple italic">no one else can.</span>
+                Automate your administrative debt <br/><span className="text-neon-purple italic">and return to delivery.</span>
              </h2>
              <Link 
                to="/services" 
                className="slim-orbital-btn px-16 py-7 bg-white text-black font-black text-[12px] tracking-[0.6em] uppercase hover:scale-105 active:scale-95 shadow-3xl transition-all mt-8"
              >
-                Explore All Services
+                Explore Deployment Nodes
              </Link>
           </div>
         </div>
@@ -329,7 +357,7 @@ const Home = () => {
               <div className="relative z-10 space-y-12 max-w-4xl w-full">
                  <div className="flex flex-col items-center gap-6">
                     <div className="p-4 bg-neon-blue/10 border border-neon-blue/20 rounded-xl w-fit">
-                       <Calendar size={24} className="text-neon-blue" />
+                       <History size={24} className="text-neon-blue" />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.8em] text-neon-blue/80">The 2026 Convergence</span>
                     <h2 className="text-5xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-[0.85]">
@@ -342,7 +370,7 @@ const Home = () => {
                     </div>
                  </div>
                  <Link to="/tech" className="text-slate-400 hover:text-white transition-all text-[11px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4">
-                   View Tech Suite <ArrowRight size={14} />
+                   View Operational Tech Suite <ArrowRight size={14} />
                  </Link>
               </div>
            </div>

@@ -1,4 +1,9 @@
-
+/**
+ * RCG MAINFRAME - SYNK_CORE_STABLE
+ * Version: 10.13.30-STABLE
+ * Environment: Cloudflare Pages / SYNK Core
+ * Status: OPERATIONAL_NOMINAL
+ */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
@@ -12,7 +17,7 @@ import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx'
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
-// --- LAZY LOADED NODES (Code Splitting) ---
+// --- LAZY LOADED NODES ---
 const Home = lazy(() => import('./pages/Home.tsx'));
 const Tech = lazy(() => import('./pages/Tech.tsx'));
 const IntelligenceHub = lazy(() => import('./pages/IntelligenceHub.tsx'));

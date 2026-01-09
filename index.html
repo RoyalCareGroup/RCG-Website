@@ -20,8 +20,8 @@
     <meta name="description" content="National NDIS Business Intelligence & Tech Division. We architect high-performance provider systems through proprietary structural intelligence.">
     <link rel="canonical" href="https://www.royalcaregroup.com.au/" />
 
-    <!-- Favicon Restoration Node -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>?v=10.12.65">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d946ef' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14'/></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -48,7 +48,7 @@
               'float': 'float 6s ease-in-out infinite',
               'hero-reveal': 'hero-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               'blob-drift': 'blob-drift 20s ease-in-out infinite alternate',
-              'spin-slow': 'spin-12s linear infinite',
+              'spin-slow': 'spin 12s linear infinite',
               'electrify': 'electrify 4s ease-in-out infinite',
               'neon-hum': 'neon-hum 2s ease-in-out infinite',
             },
@@ -82,124 +82,33 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Outfit:wght@200;400;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-      /* FORCE SYSTEM CURSOR REMOVAL */
-      html, body, * { 
-        cursor: none !important; 
-      }
-      
-      /* Re-enable cursor only for essential fallback if required by adding .show-cursor to body */
+      html, body, * { cursor: none !important; }
       .show-cursor * { cursor: auto !important; }
-
       html, body { 
         background-color: #020617; 
         color: #f1f5f9; 
-        margin: 0; 
-        padding: 0;
-        width: 100%;
-        overflow-x: hidden;
+        margin: 0; padding: 0;
+        width: 100%; overflow-x: hidden;
         font-weight: 700; 
         -webkit-font-smoothing: antialiased;
       }
-
+      body::before {
+        content: " ";
+        display: block; position: fixed;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+        z-index: 9999; background-size: 100% 3px, 3px 100%;
+        pointer-events: none; opacity: 0.4;
+      }
       .heading-specular {
-        display: block;
-        font-family: 'Outfit', sans-serif !important;
+        display: block; font-family: 'Outfit', sans-serif !important;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: font-weight, color, text-shadow, -webkit-text-stroke, background;
         paint-order: stroke fill;
       }
-
-      .heading-structural-test {
-        font-weight: 200;
-        text-transform: uppercase;
-        letter-spacing: 0.3em;
-        line-height: 1.1;
-        opacity: 0.8;
-      }
-
-      .heading-intelligence-test {
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: -0.04em;
-        line-height: 0.85;
-        margin-top: -0.05em;
-      }
-
-      .brand-heading-group:not(:hover) .heading-structural-test {
-        font-weight: 200;
-        letter-spacing: 0.3em;
-        background: linear-gradient(110deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.7) 100%);
-        background-size: 200% 100%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: specular-sweep 4s linear infinite;
-        -webkit-text-stroke: 0px transparent !important;
-        text-shadow: none !important;
-      }
-      
-      .brand-heading-group:not(:hover) .heading-intelligence-test {
-        font-weight: 900;
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-        background: none !important; 
-        -webkit-background-clip: initial !important; 
-        -webkit-text-stroke: 1.2px #06b6d4 !important; 
-        paint-order: stroke fill !important;
-        animation: neon-hum 2s ease-in-out infinite !important;
-        opacity: 1 !important;
-      }
-
-      .brand-heading-group:hover .heading-structural-test {
-        font-weight: 900;
-        letter-spacing: -0.01em;
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-        background: none !important;
-        -webkit-background-clip: initial !important;
-        -webkit-text-stroke: 1.2px #06b6d4 !important;
-        animation: neon-hum 2s ease-in-out infinite !important;
-        opacity: 1 !important;
-      }
-
-      .brand-heading-group:hover .heading-intelligence-test {
-        font-weight: 200;
-        letter-spacing: 0.25em;
-        background: linear-gradient(110deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.7) 100%) !important;
-        background-size: 200% 100% !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        animation: specular-sweep 4s linear infinite !important;
-        -webkit-text-stroke: 0px transparent !important;
-        text-shadow: none !important;
-        opacity: 0.7;
-      }
-
-      .circuit-capsule {
-        background: #000;
-        border: 0.5px solid rgba(255, 255, 255, 0.4);
-        border-radius: 0.5rem;
-        transition: all 0.4s;
-      }
-
-      .orbital-tile {
-        background: #000000 !important; 
-        border: 0.5px solid rgba(255, 255, 255, 0.1); 
-        border-radius: 1.25rem; 
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .slim-orbital-btn {
-        background: #000000; 
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 0.75rem; 
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-      }
-
-      .cyber-grid {
-        background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0);
-        background-size: 32px 32px;
-      }
-
+      .heading-structural-test { font-weight: 200; text-transform: uppercase; letter-spacing: 0.3em; line-height: 1.1; opacity: 0.8; }
+      .heading-intelligence-test { font-weight: 900; text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.85; margin-top: -0.05em; }
+      .orbital-tile { background: #000000 !important; border: 0.5px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+      .cyber-grid { background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0); background-size: 32px 32px; }
       ::-webkit-scrollbar { width: 4px; }
       ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>

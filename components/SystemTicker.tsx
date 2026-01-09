@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Shield, Cpu, Activity, Globe } from 'lucide-react';
+import { Zap, Shield, Cpu, Activity, Globe, RefreshCcw } from 'lucide-react';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const TickerItem: React.FC<{ icon: any; text: string; color: string }> = ({ icon: Icon, text, color }) => (
@@ -13,12 +13,12 @@ const TickerItem: React.FC<{ icon: any; text: string; color: string }> = ({ icon
 
 export const SystemTicker: React.FC = () => {
   const items = [
-    { icon: Globe, text: "National Grid Sync: ACTIVE", color: "text-neon-blue" },
-    { icon: Shield, text: `Compliance Parity: v${COMPANY_DETAILS.appVersion.split('-')[0]} Grounded`, color: "text-neon-purple" },
-    { icon: Activity, text: "Network Latency: 14.2ms Optimized", color: "text-neon-green" },
-    { icon: Cpu, text: "SYNK_CORE Cluster: Status Nominal", color: "text-neon-blue" },
-    { icon: Zap, text: "TFix Diagnostic: Scanning Real-time", color: "text-amber-500" },
-    { icon: Globe, text: "Uplink Node: AU-EAST DEPLOYMENT_VERIFIED", color: "text-neon-blue" },
+    { icon: Zap, text: "GRID STATUS: OPERATIONAL_NOMINAL", color: "text-neon-green shadow-[0_0_8px_#10b981]" },
+    { icon: Shield, text: `SOVEREIGNTY: v${COMPANY_DETAILS.appVersion} STABLE`, color: "text-neon-purple" },
+    { icon: Cpu, text: "SYNK_CORE: SYNCING_AU_EAST_1", color: "text-neon-blue" },
+    { icon: Activity, text: "UPLINK: SECURE_TUNNEL_ACTIVE", color: "text-neon-blue" },
+    { icon: Globe, text: "NATIONAL DEPLOYMENTS: ONLINE", color: "text-neon-blue" },
+    { icon: RefreshCcw, text: "RE-VALIDATING_GROUNDING_NODES", color: "text-amber-500 animate-spin-slow" },
   ];
 
   return (

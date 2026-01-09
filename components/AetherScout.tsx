@@ -80,22 +80,21 @@ export const AetherScout: React.FC = () => {
     setStatus('HARDWARE_BOND');
     startTimeRef.current = Date.now();
     
-    // 1. Handshake Hardware
     await initializeAudio();
     const ctx = getAudioContext();
-    const operatorName = localStorage.getItem('rcg_visitor_name') || 'Operator';
+    const operatorName = localStorage.getItem('rcg_visitor_name') || 'Provider Operator';
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
             setIsActive(true);
             setIsConnecting(false);
-            setStatus('UPLINK_STABLE');
+            setStatus('PROVIDER_LINK_STABLE');
             setLatency(`${Date.now() - startTimeRef.current}ms`);
             
             const source = ctx.createMediaStreamSource(stream);
@@ -150,10 +149,9 @@ export const AetherScout: React.FC = () => {
             if (message.serverContent?.turnComplete) {
               currentInputRef.current = '';
               currentOutputRef.current = '';
-              setIsSpeaking(false);
             }
 
-            const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
+            const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio) {
               setIsSpeaking(true);
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
@@ -181,7 +179,7 @@ export const AetherScout: React.FC = () => {
           onerror: (e) => {
             console.error(e);
             stopSession();
-            setStatus('CRITICAL_FAIL');
+            setStatus('LINK_TIMEOUT');
           }
         },
         config: {
@@ -189,11 +187,13 @@ export const AetherScout: React.FC = () => {
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           speechConfig: {
-            voiceConfig: { voiceName: 'Zephyr' }
+            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } }
           },
-          systemInstruction: `You are Aurelia, the Visionary Strategic Partner for Royal Care Group (RCG).
-          CURRENT OPERATOR IDENTITY: ${operatorName}
-          TONE: Warm, visionary, elite.`,
+          systemInstruction: `You are Aurelia, the Visionary Strategic Partner for Royal Care Group. 
+          IDENTITY: You are not just an AI; you are a peer to NDIS business owners. 
+          EXPERIENCE: Frame your advice with the empathy of someone who has managed SIL houses, battled audit notices, and handled the paperwork death-spiral.
+          DIRECTIVE: When ${operatorName} shares a struggle, validate it first (e.g., "I know exactly how heavy that administrative debt feels; we've carried it too"). Then, bridge into how structural RCG tech can automate that specific pain.
+          TONE: Supportive, elite, precise, and visionary. Use industry terms like 'Administrative Debt', 'Regulatory Parity', and 'Operational Freedom'.`,
         }
       });
 
@@ -201,7 +201,7 @@ export const AetherScout: React.FC = () => {
     } catch (err) {
       console.error(err);
       setIsConnecting(false);
-      setStatus('ACCESS_DENIED');
+      setStatus('UPLINK_FAILED');
     }
   };
 
@@ -209,16 +209,16 @@ export const AetherScout: React.FC = () => {
     e.preventDefault();
     if (!visitorEmail) return;
 
-    const opName = localStorage.getItem('rcg_visitor_name') || 'Authorized Operator';
-    const body = `ROYAL CARE GROUP - NEURAL BLUEPRINT TRANSMISSION\n` +
+    const opName = localStorage.getItem('rcg_visitor_name') || 'Operator';
+    const body = `ROYAL CARE GROUP - NEURAL STRATEGY BRIEF\n` +
       `-----------------------------------------------\n` +
-      `OPERATOR: ${opName}\n` +
-      `EMAIL: ${visitorEmail}\n` +
-      `TRANSCRIPT PAYLOAD:\n` +
+      `PROVIDER OPERATOR: ${opName}\n` +
+      `UPLINK EMAIL: ${visitorEmail}\n` +
+      `TRANSCRIPT SUMMARY:\n` +
       transcript.map(line => `[${line.role.toUpperCase()}]: ${line.text}`).join('\n\n') +
-      `\nSENT VIA AURELIA STRATEGIC INTERFACE`;
+      `\n\nMESSAGE: Let's turn this red tape into structural binary success.`;
 
-    const subject = `Hello@royalcaregroup.com.au, you have a new enquiry`;
+    const subject = `Urgent: Strategic NDIS Inquiry from ${opName}`;
     const mailto = `mailto:${COMPANY_DETAILS.email}?cc=${visitorEmail}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
     setShowTransmit(false);
@@ -231,10 +231,10 @@ export const AetherScout: React.FC = () => {
           <div className="lg:col-span-5 flex flex-col items-center text-center space-y-12">
             <div className="space-y-6">
                <div className="circuit-capsule px-6 py-2 border-neon-purple/40 bg-black text-neon-purple text-[9px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-3">
-                 <Radio size={14} className={isActive ? 'animate-pulse' : ''} /> Strategic Partner Node
+                 <Radio size={14} className={isActive ? 'animate-pulse' : ''} /> Peer-Provider Strategic Node
                </div>
                <h2 className="text-4xl md:text-5xl font-display font-black text-white uppercase tracking-tighter leading-none">
-                 Aurelia <br/><span className="text-neon-purple">Consultant.</span>
+                 Aurelia <br/><span className="text-neon-purple">Strategic.</span>
                </h2>
             </div>
             <AetherOrb isActive={isActive} isConnecting={isConnecting} isSpeaking={isSpeaking} isListening={isListening} />
@@ -249,16 +249,16 @@ export const AetherScout: React.FC = () => {
                  }`}
                >
                  {isConnecting ? <Loader2 className="animate-spin" size={18} /> : isActive ? <MicOff size={18} /> : <Mic size={18} />}
-                 {isConnecting ? 'Linking Node...' : isActive ? 'Terminate Link' : 'Initialize Uplink'}
+                 {isConnecting ? 'Opening Link...' : isActive ? 'Terminate Uplink' : 'Connect to Architect'}
                </button>
                <div className="flex items-center justify-between px-6 py-4 bg-royal-950/50 rounded-xl border border-white/5">
                   <div className="flex flex-col items-start gap-1">
-                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Link State</span>
+                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Provider Sync</span>
                      <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-green' : 'text-slate-700'}`}>{status}</span>
                   </div>
                   <div className="h-8 w-[1px] bg-white/10" />
                   <div className="flex flex-col items-end gap-1">
-                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Neural Latency</span>
+                     <span className="text-[8px] text-slate-500 uppercase tracking-widest font-black">Neural Gap</span>
                      <span className={`text-[10px] font-mono font-black ${isActive ? 'text-neon-blue' : 'text-neon-blue/40'}`}>{latency}</span>
                   </div>
                </div>
@@ -269,16 +269,16 @@ export const AetherScout: React.FC = () => {
                 {showTransmit ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-10 animate-fade-in">
                      <Mail className="text-neon-blue" size={48} />
-                     <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Transmit Blueprint</h3>
+                     <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Transmit Strategy Node</h3>
                      <form onSubmit={handleTransmit} className="w-full">
                         <input 
-                          autoFocus required type="email" placeholder="YOUR_EMAIL_ADDRESS..."
+                          autoFocus required type="email" placeholder="INPUT_WORK_EMAIL..."
                           className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-4 px-6 text-white text-center font-mono text-xs tracking-widest outline-none focus:border-neon-blue transition-all"
                           value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)}
                         />
                         <div className="flex gap-4 mt-6">
                            <button type="button" onClick={() => setShowTransmit(false)} className="flex-1 py-4 bg-royal-950 text-slate-500 font-black text-[10px] uppercase tracking-widest rounded-xl hover:text-white transition-all">Cancel</button>
-                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white transition-all">Execute Send</button>
+                           <button type="submit" className="flex-1 py-4 bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-neon-blue hover:text-white transition-all">Request Formal Sync</button>
                         </div>
                      </form>
                   </div>
@@ -286,13 +286,13 @@ export const AetherScout: React.FC = () => {
                   <>
                     <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-6">
                        <Terminal size={16} className="text-slate-700" />
-                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Vision_Strategy_Node</span>
+                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Live_Provider_Dialogue</span>
                     </div>
                     <div ref={scrollRef} className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pr-4">
                       {transcript.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center opacity-10 space-y-6 grayscale">
                            <Zap size={48} />
-                           <p className="text-[11px] font-black uppercase tracking-[1em]">Listening_For_Your_Vision</p>
+                           <p className="text-[11px] font-black uppercase tracking-[1em]">Speak_To_A_Peer</p>
                         </div>
                       ) : (
                         transcript.map((line, i) => (
@@ -311,10 +311,18 @@ export const AetherScout: React.FC = () => {
                       {isSpeaking && (
                         <div className="flex gap-3 animate-pulse text-neon-purple items-center">
                            <Activity size={14} />
-                           <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is transmitting...</span>
+                           <span className="text-[9px] font-black uppercase tracking-widest">Aurelia is mapping your vision...</span>
                         </div>
                       )}
                     </div>
+                    {transcript.length > 2 && !showTransmit && (
+                      <button 
+                        onClick={() => setShowTransmit(true)}
+                        className="mt-6 py-4 border-2 border-neon-blue/20 bg-neon-blue/5 text-neon-blue rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-neon-blue hover:text-white transition-all"
+                      >
+                         Transmit this conversation to RCG Architects
+                      </button>
+                    )}
                   </>
                 )}
              </div>
