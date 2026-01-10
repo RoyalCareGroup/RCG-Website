@@ -1,13 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
-  ShieldCheck, AlertTriangle, FileCheck, Scale, 
-  Database, Shield, Globe, Activity, Terminal, 
-  ArrowRight, Search, Cpu, Lock, CheckCircle2,
-  ChevronRight, Gauge, Command, Layers
+  ShieldCheck, Gauge, Activity, Scale, Layers, Shield, Terminal, ArrowRight, Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
 import { DecodingText } from '../components/DecodingText.tsx';
+import { COMPANY_DETAILS } from '../config.ts';
 
 const RISK_VECTOR_DATA = [
   { subject: 'Privacy', A: 95, fullMark: 100 },
@@ -19,12 +18,8 @@ const RISK_VECTOR_DATA = [
 
 const Governance: React.FC = () => {
   const [logs, setLogs] = useState<string[]>([]);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
     const messages = [
       "Syncing with NDIS Standards v5.4.2...",
       "Validating logic against Quality Indicators...",
@@ -35,77 +30,67 @@ const Governance: React.FC = () => {
     ];
     let i = 0;
     const interval = setInterval(() => {
-      setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${messages[i % messages.length]}`].slice(-5));
+      setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${messages[i % messages.length]}`].slice(-6));
       i++;
-    }, 4500);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans font-bold relative">
-      
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-50">
-        <div className="absolute inset-0 bg-[#334155]"></div>
-        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift"></div>
-        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift"></div>
-      </div>
-
-      <div className="max-w-6xl mx-auto relative z-10 pt-32 pb-24">
-        <div className="mb-16 animate-hero-reveal">
-          <div className="circuit-capsule mb-6 border border-white/80 bg-black px-8 py-3 shadow-xl inline-block">
-            <Shield size={14} className="mr-3 animate-pulse text-neon-blue" /> National Sovereign Layer
+    <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
+      <div className="max-w-7xl mx-auto relative z-10 pt-48 pb-32 w-full">
+        
+        <div className="mb-24 animate-hero-reveal flex flex-col items-center text-center">
+          <div className="circuit-capsule border border-neon-gold/30 bg-white dark:bg-black/40 text-slate-600 dark:text-neon-gold px-10 py-3 shadow-3xl mb-10 inline-flex items-center gap-4">
+            <Shield size={18} className="animate-pulse" /> 
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">National_Sovereign_Layer</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-[0.85]">
-            Sovereign<br/>
-            <span className="text-neon-purple">Governance.</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
+            <span className="text-chiseled-silver block mb-4 text-stroked-black">Sovereign</span> 
+            <span className="text-chiseled-gold text-stroked-black">Governance.</span>
           </h1>
-          <div className="max-w-lg banner-pop bg-black p-6 shadow-2xl border border-white/10 mt-6">
-            <DecodingText 
-              text="Automating regulatory adherence through binary logic. Shifting risk from humans to systems."
-              className="text-lg text-white font-black leading-tight opacity-100"
-              stagger={6}
-            />
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="text-xl text-slate-600 dark:text-slate-400 font-bold leading-relaxed italic opacity-90 tracking-tight uppercase">
+               <DecodingText text="Automating regulatory adherence through binary logic. Shifting risk from humans to systems." stagger={10} />
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-24 items-stretch">
-           <div className="lg:col-span-7 orbital-tile p-8 bg-black border border-white/10 shadow-2xl">
-              <div className="flex items-center justify-between mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-32 items-stretch">
+           <div className="lg:col-span-7 orbital-tile p-12 border border-white/10 shadow-[0_60px_120px_rgba(0,0,0,0.8)]">
+              <div className="flex items-center justify-between mb-16">
                  <div>
-                    <h3 className="text-xl font-display font-black text-white uppercase tracking-tighter">Integrity Matrix</h3>
-                    <p className="text-slate-600 text-[8px] font-black uppercase tracking-[0.4em] mt-2">Live_Regulatory_Adherence_v10.9</p>
+                    <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Integrity Matrix</h3>
+                    <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">Live_Regulatory_Adherence_v10.9</p>
                  </div>
-                 <Gauge size={20} className="text-neon-blue animate-pulse" />
+                 <Gauge size={28} className="text-neon-gold animate-pulse" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                 <div className="h-[250px] w-full group">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={RISK_VECTOR_DATA}>
-                          <PolarGrid stroke="#1e293b" />
-                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 9, fontWeight: '900' }} />
+                          <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                          <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }} />
                           <Radar
                              name="Compliance"
                              dataKey="A"
-                             stroke="#06b6d4"
-                             fill="#06b6d4"
-                             fillOpacity={0.3}
-                             strokeWidth={3}
+                             stroke="#E5C78B"
+                             fill="#E5C78B"
+                             fillOpacity={0.15}
+                             strokeWidth={4}
                           />
                        </RadarChart>
                     </ResponsiveContainer>
                  </div>
-                 <div className="space-y-4">
+                 <div className="space-y-6">
                     {[
-                      { label: "Fidelity", val: "99.2%", color: "text-neon-blue" },
-                      { label: "Mitigation", val: "LEVEL 5", color: "text-neon-purple" },
-                      { label: "Readiness", val: "OPTIMAL", color: "text-neon-green" }
+                      { label: "Fidelity Node", val: "99.2%", color: "text-neon-gold" },
+                      { label: "Mitigation", val: "LEVEL 5", color: "text-white" },
+                      { label: "Audit Readiness", val: "OPTIMAL", color: "text-neon-gold" }
                     ].map((m, i) => (
-                      <div key={i} className="p-5 bg-royal-950 border border-white/5 rounded-xl flex items-center justify-between shadow-inner">
-                         <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">{m.label}</span>
-                         <span className={`text-xl font-display font-black ${m.color}`}>{m.val}</span>
+                      <div key={i} className="p-8 bg-black/40 border border-white/5 rounded-2xl flex items-center justify-between shadow-inner">
+                         <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] font-mono">{m.label}</span>
+                         <span className={`text-2xl font-display font-black ${m.color}`}>{m.val}</span>
                       </div>
                     ))}
                  </div>
@@ -113,39 +98,43 @@ const Governance: React.FC = () => {
            </div>
 
            <div className="lg:col-span-5 flex flex-col gap-6">
-              <div className="orbital-tile p-8 bg-black border border-white/10 relative overflow-hidden flex-grow flex flex-col">
-                 <div className="flex items-center gap-4 mb-6">
-                    <Activity size={16} className="text-neon-purple animate-pulse" />
-                    <span className="text-[9px] font-black text-white uppercase tracking-[0.4em]">Policy Node Real-time</span>
+              <div className="orbital-tile p-10 border border-white/10 relative overflow-hidden flex-grow flex flex-col shadow-2xl">
+                 <div className="flex items-center gap-6 mb-10 pb-6 border-b border-white/5">
+                    <Activity size={20} className="text-neon-gold animate-pulse" />
+                    <span className="text-[11px] font-black text-white uppercase tracking-[0.4em] font-mono">Policy_Node_Realtime</span>
                  </div>
-                 <div className="space-y-3 font-mono text-[11px] h-48 overflow-hidden flex-grow opacity-60">
+                 <div className="space-y-5 font-mono text-[12px] h-[320px] overflow-hidden flex-grow opacity-60">
                     {logs.map((log, i) => (
-                       <div key={i} className="flex gap-4">
-                          <span className="text-neon-blue">#</span>
-                          <span>{log}</span>
+                       <div key={i} className="flex gap-6">
+                          <span className="text-neon-gold opacity-40">#</span>
+                          <span className="text-slate-300">{log}</span>
                        </div>
                     ))}
                  </div>
-                 <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
-                    <div className="text-[8px] font-black text-slate-700 uppercase tracking-[0.4em]">SYNK_GND_v10.9</div>
-                    <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
+                 <div className="mt-10 pt-10 border-t border-white/5 flex items-center justify-between">
+                    <div className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] font-mono">SYNK_GND_OS_V10.9</div>
+                    <div className="flex gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-neon-gold animate-pulse"></div>
+                       <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                       <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                    </div>
                  </div>
               </div>
            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
            {[
-             { icon: <Scale size={24} className="text-neon-blue" />, title: "Parity", desc: "Dynamic policy architecture that updates as NDIS standards evolve." },
-             { icon: <ShieldCheck size={24} className="text-neon-purple" />, title: "Auditing", desc: "Deep-scan algorithms for support logs and financial trails." },
-             { icon: <Layers size={24} className="text-neon-blue" />, title: "Oversight", desc: "Board-level dashboards for national service delivery nodes." }
+             { icon: <Scale size={28} className="text-neon-gold" />, title: "Regulatory Parity", desc: "Dynamic architecture that updates as NDIS standards evolve. Real-time grounding." },
+             { icon: <ShieldCheck size={28} className="text-slate-400" />, title: "Automated Auditing", desc: "Deep-scan algorithms for support logs and financial trails. Zero-leakage protocol." },
+             { icon: <Layers size={28} className="text-neon-gold" />, title: "Governance Oversight", desc: "Board-level dashboards for national nodes. Total transparency for Tier-1 entities." }
            ].map((pillar, i) => (
-             <div key={i} className="orbital-tile p-10 group bg-black border border-white/10 flex flex-col min-h-[300px]">
-                <div className="mb-8 p-4 bg-royal-950 border border-white/5 rounded-xl w-fit group-hover:scale-110 transition-all">
+             <div key={i} className="orbital-tile p-12 group flex flex-col min-h-[350px] shadow-2xl transition-all hover:border-neon-gold/30">
+                <div className="mb-10 p-6 bg-royal-950 border border-white/10 rounded-2xl w-fit group-hover:scale-110 transition-all shadow-inner">
                    {pillar.icon}
                 </div>
-                <h3 className="text-xl font-display font-black text-white uppercase tracking-tighter mb-4 leading-none">{pillar.title}</h3>
-                <p className="text-white text-xs font-bold leading-relaxed opacity-80 italic">"{pillar.desc}"</p>
+                <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-6 leading-none group-hover:text-chiseled-gold transition-colors">{pillar.title}</h3>
+                <p className="text-slate-400 text-base font-bold leading-relaxed opacity-80 italic group-hover:opacity-100 transition-opacity">"{pillar.desc}"</p>
              </div>
            ))}
         </div>

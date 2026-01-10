@@ -1,98 +1,90 @@
+
 import React from 'react';
-import { Shield, Lock, FileText, Gavel, Scale, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { Gavel, Scale, ShieldAlert, FileText, ArrowLeft, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Terms: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#01040f] pt-40 pb-20 px-6 relative">
-      {/* Background Ambience */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]"></div>
-      </div>
-
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="mb-16">
-          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-neon-blue transition-colors mb-12 group">
-            <ArrowLeft size={14} className="mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Mainframe
+    <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
+      <div className="max-w-4xl mx-auto relative z-10 pt-48 pb-32 w-full">
+        <div className="mb-24 animate-hero-reveal">
+          <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.4em] text-slate-600 hover:text-neon-gold transition-colors mb-12 group">
+            <ArrowLeft size={16} className="mr-3 group-hover:-translate-x-2 transition-transform" /> Back to Mainframe
           </Link>
           
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-neon-blue/20 bg-neon-blue/5 text-neon-blue text-[10px] font-black tracking-[0.4em] uppercase mb-8">
-            <Gavel size={14} className="mr-3" /> Operational Protocol
+          <div className="circuit-capsule mb-10 border border-neon-gold/30 bg-black/40 text-neon-gold px-10 py-3 shadow-3xl inline-flex items-center gap-4">
+            <Gavel size={18} className="animate-pulse" /> 
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Operational_Protocol_ENFORCED</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-none">
-            Terms of<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple">Service.</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter leading-[0.85] heading-wow">
+            Terms of<br/><span className="text-chiseled-gold">Service.</span>
           </h1>
-          <p className="text-xl text-slate-400 font-light leading-relaxed border-l-4 border-royal-800 pl-10">
-            Legal framework governing the use of the {COMPANY_DETAILS.legalName} ecosystem and SYNK technical assets.
+          <p className="text-2xl text-slate-400 font-bold leading-relaxed border-l-4 border-neon-gold/40 pl-12 italic opacity-90 mt-10">
+            Legal framework governing the use of the {COMPANY_DETAILS.legalName} ecosystem and SYNK assets.
           </p>
         </div>
 
         <div className="space-y-12">
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-purple/10 rounded-2xl text-neon-purple">
-                  <Scale size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">1. Acceptable Use Node</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Protocol: USER_ENGAGEMENT_v1</p>
-                </div>
+          <div className="orbital-tile p-12 bg-black/60 border border-white/10 shadow-[0_60px_120px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-8 mb-10 border-b border-white/5 pb-8">
+              <div className="p-5 bg-royal-950 rounded-2xl border border-white/10 text-neon-gold shadow-inner">
+                <Scale size={32} />
               </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed">
-                By accessing the {COMPANY_DETAILS.name} platform, including the Intelligence Hub and SYNK Suite, you agree to utilize these structural assets solely for legitimate NDIS organizational improvement. Any attempt to reverse-engineer proprietary binary logic or bypass security layers is a critical protocol violation.
-              </p>
+              <div>
+                <h2 className="text-3xl font-display font-black text-white uppercase tracking-tight">1. Acceptable Use</h2>
+                <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.5em] mt-2">Protocol: USER_ENGAGEMENT_v1</p>
+              </div>
             </div>
+            <p className="text-xl text-slate-400 font-bold leading-relaxed italic">
+              By accessing the {COMPANY_DETAILS.name} platform, including the Intelligence Hub and SYNK Suite, you agree to utilize these structural assets solely for legitimate organizational improvement. Reverse-engineering proprietary binary logic is a critical protocol violation.
+            </p>
           </div>
 
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-blue/10 rounded-2xl text-neon-blue">
-                  <ShieldAlert size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">2. Professional Disclaimer</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Logic: ADVISORY_ONLY</p>
-                </div>
+          <div className="orbital-tile p-12 bg-black/60 border border-white/10 shadow-[0_60px_120px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-8 mb-10 border-b border-white/5 pb-8">
+              <div className="p-5 bg-royal-950 rounded-2xl border border-white/10 text-slate-500 shadow-inner">
+                <ShieldAlert size={32} />
               </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed mb-6">
-                While our TFix Engine and consultancy provide high-fidelity structural logic, ultimate responsibility for NDIS regulatory compliance and participant outcomes rests with the provider. Our tools are designed to augment, not replace, organizational governance.
-              </p>
+              <div>
+                <h2 className="text-3xl font-display font-black text-white uppercase tracking-tight">2. Professional Node</h2>
+                <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.5em] mt-2">Logic: ADVISORY_ONLY</p>
+              </div>
             </div>
+            <p className="text-xl text-slate-400 font-bold leading-relaxed italic">
+              While our TFix Engine provides high-fidelity logic, ultimate responsibility for NDIS regulatory compliance rests with the provider. Our tools augment organizational governance.
+            </p>
           </div>
 
-          <div className="orbital-tile p-10 md:p-16 group">
-            <div className="orbital-content">
-              <div className="flex items-center gap-6 mb-8">
-                <div className="p-4 bg-neon-green/10 rounded-2xl text-neon-green">
-                  <FileText size={28} />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">3. Intellectual Property</h2>
-                  <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Ownership: SOVEREIGN_ASSETS</p>
-                </div>
+          <div className="orbital-tile p-12 bg-black/60 border border-white/10 shadow-[0_60px_120px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-8 mb-10 border-b border-white/5 pb-8">
+              <div className="p-5 bg-royal-950 rounded-2xl border border-white/10 text-neon-gold shadow-inner">
+                <FileText size={32} />
               </div>
-              <p className="text-slate-400 text-lg font-light leading-relaxed">
-                The SYNK ecosystem, including ClaimSYNK, ReportSYNK, and FormSYNK, along with all associated source code and structural methodologies, remain the exclusive property of {COMPANY_DETAILS.legalName}. Deployment does not constitute a transfer of ownership node.
-              </p>
+              <div>
+                <h2 className="text-3xl font-display font-black text-white uppercase tracking-tight">3. IP Ownership</h2>
+                <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.5em] mt-2">Ownership: SOVEREIGN_ASSETS</p>
+              </div>
             </div>
+            <p className="text-xl text-slate-400 font-bold leading-relaxed italic">
+              The SYNK ecosystem, source code, and structural methodologies remain the exclusive property of {COMPANY_DETAILS.legalName}.
+            </p>
           </div>
         </div>
 
-        <div className="mt-24 p-12 glass rounded-[3rem] border border-royal-800 text-center">
-           <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-6">Legal Query?</h3>
-           <p className="text-slate-500 text-sm mb-10 font-light max-w-xl mx-auto tracking-wide">
-             If you require clarification on the structural terms of engagement or have specific contractual inquiries, contact our Legal Architect.
+        <div className="mt-32 p-16 orbital-tile !rounded-[4rem] bg-black/80 border-2 border-neon-gold/20 text-center shadow-3xl">
+           <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight mb-8">Legal Query?</h3>
+           <p className="text-xl text-slate-500 font-bold italic mb-12 max-w-xl mx-auto leading-relaxed">
+             If you require clarification on the structural terms, contact our Legal Architect node.
            </p>
-           <a href={`mailto:${COMPANY_DETAILS.email}`} className="px-12 py-5 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all inline-block">
-             Contact Legal Node
-           </a>
+           <Link to="/contact" className="px-12 py-6 bg-black border-2 border-neon-gold text-white font-black text-[11px] tracking-[0.5em] uppercase rounded-xl hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-3xl inline-flex items-center gap-6 group">
+             <Zap size={20} className="text-neon-gold group-active:text-black" />
+             <span>Contact Legal Node</span>
+           </Link>
         </div>
         
-        <div className="mt-16 text-center text-[9px] font-mono text-slate-600 uppercase tracking-[0.5em]">
-           Last Revision: 2024.Q4 // Version: {COMPANY_DETAILS.appVersion}
+        <div className="mt-24 text-center text-[10px] font-mono text-slate-800 uppercase tracking-[1em] font-black">
+           Last Revision: 2024.Q4 // v{COMPANY_DETAILS.appVersion}
         </div>
       </div>
     </div>

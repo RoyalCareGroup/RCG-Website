@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Mail, Fingerprint, Globe, Linkedin, Facebook, Layout } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -5,7 +6,7 @@ import { COMPANY_DETAILS } from '../config.ts';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-white border-t border-slate-100 py-6 px-6 relative z-50">
+    <footer data-cursor-contrast="true" className="bg-white border-t border-slate-100 py-6 px-6 relative z-50">
       <div className="max-w-7xl mx-auto flex flex-col items-center space-y-4">
         
         <div className="text-slate-900">
@@ -17,9 +18,9 @@ const Footer: React.FC = () => {
         <div className="flex flex-col items-center">
           <Link 
             to="/contact"
-            className="slim-orbital-btn inline-flex items-center gap-2.5 px-8 py-2.5 bg-black text-white border-[0.5px] border-neon-blue rounded-lg font-black text-[9px] tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 group"
+            className="inline-flex items-center gap-3 px-10 py-3 bg-black text-white border-[3px] border-[#D4AF37] rounded-xl font-black text-[9px] tracking-[0.3em] uppercase transition-all hover:scale-105 active:border-neon-purple active:text-neon-purple group shadow-2xl"
           >
-            <Mail size={12} className="text-neon-blue" />
+            <Mail size={14} className="text-amber-500 group-active:text-neon-purple transition-colors" />
             <span>Contact Now</span>
           </Link>
         </div>
@@ -44,4 +45,5 @@ const Footer: React.FC = () => {
   );
 };
 
+// Fix: Add default export for the Footer component to resolve the error in App.tsx
 export default Footer;

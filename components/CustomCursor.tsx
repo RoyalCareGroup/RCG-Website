@@ -8,9 +8,9 @@ export const CustomCursor: React.FC = () => {
   const [isOnLightBg, setIsOnLightBg] = useState(false);
   
   const cursorRef = useRef<HTMLDivElement>(null);
-  const mousePos = useRef({ x: -200, y: -200 }); 
+  const mousePos = useRef({ x: -100, y: -100 }); 
   const requestRef = useRef<number>(null);
-  
+
   useEffect(() => {
     const touchCheck = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     setIsTouchDevice(touchCheck);
@@ -28,15 +28,16 @@ export const CustomCursor: React.FC = () => {
       if (!isVisible) setIsVisible(true);
       
       const target = e.target as HTMLElement;
-      setIsPointer(
+      const isClickable = (
         window.getComputedStyle(target).cursor === 'pointer' || 
         target.tagName === 'A' || 
         target.tagName === 'BUTTON' ||
         target.closest('button') !== null ||
         target.closest('a') !== null
       );
-
-      // Detect if we are over an area requiring high contrast (like the white contact form)
+      
+      setIsPointer(isClickable);
+      
       const contrastElement = target.closest('[data-cursor-contrast="true"]');
       setIsOnLightBg(!!contrastElement);
     };
@@ -64,7 +65,7 @@ export const CustomCursor: React.FC = () => {
     window.addEventListener('mouseup', onMouseUp);
     document.addEventListener('mouseleave', onMouseLeave);
     document.addEventListener('mouseenter', onMouseEnter);
-    
+
     requestRef.current = requestAnimationFrame(updateCursor);
 
     return () => {
@@ -83,55 +84,81 @@ export const CustomCursor: React.FC = () => {
   const CrownPath = "m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14";
 
   return (
-    <div 
-      ref={cursorRef}
-      className={`fixed left-0 top-0 pointer-events-none z-[99999] will-change-transform flex items-center justify-center transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-    >
-      <div className={`relative flex items-center justify-center transition-transform duration-300 ${isPointer ? 'scale-110' : 'scale-100'}`}>
-        {/* ATMOSPHERIC GLOW: Inverts color if over light background */}
-        <div className={`absolute rounded-full transition-all duration-500 ease-out ${
-          isOnLightBg 
-            ? 'bg-royal-950 shadow-[0_0_30px_rgba(8,12,29,0.4)]' 
-            : isPointer ? 'bg-neon-blue shadow-[0_0_40px_#06b6d4]' : 'bg-white shadow-[0_0_30px_#ffffff]'
-        } ${
-          isPointer 
-            ? 'w-20 h-20 opacity-30 blur-xl scale-125' 
-            : 'w-16 h-16 opacity-20 blur-lg scale-110'
-        } ${isMouseDown ? 'scale-75 opacity-50' : ''}`} />
+    <>
+      {/* ATMOSPHERIC LENS - REACTIVE GLOW */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-[99990] transition-opacity duration-1000"
+        style={{ 
+          opacity: isVisible ? 1 : 0,
+          background: `radial-gradient(circle 350px at var(--cursor-x, 50%) var(--cursor-y, 50%), ${
+            isOnLightBg 
+              ? 'rgba(0, 0, 0, 0.05)' 
+              : isPointer ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255, 255, 255, 0.03)'
+          }, transparent 100%)`
+        }}
+      />
 
-        {/* CORE LIGHT */}
-        <div className={`absolute rounded-full w-6 h-6 blur-md transition-all duration-500 ${
-          isOnLightBg ? 'bg-royal-900/60 opacity-80' : isPointer ? 'bg-white/40 opacity-70' : 'bg-white/40 opacity-30'
-        }`} />
+      <div 
+        ref={cursorRef}
+        className={`fixed left-0 top-0 pointer-events-none z-[100000] will-change-transform flex items-center justify-center transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{ width: '40px', height: '40px', marginLeft: '-20px', marginTop: '-20px' }}
+      >
+        <div className={`relative w-full h-full flex items-center justify-center transition-all duration-500`}>
+          
+          {/* HIGH-IMPACT CLICK RESONANCE - MULTI-LAYER OMNIDIRECTIONAL BURST */}
+          {isMouseDown && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              {/* LAYER 1: The Deep Structural Burst (Hard ring) */}
+              <div 
+                className={`absolute w-12 h-12 rounded-full border-[12px] animate-deep-burst opacity-80 ${
+                  isOnLightBg ? 'border-black/40' : 'border-[#06b6d4]/80 shadow-[0_0_40px_#06b6d4]'
+                }`} 
+              />
+              
+              {/* LAYER 2: The Neural Shockwave (Atmospheric expansion) */}
+              <div 
+                className={`absolute w-12 h-12 rounded-full border-[2px] animate-neural-shockwave ${
+                  isOnLightBg ? 'border-black/10' : 'border-[#06b6d4]/30'
+                }`} 
+              />
 
-        <div className={`relative transition-all duration-300 ease-out ${isMouseDown ? 'scale-75' : 'scale-100'}`}>
-          <svg 
-            viewBox="0 0 24 24" 
-            width="22" 
-            height="22" 
-            className={`transition-colors duration-500 -translate-x-1/2 -translate-y-1/2 absolute top-0 left-0 ${
-              isOnLightBg ? 'text-royal-950' : isPointer ? 'text-neon-blue' : 'text-white'
-            }`}
-            fill="currentColor" 
-            fillOpacity={isPointer ? "0.7" : "0.3"}
-            stroke="currentColor" 
-            strokeWidth="2.5"
-          >
-            <path 
-              d={CrownPath} 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              className={`transition-all duration-500 ${
-                isOnLightBg ? 'drop-shadow-none' : isPointer ? 'drop-shadow-[0_0_8px_#06b6d4]' : 'drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]'
-              }`}
-            />
-          </svg>
+              {/* LAYER 3: Core Flash (Center point intensity) */}
+              <div className={`absolute w-8 h-8 rounded-full bg-white/20 blur-xl animate-pulse`} />
+            </div>
+          )}
+
+          {isPointer ? (
+            /* BRAND-BLUE FOCUS DOT: Core identity anchor */
+            <div className={`w-3 h-3 bg-[#06b6d4] rounded-full shadow-[0_0_15px_#fff,0_0_30px_#06b6d4,0_0_60px_#06b6d4,0_0_90px_rgba(6,182,212,0.9)] transition-all duration-300 z-10 ${isMouseDown ? 'scale-75' : 'scale-100'}`} />
+          ) : (
+            /* STANDARD BRAND MODE: The Crown */
+            <div className={`relative transition-all duration-300 z-10 ${isMouseDown ? 'scale-75' : 'scale-100'}`}>
+              <svg 
+                viewBox="0 0 24 24" 
+                width="26" 
+                height="26" 
+                className={`transition-all duration-500 transform drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)] ${
+                  isOnLightBg ? 'text-black' : 'text-white/90'
+                }`}
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5" 
+              >
+                <path 
+                  d={CrownPath} 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className={`transition-all duration-700 ${
+                    isOnLightBg 
+                      ? '' 
+                      : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]'
+                  }`}
+                />
+              </svg>
+            </div>
+          )}
         </div>
-
-        {isPointer && !isOnLightBg && (
-          <div className="absolute w-12 h-12 border-2 border-neon-blue/40 rounded-full animate-ping pointer-events-none" />
-        )}
       </div>
-    </div>
+    </>
   );
 };

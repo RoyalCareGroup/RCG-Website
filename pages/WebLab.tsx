@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Code, Globe, Layout, Send, Loader2, Sparkles, ChevronRight } from 'lucide-react';
+import { Search, Code, Globe, Layout, Send, Loader2, Sparkles, ChevronRight, Zap } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import { BrowserMockup } from '../components/BrowserMockup.tsx';
 
@@ -64,8 +64,8 @@ const WebLab: React.FC = () => {
             <div className="orbital-tile border-2 border-white/10 p-10 bg-black shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
               <form onSubmit={generateBlueprint} className="space-y-8">
                 <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} className="w-full bg-royal-950 border-2 border-white/10 rounded-2xl p-8 text-white outline-none focus:border-neon-blue transition-all min-h-[200px] font-black shadow-inner" />
-                <button type="submit" disabled={isLoading || !prompt.trim()} className="slim-orbital-btn w-full py-8 text-black bg-white font-black text-[11px] tracking-[0.6em] uppercase transition-all shadow-3xl active:scale-95">
-                  {isLoading ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />}
+                <button type="submit" disabled={isLoading || !prompt.trim()} className="w-full py-6 bg-black border-[3px] border-neon-green rounded-xl text-white font-black text-[11px] tracking-[0.6em] uppercase flex items-center justify-center gap-6 group hover:scale-105 active:border-neon-purple active:text-neon-purple transition-all shadow-2xl disabled:opacity-50">
+                  {isLoading ? <Loader2 className="animate-spin text-neon-blue" /> : <Zap size={18} className="text-neon-green group-active:text-neon-purple transition-colors" />}
                   {isLoading ? 'Synthesizing...' : 'Initialize Build'}
                 </button>
               </form>

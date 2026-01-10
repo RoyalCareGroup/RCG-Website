@@ -122,9 +122,9 @@ export const FutureStateArchitect: React.FC = () => {
                   <button 
                     type="submit"
                     disabled={isGenerating || !constraints.trim()}
-                    className="slim-orbital-btn w-full py-6 bg-white text-black font-black text-[11px] tracking-[0.5em] uppercase transition-all shadow-3xl hover:bg-neon-blue hover:text-white flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50"
+                    className="w-full py-5 bg-black border-[3px] border-[#D4AF37] text-white font-black text-[10px] tracking-[0.4em] uppercase hover:scale-[1.05] active:border-neon-purple active:text-neon-purple transition-all shadow-3xl flex items-center justify-center gap-4 active:scale-95 disabled:opacity-50 rounded-xl"
                   >
-                    {isGenerating ? <RefreshCw className="animate-spin" size={18} /> : <Zap size={18} className="text-neon-purple" />}
+                    {isGenerating ? <RefreshCw className="animate-spin" size={18} /> : <Zap size={18} className="text-amber-500 group-active:text-neon-purple transition-colors" />}
                     {isGenerating ? 'Synthesizing...' : 'Initialize Build'}
                   </button>
                </form>
@@ -173,13 +173,13 @@ export const FutureStateArchitect: React.FC = () => {
                         <a 
                           href={blueprint} 
                           download={`RCG_FutureState_${Date.now()}.png`}
-                          className="px-12 py-5 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] hover:bg-neon-blue hover:text-white transition-all shadow-2xl active:scale-95 flex items-center gap-4"
+                          className="px-10 py-5 bg-black border-[3px] border-[#D4AF37] text-white rounded-xl text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 active:border-neon-purple active:text-neon-purple transition-all shadow-2xl active:scale-95 flex items-center gap-4"
                         >
-                           <Download size={16} /> Export vision
+                           <Download size={16} className="text-amber-500" /> Export vision
                         </a>
                         <button 
                           onClick={() => setBlueprint(null)}
-                          className="px-12 py-5 bg-royal-950 text-white border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all shadow-xl active:scale-95"
+                          className="px-10 py-5 bg-royal-950 text-white border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all shadow-xl active:scale-95"
                         >
                            Reset Lab
                         </button>

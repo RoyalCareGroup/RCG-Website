@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -96,7 +97,7 @@ const CommandCenter: React.FC = () => {
       <div className="max-w-7xl mx-auto relative z-10 pt-48 pb-40">
         <div className="mb-24 flex flex-col md:flex-row items-end justify-between gap-12 animate-hero-reveal">
           <div className="max-w-3xl">
-            <div className="circuit-capsule border-2 border-emerald-500 text-emerald-500 mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] bg-black px-10 py-4">
+            <div className="circuit-capsule border-2 border-emerald-500 text-emerald-500 mb-10 shadow-[0_0_30px_rgba(16,185,129,0.1)] bg-black/60 backdrop-blur-md px-10 py-4">
               <ShieldCheck size={16} className="mr-4 animate-pulse" /> Grid Operational: v{COMPANY_DETAILS.appVersion}
             </div>
             <h1 className="text-6xl md:text-8xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.8] heading-wow">
@@ -109,11 +110,11 @@ const CommandCenter: React.FC = () => {
           </div>
 
           <div className="flex gap-6">
-             <div className="glass p-8 rounded-[2rem] border-2 border-white/10 bg-black text-center min-w-[200px] shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+             <div className="orbital-tile p-8 !rounded-[2rem] text-center min-w-[200px] shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
                 <div className="text-[10px] text-slate-600 font-black uppercase tracking-[0.5em] mb-3">Sync Status</div>
                 <div className="text-3xl font-mono text-emerald-400 font-black animate-pulse">LOCKED</div>
              </div>
-             <div className="glass p-8 rounded-[2rem] border-2 border-white/10 bg-black text-center min-w-[200px] shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
+             <div className="orbital-tile p-8 !rounded-[2rem] text-center min-w-[200px] shadow-[0_40px_80px_rgba(0,0,0,0.8)]">
                 <div className="text-[10px] text-slate-600 font-black uppercase tracking-[0.5em] mb-3">Auth Logic</div>
                 <div className="text-3xl font-mono text-white font-black">LEVEL_4</div>
              </div>
@@ -125,13 +126,13 @@ const CommandCenter: React.FC = () => {
             <Link 
               key={m.id} 
               to={m.path} 
-              className={`orbital-tile group p-12 bg-black flex flex-col h-full hover:border-white transition-all duration-700 shadow-[0_40px_80px_rgba(0,0,0,0.7)] border-2 border-white/10`}
+              className={`orbital-tile group p-12 flex flex-col h-full transition-all duration-700 shadow-[0_40px_80px_rgba(0,0,0,0.7)]`}
             >
               <div className="flex justify-between items-start mb-12">
-                <div className="p-5 bg-royal-950 rounded-[1.5rem] border-2 border-white/5 shadow-inner group-hover:scale-110 transition-transform group-hover:border-white/20">
+                <div className="p-5 bg-royal-950/80 rounded-[1.5rem] border border-white/10 shadow-inner group-hover:scale-110 transition-transform group-hover:border-white/30">
                   {m.icon}
                 </div>
-                <span className={`text-[10px] font-mono tracking-[0.4em] font-black border-2 px-4 py-1.5 rounded-lg ${m.status === 'STABLE' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-slate-600 border-white/5'}`}>
+                <span className={`text-[10px] font-mono tracking-[0.4em] font-black border px-4 py-1.5 rounded-lg ${m.status === 'STABLE' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' : 'text-slate-600 border-white/5'}`}>
                    {m.status}
                 </span>
               </div>
@@ -143,7 +144,7 @@ const CommandCenter: React.FC = () => {
                 "{m.desc}"
               </p>
               
-              <div className="mt-auto pt-8 border-t-2 border-white/5 flex items-center justify-between group-hover:border-white/20 transition-colors">
+              <div className="mt-auto pt-8 border-t border-white/10 flex items-center justify-between group-hover:border-white/20 transition-colors">
                 <div className="flex items-center gap-4 text-[10px] font-mono text-slate-600 uppercase tracking-widest font-black">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_#10b981]"></div>
                   RC_NOMINAL_SYNC
@@ -154,9 +155,9 @@ const CommandCenter: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-40 p-16 md:p-24 banner-pop bg-black flex flex-col lg:flex-row items-center justify-between gap-16 text-center lg:text-left shadow-[0_40px_100px_rgba(0,0,0,0.8)] border-2 border-white/10 rounded-[4rem]">
+        <div className="mt-40 p-16 md:p-24 orbital-tile !rounded-[4rem] flex flex-col lg:flex-row items-center justify-between gap-16 text-center lg:text-left shadow-[0_40px_100px_rgba(0,0,0,0.8)]">
            <div className="flex items-center gap-10">
-              <div className="p-8 bg-royal-950 rounded-full border-2 border-white/10 shadow-3xl relative">
+              <div className="p-8 bg-royal-950/80 rounded-full border border-white/10 shadow-3xl relative">
                  <div className="absolute inset-0 bg-emerald-500/10 blur-3xl rounded-full animate-pulse"></div>
                  <Activity size={48} className="text-emerald-400 relative z-10" />
               </div>
@@ -171,7 +172,7 @@ const CommandCenter: React.FC = () => {
                 { label: 'Core', val: 'STABILIZED' },
                 { label: 'Node', val: 'AU_EAST' }
               ].map((stat, i) => (
-                <div key={i} className="px-8 py-5 bg-royal-950 border-2 border-white/5 rounded-2xl text-[11px] font-mono font-black shadow-inner">
+                <div key={i} className="px-8 py-5 bg-royal-950/60 border border-white/10 rounded-2xl text-[11px] font-mono font-black shadow-inner">
                    <span className="text-slate-700 mr-4 uppercase tracking-widest">{stat.label}</span>
                    <span className="text-emerald-500">{stat.val}</span>
                 </div>

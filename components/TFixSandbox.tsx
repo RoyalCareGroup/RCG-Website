@@ -159,9 +159,9 @@ export const TFixSandbox: React.FC = () => {
                        <button 
                         onClick={executeAudit}
                         disabled={isAnalyzing}
-                        className="w-full py-5 bg-white text-black font-black text-[11px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-purple hover:text-white transition-all shadow-3xl flex items-center justify-center gap-4"
+                        className="w-full py-5 bg-black border-[3px] border-[#D4AF37] rounded-xl text-white font-black text-[10px] tracking-[0.4em] uppercase hover:scale-[1.02] active:border-neon-purple active:text-neon-purple transition-all shadow-3xl flex items-center justify-center gap-4 group"
                        >
-                         {isAnalyzing ? <Loader2 className="animate-spin" size={18} /> : <Search size={18} />}
+                         {isAnalyzing ? <Loader2 className="animate-spin text-neon-blue" /> : <Search size={18} className="text-amber-500 group-active:text-neon-purple transition-colors" />}
                          {isAnalyzing ? 'Analyzing...' : 'Initialize Audit'}
                        </button>
                     </div>
@@ -213,7 +213,7 @@ export const TFixSandbox: React.FC = () => {
                      <div className="text-center space-y-4">
                         <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter animate-pulse">Executing Logic Sweep</h3>
                         <div className="flex justify-center gap-2">
-                           <div className="h-1 w-24 bg-royal-900 rounded-full overflow-hidden">
+                           <div className="h-1 w-24 bg-royal-950 rounded-full overflow-hidden">
                               <div className="h-full bg-neon-purple animate-ping"></div>
                            </div>
                         </div>
@@ -282,7 +282,11 @@ export const TFixSandbox: React.FC = () => {
                                  <CheckCircle2 className="text-neon-green" size={20} />
                                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Logic Grounding: NDIS_2024_PARITY</span>
                               </div>
-                              <a href="#/contact" className="slim-orbital-btn px-10 py-4 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase hover:bg-neon-blue hover:text-white transition-all shadow-3xl">
+                              <a 
+                                href="#/contact" 
+                                className="px-10 py-5 bg-black border-[3px] border-[#D4AF37] rounded-xl text-white font-black text-[10px] tracking-[0.4em] uppercase hover:scale-[1.02] active:border-neon-purple active:text-neon-purple transition-all shadow-3xl inline-flex items-center gap-4 group"
+                              >
+                                <Zap size={16} className="text-amber-500 group-active:text-neon-purple transition-colors" />
                                 Initialize Remediation Sync
                               </a>
                            </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Terminal, ShieldAlert, Lock, Cpu, ArrowRight, Loader2, Zap } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -64,7 +65,10 @@ const AdminLogin: React.FC = () => {
 
           <form onSubmit={handleLogin} className="space-y-8">
             <input type="password" value={passkey} onChange={e => setPasskey(e.target.value)} className="w-full bg-royal-950 border-2 border-white/10 rounded-xl py-6 px-8 text-white font-mono text-center focus:border-neon-blue outline-none transition-all shadow-inner" placeholder="INPUT_PASSKEY" />
-            <button type="submit" disabled={status === 'checking' || !passkey} className="slim-orbital-btn w-full py-8 text-black bg-white font-black text-[12px] tracking-[0.5em] uppercase transition-all shadow-3xl active:scale-95">Initialize Sync</button>
+            <button type="submit" disabled={status === 'checking' || !passkey} className="w-full py-6 bg-black border-[4px] border-[#D4AF37] text-white font-black text-[11px] tracking-[0.6em] uppercase flex items-center justify-center gap-6 group active:border-neon-purple active:text-neon-purple transition-all shadow-2xl disabled:opacity-50 rounded-[2rem]">
+               {status === 'checking' ? <Loader2 className="animate-spin text-neon-blue" /> : <Zap size={18} className="text-amber-500 group-active:text-neon-purple transition-colors" />}
+               <span>Initialize Sync</span>
+            </button>
           </form>
         </div>
       </div>

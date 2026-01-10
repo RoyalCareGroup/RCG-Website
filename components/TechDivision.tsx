@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Activity, Settings, Wrench, ShieldCheck, Gauge, Cpu, Network } from 'lucide-react';
 import { ClaimSynkLogo } from './logos/ClaimSynkLogo.tsx';
@@ -28,13 +29,13 @@ const SynkModuleChassis: React.FC<{
   isStable: boolean;
 }> = ({ id, title, status, icon, desc, specs, isStable }) => {
   const accent = isStable ? 'text-neon-blue' : 'text-neon-purple';
-  const border = isStable ? 'border-neon-blue/30 group-hover:border-neon-blue' : 'border-neon-purple/30 group-hover:border-neon-purple';
+  const border = isStable ? 'border-neon-blue/20 group-hover:border-neon-blue/50' : 'border-neon-purple/20 group-hover:border-neon-purple/50';
   
   return (
     <div className="relative group transition-all duration-700 h-full">
-      <div className={`absolute -inset-0.5 bg-gradient-to-br ${isStable ? 'from-neon-blue/20 to-transparent' : 'from-neon-purple/20 to-transparent'} rounded-3xl blur opacity-0 group-hover:opacity-100 transition duration-1000`}></div>
+      <div className={`absolute -inset-0.5 bg-gradient-to-br ${isStable ? 'from-neon-blue/30 to-transparent' : 'from-neon-purple/30 to-transparent'} rounded-[2.5rem] blur opacity-0 group-hover:opacity-100 transition duration-1000`}></div>
       
-      <div className={`relative bg-royal-950/80 backdrop-blur-xl border ${border} rounded-3xl p-10 h-full flex flex-col shadow-2xl overflow-hidden`}>
+      <div className={`relative orbital-tile p-10 h-full flex flex-col shadow-2xl overflow-hidden !border-white/10 group-hover:!border-neon-gold/40`}>
         <div className="flex justify-between items-start mb-10">
           <div className="flex flex-col">
             <span className="text-[8px] font-mono text-slate-400 uppercase tracking-[0.3em]">MODULE ID</span>
@@ -46,29 +47,29 @@ const SynkModuleChassis: React.FC<{
         </div>
 
         <div className="mb-8">
-          <div className={`mb-6 group-hover:scale-105 transition-transform origin-left`}>
+          <div className={`mb-6 group-hover:scale-110 group-hover:rotate-1 transition-all duration-700 origin-left`}>
             {icon}
           </div>
-          <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-4">{title}</h3>
-          <p className="text-slate-200 text-sm leading-relaxed font-bold mb-8">{desc}</p>
+          <h3 className="text-3xl font-display font-black text-white uppercase tracking-tighter mb-4 group-hover:text-chiseled-gold transition-colors">{title}</h3>
+          <p className="text-slate-200 text-sm leading-relaxed font-bold mb-8 italic opacity-80 group-hover:opacity-100">"{desc}"</p>
         </div>
 
         <div className="mt-auto space-y-6">
           <div className="flex flex-wrap gap-2">
             {specs.map((spec, i) => (
-              <div key={i} className="px-3 py-1 bg-royal-950 border border-royal-800 rounded text-[9px] font-mono text-slate-300 uppercase tracking-widest flex items-center">
+              <div key={i} className="px-3 py-1 bg-black/40 border border-white/5 rounded text-[9px] font-mono text-slate-300 uppercase tracking-widest flex items-center">
                 <div className="w-1 h-1 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                 {spec}
               </div>
             ))}
           </div>
 
-          <div className="pt-6 border-t border-royal-800/50 flex items-center justify-between">
+          <div className="pt-6 border-t border-white/5 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Activity size={12} className={accent} />
               <span className="text-[8px] font-mono text-slate-400 tracking-widest uppercase">LATENCY: <TelemetryValue />ms</span>
             </div>
-            <span className="text-[8px] font-mono text-slate-400 tracking-widest">AES-256</span>
+            <span className="text-[8px] font-mono text-slate-400 tracking-widest">AES-256_ENCRYPTED</span>
           </div>
         </div>
       </div>
@@ -120,54 +121,59 @@ const TechDivision: React.FC = () => {
     <div className="pt-24 pb-32 px-6 animate-fade-in">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-40">
-          <div className="inline-flex items-center space-x-4 mb-10 p-4 bg-royal-900 border border-royal-800 rounded-3xl">
-             <Cpu className="text-neon-blue" size={32} />
+          <div className="inline-flex items-center space-x-4 mb-10 p-4 bg-black/40 border border-white/10 rounded-3xl backdrop-blur-md">
+             <Cpu className="text-neon-gold" size={32} />
              <div className="text-left">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] block">Status Check</span>
-                <span className="text-white font-mono text-sm tracking-widest">SYNK_CORE_VERSION_{COMPANY_DETAILS.appVersion}: OPTIMAL</span>
+                <span className="text-white font-mono text-sm tracking-widest uppercase">Grid_Core_v{COMPANY_DETAILS.appVersion}: OPTIMAL</span>
              </div>
           </div>
-          <h1 className="text-6xl md:text-[10rem] font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.85]">SYNK Suite</h1>
+          <h1 className="text-6xl md:text-[8rem] font-display font-black uppercase tracking-tighter leading-[0.85] mb-10">
+            <span className="text-chiseled-silver block mb-4">SYNK</span>
+            <span className="text-chiseled-gold">Suite.</span>
+          </h1>
           <p className="text-slate-400 uppercase tracking-[0.8em] text-[11px] font-black">Royal Care Tech Division // Translating Regulation into Binary</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-40">
           {modules.map((item) => (
             <SynkModuleChassis key={item.id} {...item} />
           ))}
         </div>
 
-        <div className="bg-royal-900 border border-royal-800 rounded-[5rem] p-16 md:p-32 relative overflow-hidden group">
+        <div className="orbital-tile !rounded-[5rem] p-16 md:p-32 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-20 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Settings size={300} className="animate-spin-slow text-neon-blue" />
+            <Settings size={300} className="animate-spin-slow text-neon-gold" />
           </div>
           
           <div className="relative z-10 max-w-4xl">
-            <div className="inline-flex items-center space-x-4 mb-14 text-neon-blue">
+            <div className="inline-flex items-center space-x-4 mb-14 text-neon-gold">
               <Wrench size={40} />
               <span className="text-sm font-black uppercase tracking-[0.6em]">Diagnostic Infrastructure</span>
             </div>
-            <h2 className="text-5xl md:text-8xl font-display font-black text-white mb-12 uppercase tracking-tighter">The TFix Engine</h2>
-            <p className="text-2xl text-slate-200 leading-relaxed font-bold mb-16 border-l-4 border-neon-blue pl-12">
-              The TFix Core is the foundational intelligence behind every Royal Care deployment. It actively scans your organizational architecture to identify "Compliance Slippage" and "Revenue Leakage" before they impact your NDIS bottom line.
+            <h2 className="text-5xl md:text-7xl font-display font-black text-white mb-12 uppercase tracking-tighter leading-none">
+              The <span className="text-chiseled-gold">TFix Engine.</span>
+            </h2>
+            <p className="text-2xl text-slate-200 leading-relaxed font-bold mb-16 border-l-4 border-neon-gold pl-12 italic">
+              The TFix Core is the foundational intelligence behind every Royal Care deployment. It actively scans organizational architecture to identify "Compliance Slippage" and "Revenue Leakage" before they impact your NDIS bottom line.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="bg-royal-950 p-12 rounded-[2.5rem] border border-royal-800 hover:border-neon-purple transition-all shadow-xl">
+              <div className="bg-black/40 p-12 rounded-[2.5rem] border border-white/5 hover:border-neon-gold/40 transition-all shadow-xl backdrop-blur-md">
                  <div className="flex items-center space-x-4 mb-8">
-                   <ShieldCheck className="text-neon-purple" size={32} />
+                   <ShieldCheck className="text-neon-gold" size={32} />
                    <h4 className="text-white font-black text-xl uppercase tracking-tight">Self-Healing Protocols</h4>
                  </div>
-                 <p className="text-slate-300 text-lg leading-relaxed font-bold">
+                 <p className="text-slate-300 text-lg leading-relaxed font-bold italic opacity-80">
                    Automated identification and correction of support documentation errors in real-time. TFix bridges the gap between field-staff input and commission requirements.
                  </p>
               </div>
-              <div className="bg-royal-950 p-12 rounded-[2.5rem] border border-royal-800 hover:border-neon-blue transition-all shadow-xl">
+              <div className="bg-black/40 p-12 rounded-[2.5rem] border border-white/5 hover:border-neon-gold/40 transition-all shadow-xl backdrop-blur-md">
                  <div className="flex items-center space-x-4 mb-8">
-                   <Gauge className="text-neon-blue" size={32} />
+                   <Gauge className="text-neon-gold" size={32} />
                    <h4 className="text-white font-black text-xl uppercase tracking-tight">Predictive Compliance</h4>
                  </div>
-                 <p className="text-slate-300 text-lg leading-relaxed font-bold">
+                 <p className="text-slate-300 text-lg leading-relaxed font-bold italic opacity-80">
                    Forecasting audit risk based on historical operational telemetry. We identify patterns of non-compliance and automate the retraining cycle for your organization.
                  </p>
               </div>

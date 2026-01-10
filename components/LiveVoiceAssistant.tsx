@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { Mic, MicOff, Loader2, Volume2, ShieldCheck, Sparkles, X, Terminal, Radio } from 'lucide-react';
@@ -87,7 +88,8 @@ export const LiveVoiceAssistant: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+        // Fix: Update model name to the latest supported version for real-time audio
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
             setIsActive(true);
@@ -196,7 +198,7 @@ export const LiveVoiceAssistant: React.FC = () => {
   };
 
   return (
-    <div className="bg-royal-900/40 border border-royal-800 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden backdrop-blur-3xl">
+    <div className="bg-royal-950/40 border border-royal-800 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden backdrop-blur-3xl">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-blue animate-pulse"></div>
       
       <div className="flex flex-col gap-8">

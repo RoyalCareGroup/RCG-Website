@@ -1,20 +1,17 @@
-/**
- * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.15.00-GATEWAY_LOCK
- * Status: OPERATIONAL_NOMINAL
- */
+
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 import { CustomCursor } from './components/CustomCursor.tsx';
 import { NeuralBackground } from './components/NeuralBackground.tsx';
-import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
+import { RefractiveLens } from './components/RefractiveLens.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
 import { SovereignConsent } from './components/SovereignConsent.tsx';
-import { COMPANY_DETAILS } from './config.ts';
+import { MatrixXRay } from './components/MatrixXRay.tsx';
+import { NeuralPassport } from './components/NeuralPassport.tsx';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
 // --- LAZY LOADED NODES ---
@@ -25,7 +22,6 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage.tsx'));
 const About = lazy(() => import('./pages/About.tsx'));
 const CaseStudies = lazy(() => import('./pages/CaseStudies.tsx'));
 const Contact = lazy(() => import('./pages/Contact.tsx'));
-const DesignSystem = lazy(() => import('./pages/DesignSystem.tsx'));
 const Privacy = lazy(() => import('./pages/Privacy.tsx'));
 const Terms = lazy(() => import('./pages/Terms.tsx'));
 const Compliance = lazy(() => import('./pages/Compliance.tsx'));
@@ -35,6 +31,7 @@ const Governance = lazy(() => import('./pages/Governance.tsx'));
 const DeploymentHub = lazy(() => import('./pages/DeploymentHub.tsx'));
 const CommandCenter = lazy(() => import('./pages/CommandCenter.tsx'));
 const AdminLogin = lazy(() => import('./components/AdminLogin.tsx'));
+const DesignSystem = lazy(() => import('./pages/DesignSystem.tsx'));
 const CreativeStudio = lazy(() => import('./pages/CreativeStudio.tsx'));
 const WebLab = lazy(() => import('./pages/WebLab.tsx'));
 const VideoStudio = lazy(() => import('./pages/VideoStudio.tsx'));
@@ -42,6 +39,9 @@ const AudioStudio = lazy(() => import('./pages/AudioStudio.tsx'));
 const ArchitectPage = lazy(() => import('./pages/ArchitectPage.tsx'));
 const SandboxPage = lazy(() => import('./pages/SandboxPage.tsx'));
 const AureliaPage = lazy(() => import('./pages/AureliaPage.tsx'));
+const EasyRead = lazy(() => import('./pages/EasyRead.tsx'));
+const WebsiteMakeovers = lazy(() => import('./pages/WebsiteMakeovers.tsx'));
+const MemberVault = lazy(() => import('./pages/MemberVault.tsx'));
 
 const NeuralFallback = () => (
   <div className="fixed inset-0 z-[9999] bg-royal-950 flex flex-col items-center justify-center gap-6">
@@ -51,28 +51,20 @@ const NeuralFallback = () => (
     </div>
     <div className="text-center space-y-2">
       <div className="text-[10px] font-black text-white uppercase tracking-tight">Synchronizing_Node</div>
-      <div className="text-[8px] font-mono text-slate-500 uppercase tracking-widest italic">Fetching neural assets from grid...</div>
+      <div className="text-[8px] font-mono text-slate-500 uppercase tracking-widest italic">Fetching neural assets...</div>
     </div>
   </div>
 );
 
-const SovereignSync = () => {
-  const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
-  useEffect(() => {
-    const host = window.location.hostname;
-    if (host.includes('run.app')) setEnvStatus('STAGING');
-    else if (host.includes('royalcaregroup.com.au') || host.includes('pages.dev')) setEnvStatus('LIVE');
-    else setEnvStatus('LOCAL');
-  }, []);
-  if (envStatus === 'STAGING') {
-    return (
-      <div className="bg-amber-500 text-black py-2 px-6 flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] relative z-[9999] shadow-2xl">
-        <AlertTriangle size={14} />
-        <span>Staging Mode Node Active // v{COMPANY_DETAILS.appVersion}</span>
-      </div>
-    );
+const MemberRoute = ({ children }: { children?: React.ReactNode }) => {
+  const { isMember, setShowPassportModal } = useSovereign();
+  const location = useLocation();
+  
+  if (!isMember) {
+    useEffect(() => { setShowPassportModal(true); }, []);
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
-  return null;
+  return <>{children}</>;
 };
 
 const SovereignRoute = ({ children }: { children?: React.ReactNode }) => {
@@ -82,15 +74,19 @@ const SovereignRoute = ({ children }: { children?: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const GoogleTagTracker = () => {
-  const { pathname, search } = useLocation();
+const PageTransitionScanner = () => {
+  const { pathname } = useLocation();
+  const [isScanning, setIsScanning] = useState(false);
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-    if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', 'AW-17820482706', { 'page_path': pathname + search });
-    }
-  }, [pathname, search]);
-  return null;
+    setIsScanning(true);
+    const timer = setTimeout(() => setIsScanning(false), 1500);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  if (!isScanning) return null;
+  return <div className="scanning-freznel animate-scan-line" />;
 };
 
 const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
@@ -101,7 +97,7 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
       triggerPulse(e.clientX, e.clientY);
     }
   };
-  return <div onClick={handleInteraction} className="min-h-screen flex flex-col">{children}</div>;
+  return <div onClick={handleInteraction} className="min-h-screen flex flex-col bg-transparent relative">{children}</div>;
 };
 
 const AppContent: React.FC = () => {
@@ -109,25 +105,23 @@ const AppContent: React.FC = () => {
 
   return (
     <GridInteractionLayer>
-      <SovereignSync />
-      <GoogleTagTracker />
-      
-      {/* Background Layer (Persistent for aesthetic continuity) */}
-      <div className="fixed inset-0 bg-[#334155] z-0" />
       <NeuralBackground />
+      <MatrixXRay />
       <SovereignGrid />
+      <RefractiveLens />
       <CustomCursor />
+      <NeuralPassport />
 
       {!isGridInitialized ? (
         <SovereignConsent onAccepted={() => setIsGridInitialized(true)} />
       ) : (
-        <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none animate-in fade-in duration-1000">
-          <SystemTicker />
+        <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white animate-in fade-in duration-1000 bg-transparent">
+          <PageTransitionScanner />
           <LiveStatusHUD />
           
-          <div className="flex-grow flex flex-col pointer-events-auto">
+          <div className="flex-grow flex flex-col bg-transparent">
             <Header />
-            <main className="flex-grow">
+            <main className="flex-grow bg-transparent">
               <Suspense fallback={<NeuralFallback />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -147,6 +141,9 @@ const AppContent: React.FC = () => {
                   <Route path="/architect" element={<ArchitectPage />} />
                   <Route path="/sandbox" element={<SandboxPage />} />
                   <Route path="/aurelia" element={<AureliaPage />} />
+                  <Route path="/easy-read" element={<EasyRead />} />
+                  <Route path="/makeovers" element={<WebsiteMakeovers />} />
+                  <Route path="/vault" element={<MemberRoute><MemberVault /></MemberRoute>} />
                   <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
                   <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
                   <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />

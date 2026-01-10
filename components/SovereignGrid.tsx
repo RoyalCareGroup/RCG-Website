@@ -1,12 +1,14 @@
+
 import React, { useEffect, useRef } from 'react';
 import { useSovereign } from '../context/SovereignContext.tsx';
 
 interface Node {
   x: number;
   y: number;
+  baseX: number;
+  baseY: number;
   vx: number;
   vy: number;
-  pulseSize: number;
 }
 
 export const SovereignGrid: React.FC = () => {
@@ -14,6 +16,7 @@ export const SovereignGrid: React.FC = () => {
   const { isThinking, lastPulse } = useSovereign();
   const nodes = useRef<Node[]>([]);
   const pulses = useRef<{ x: number, y: number, radius: number, alpha: number }[]>([]);
+  const mousePos = useRef({ x: -1000, y: -1000 });
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,74 +28,93 @@ export const SovereignGrid: React.FC = () => {
     let height = canvas.height = window.innerHeight;
     const isMobile = width < 768;
 
-    // Dynamically calculate node count to keep performance high on mobile
-    const nodeCount = Math.floor((width * height) / (isMobile ? 45000 : 25000));
-    nodes.current = Array.from({ length: nodeCount }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      pulseSize: 0,
-    }));
+    const onMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener('mousemove', onMouseMove);
+
+    const nodeCount = Math.floor((width * height) / (isMobile ? 60000 : 35000));
+    nodes.current = Array.from({ length: nodeCount }, () => {
+      const rx = Math.random() * width;
+      const ry = Math.random() * height;
+      return {
+        x: rx,
+        y: ry,
+        baseX: rx,
+        baseY: ry,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+      };
+    });
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       
-      const speedMultiplier = isThinking ? 2.5 : 1;
-      const opacityMultiplier = isThinking ? 1.5 : 1;
+      const speedMultiplier = isThinking ? 1.6 : 1;
+      const opacityMultiplier = isThinking ? 1.2 : 1;
 
-      // Update and draw pulses
       pulses.current = pulses.current.filter(p => p.alpha > 0.01);
       pulses.current.forEach(p => {
-        p.radius += isMobile ? 3 : 5;
-        p.alpha *= 0.95;
+        p.radius += isMobile ? 1.5 : 2.5;
+        p.alpha *= 0.98;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(6, 182, 212, ${p.alpha * 0.25})`;
-        ctx.lineWidth = isMobile ? 1 : 2;
+        ctx.strokeStyle = `rgba(30, 41, 59, ${p.alpha * 0.3})`;
+        ctx.lineWidth = 1;
         ctx.stroke();
       });
 
       nodes.current.forEach((node, i) => {
-        node.x += node.vx * speedMultiplier;
-        node.y += node.vy * speedMultiplier;
+        // Base drift
+        node.baseX += node.vx * speedMultiplier;
+        node.baseY += node.vy * speedMultiplier;
 
-        if (node.x < 0 || node.x > width) node.vx *= -1;
-        if (node.y < 0 || node.y > height) node.vy *= -1;
+        if (node.baseX < 0 || node.baseX > width) node.vx *= -1;
+        if (node.baseY < 0 || node.baseY > height) node.vy *= -1;
 
-        // Connections - limit distance on mobile to reduce drawing ops
-        const maxDist = isMobile ? 100 : 150;
+        // SOFT DISPLACEMENT
+        const dx = node.baseX - mousePos.current.x;
+        const dy = node.baseY - mousePos.current.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const maxDist = 280;
+
+        if (dist < maxDist) {
+          const force = (1 - dist / maxDist) * 55;
+          const targetX = node.baseX + (dx / dist) * force;
+          const targetY = node.baseY + (dy / dist) * force;
+          
+          // Smoothly move towards target displacement
+          node.x += (targetX - node.x) * 0.08;
+          node.y += (targetY - node.y) * 0.08;
+        } else {
+          // Smoothly return to base with slight momentum
+          node.x += (node.baseX - node.x) * 0.05;
+          node.y += (node.baseY - node.y) * 0.05;
+        }
+
+        const maxConnDist = isMobile ? 120 : 180;
         for (let j = i + 1; j < nodes.current.length; j++) {
           const other = nodes.current[j];
-          const dx = node.x - other.x;
-          const dy = node.y - other.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const dxx = node.x - other.x;
+          const dyy = node.y - other.y;
+          const ddistSq = dxx * dxx + dyy * dyy;
 
-          if (dist < maxDist) {
+          if (ddistSq < maxConnDist * maxConnDist) {
+            const ddist = Math.sqrt(ddistSq);
             ctx.beginPath();
             ctx.moveTo(node.x, node.y);
             ctx.lineTo(other.x, other.y);
-            const alpha = (1 - dist / maxDist) * 0.12 * opacityMultiplier;
-            ctx.strokeStyle = i % 2 === 0 
-              ? `rgba(6, 182, 212, ${alpha})` 
-              : `rgba(217, 70, 239, ${alpha})`;
+            const alpha = (1 - ddist / maxConnDist) * 0.05 * opacityMultiplier;
+            ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
 
-        // Draw node
         ctx.beginPath();
-        ctx.arc(node.x, node.y, isMobile ? 1 : 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = i % 2 === 0 ? '#06b6d4' : '#d946ef';
+        ctx.arc(node.x, node.y, 1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
         ctx.fill();
-        
-        if (isThinking && !isMobile) { // Disable shadows on mobile thinking to save GPU
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = i % 2 === 0 ? '#06b6d4' : '#d946ef';
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
       });
 
       requestAnimationFrame(draw);
@@ -108,6 +130,7 @@ export const SovereignGrid: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animationId);
     };
   }, [isThinking]);
@@ -122,7 +145,7 @@ export const SovereignGrid: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-[2]"
-      style={{ opacity: isThinking ? 0.7 : 0.4 }}
+      style={{ opacity: 0.6 }}
     />
   );
 };

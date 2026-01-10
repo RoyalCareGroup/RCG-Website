@@ -1,9 +1,17 @@
+
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 
 interface TranscriptLine {
   role: 'user' | 'model';
   text: string;
+}
+
+interface MemberData {
+  name: string;
+  email: string;
+  org: string;
+  timestamp: number;
 }
 
 interface SovereignContextType {
@@ -30,6 +38,17 @@ interface SovereignContextType {
   startAurelia: () => Promise<void>;
   stopAurelia: () => void;
   clearAureliaTranscript: () => void;
+
+  isSunshineMode: boolean;
+  setIsSunshineMode: (active: boolean) => void;
+
+  // Membership State
+  isMember: boolean;
+  memberData: MemberData | null;
+  establishPassport: (data: MemberData) => void;
+  terminatePassport: () => void;
+  showPassportModal: boolean;
+  setShowPassportModal: (show: boolean) => void;
 }
 
 const SovereignContext = createContext<SovereignContextType | undefined>(undefined);
@@ -48,6 +67,47 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const [aureliaListening, setAureliaListening] = useState(false);
   const [aureliaStatus, setAureliaStatus] = useState('STANDBY');
   const [aureliaTranscript, setAureliaTranscript] = useState<TranscriptLine[]>([]);
+
+  // Membership Logic
+  const [isMember, setIsMember] = useState(false);
+  const [memberData, setMemberData] = useState<MemberData | null>(null);
+  const [showPassportModal, setShowPassportModal] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('rcg_neural_passport');
+    if (saved) {
+      setIsMember(true);
+      setMemberData(JSON.parse(saved));
+    }
+  }, []);
+
+  const establishPassport = (data: MemberData) => {
+    localStorage.setItem('rcg_neural_passport', JSON.stringify(data));
+    setMemberData(data);
+    setIsMember(true);
+    setShowPassportModal(false);
+  };
+
+  const terminatePassport = () => {
+    localStorage.removeItem('rcg_neural_passport');
+    setMemberData(null);
+    setIsMember(false);
+  };
+
+  // Persistent sunshine state
+  const [isSunshineMode, setIsSunshineMode] = useState(() => {
+    const saved = localStorage.getItem('rcg_sunshine_mode');
+    return saved !== null ? saved === 'true' : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('rcg_sunshine_mode', isSunshineMode.toString());
+    if (isSunshineMode) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  }, [isSunshineMode]);
 
   const masterCtxRef = useRef<AudioContext | null>(null);
   const heartbeatRef = useRef<OscillatorNode | null>(null);
@@ -80,12 +140,7 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const initializeAudio = useCallback(async (): Promise<boolean> => {
     try {
       const ctx = getAudioContext();
-      
-      // Explicitly resume on every call to ensure the User Gesture is captured
-      if (ctx.state !== 'running') {
-        await ctx.resume();
-      }
-      
+      if (ctx.state !== 'running') await ctx.resume();
       if (!heartbeatRef.current) {
         const heartbeat = ctx.createOscillator();
         const silentGain = ctx.createGain();
@@ -96,11 +151,9 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
         heartbeat.start();
         heartbeatRef.current = heartbeat;
       }
-
       setAudioReady(true);
       return true;
     } catch (err) {
-      console.error("Audio Initialization Error:", err);
       setAudioReady(false);
       return false;
     }
@@ -122,12 +175,10 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
 
   const startAurelia = async () => {
     if (aureliaActive || aureliaConnecting) return;
-    
     setAureliaConnecting(true);
     setAureliaStatus('INITIATING_BOND');
     const bonded = await initializeAudio();
     if (!bonded) { setAureliaConnecting(false); setAureliaStatus('HARDWARE_BLOCKED'); return; }
-
     const ctx = getAudioContext();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -156,55 +207,29 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
               currentInputRef.current += message.serverContent.inputTranscription.text;
               setAureliaTranscript(prev => {
                 const last = prev[prev.length - 1];
-                if (last?.role === 'user') {
-                  const newArr = [...prev];
-                  newArr[newArr.length - 1] = { role: 'user', text: currentInputRef.current };
-                  return newArr;
-                }
+                if (last?.role === 'user') return [...prev.slice(0, -1), { role: 'user', text: currentInputRef.current }];
                 return [...prev, { role: 'user', text: currentInputRef.current }];
               });
             }
-
             if (message.serverContent?.outputTranscription) {
               currentOutputRef.current += message.serverContent.outputTranscription.text;
               setAureliaTranscript(prev => {
                 const last = prev[prev.length - 1];
-                if (last?.role === 'model') {
-                  const newArr = [...prev];
-                  newArr[newArr.length - 1] = { role: 'model', text: currentOutputRef.current };
-                  return newArr;
-                }
+                if (last?.role === 'model') return [...prev.slice(0, -1), { role: 'model', text: currentOutputRef.current }];
                 return [...prev, { role: 'model', text: currentOutputRef.current }];
               });
             }
-
-            if (message.serverContent?.turnComplete) {
-              currentInputRef.current = '';
-              currentOutputRef.current = '';
-            }
-
+            if (message.serverContent?.turnComplete) { currentInputRef.current = ''; currentOutputRef.current = ''; }
             const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio) {
               setAureliaSpeaking(true);
               nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
               const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
               const source = ctx.createBufferSource();
-              source.buffer = audioBuffer;
-              source.connect(ctx.destination);
-              source.start(nextStartTimeRef.current);
-              nextStartTimeRef.current += audioBuffer.duration;
+              source.buffer = audioBuffer; source.connect(ctx.destination);
+              source.start(nextStartTimeRef.current); nextStartTimeRef.current += audioBuffer.duration;
               sourcesRef.current.add(source);
-              source.onended = () => {
-                sourcesRef.current.delete(source);
-                if (sourcesRef.current.size === 0) setAureliaSpeaking(false);
-              };
-            }
-
-            if (message.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
-              sourcesRef.current.clear();
-              nextStartTimeRef.current = 0;
-              setAureliaSpeaking(false);
+              source.onended = () => { sourcesRef.current.delete(source); if (sourcesRef.current.size === 0) setAureliaSpeaking(false); };
             }
           },
           onclose: () => stopAurelia(),
@@ -215,7 +240,7 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
-          systemInstruction: "You are Aurelia, the RCG Visionary Strategist. Speak with peer-level empathy to NDIS providers. Frame your advice with the empathy of someone who has managed SIL houses, battled audit notices, and handled the paperwork death-spiral."
+          systemInstruction: "You are Aurelia, the RCG Visionary Strategist. Speak with peer-level empathy to NDIS providers."
         }
       });
       sessionRef.current = await sessionPromise;
@@ -230,7 +255,9 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
     <SovereignContext.Provider value={{ 
       isThinking, setIsThinking, triggerPulse, lastPulse, getAudioContext, audioReady, initializeAudio, stopHeartbeat,
       isWelcomePlaying, setIsWelcomePlaying, welcomeAnalyser, setWelcomeAnalyser,
-      aureliaActive, aureliaConnecting, aureliaSpeaking, aureliaListening, aureliaStatus, aureliaTranscript, startAurelia, stopAurelia, clearAureliaTranscript: () => setAureliaTranscript([])
+      aureliaActive, aureliaConnecting, aureliaSpeaking, aureliaListening, aureliaStatus, aureliaTranscript, startAurelia, stopAurelia, clearAureliaTranscript: () => setAureliaTranscript([]),
+      isSunshineMode, setIsSunshineMode,
+      isMember, memberData, establishPassport, terminatePassport, showPassportModal, setShowPassportModal
     }}>
       {children}
     </SovereignContext.Provider>

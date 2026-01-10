@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 interface DecodingTextProps {
@@ -38,9 +39,9 @@ const DecodingChar = ({ char, trigger, delay, glow }: { char: string, trigger: b
   }, [trigger, char, delay]);
 
   return (
-    <span className={`transition-all duration-500 inline-block whitespace-pre font-black ${
+    <span className={`transition-all duration-500 inline-block whitespace-pre font-black uppercase ${
       isLocked 
-        ? (glow ? 'text-white animate-neon-hum' : '') 
+        ? (glow ? 'dark:text-white text-slate-950 animate-neon-hum' : '') 
         : 'text-neon-blue opacity-50'
     }`}>
       {display || " "}
@@ -60,7 +61,7 @@ export const DecodingText: React.FC<DecodingTextProps> = ({
   const words = text.split(' ');
   let charCumulativeIndex = 0;
   return (
-    <span className={`${wrapperClassName} inline-block font-black`}>
+    <span className={`${wrapperClassName} inline-block font-black uppercase`}>
       {words.map((word, wordIndex) => {
         const wordChars = word.split('');
         return (

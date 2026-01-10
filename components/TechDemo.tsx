@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Terminal, Search, ShieldCheck, AlertTriangle, Loader2, Zap, Database, ChevronRight, FileCheck } from 'lucide-react';
 import { sendChatMessage } from '../services/geminiService.ts';
@@ -74,9 +75,9 @@ export const TechDemo: React.FC = () => {
           <button 
             type="submit"
             disabled={isValidating || !input.trim()}
-            className="w-full py-5 bg-white text-black font-black text-[10px] tracking-[0.5em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all flex items-center justify-center gap-4 shadow-xl disabled:opacity-50 mt-auto"
+            className="w-full py-6 bg-black border-[4px] border-[#D4AF37] text-white font-black text-[10px] tracking-[0.5em] uppercase rounded-2xl hover:scale-105 active:border-neon-purple active:text-neon-purple transition-all shadow-xl disabled:opacity-50 mt-auto"
           >
-            {isValidating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} />}
+            {isValidating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} className="text-amber-500 group-active:text-neon-purple" />}
             {isValidating ? 'Executing Deep-Scan...' : 'Initialize Logic Check'}
           </button>
         </form>

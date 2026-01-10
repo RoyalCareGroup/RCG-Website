@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Shield, ArrowRight, Zap, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -58,7 +59,7 @@ export const LegalUplink: React.FC = () => {
               onClick={handleAcknowledge}
               className="w-full py-5 bg-white text-black font-black text-[11px] uppercase tracking-[0.5em] rounded-2xl hover:bg-neon-blue hover:text-white transition-all active:scale-95 shadow-3xl flex items-center justify-center gap-4 group"
             >
-              <Zap size={16} className="text-neon-purple group-hover:animate-bounce" /> 
+              <Zap size={16} className="text-amber-500 group-hover:animate-bounce" /> 
               Accept Protocol
             </button>
             

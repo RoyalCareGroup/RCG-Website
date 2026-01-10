@@ -1,12 +1,15 @@
+
 import React, { useEffect, useRef } from 'react';
+import { useSovereign } from '../context/SovereignContext.tsx';
 
 export const MatrixXRay: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { isSunshineMode } = useSovereign();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha: true }); // Enable alpha for clean clearing
     if (!ctx) return;
 
     const isMobile = window.innerWidth < 768;
@@ -19,8 +22,9 @@ export const MatrixXRay: React.FC = () => {
     const drops: number[] = Array.from({ length: columns }, () => Math.random() * -100);
 
     const draw = () => {
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(0, 0, width, height);
+      // CLEAR the canvas completely so it's transparent
+      ctx.clearRect(0, 0, width, height);
+      
       ctx.font = `bold ${fontSize}px "JetBrains Mono"`;
 
       const step = isMobile ? 3 : 1;
@@ -29,15 +33,28 @@ export const MatrixXRay: React.FC = () => {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 8; j++) {
           const trailY = y - (j * fontSize);
           if (trailY < 0 || trailY > height) continue;
 
+          const opacity = 1 - (j / 8);
+          
           if (j === 0) {
-            ctx.fillStyle = '#ffffff';
+            // TIP COLOR
+            ctx.fillStyle = isSunshineMode ? 'rgba(15, 23, 42, 1)' : 'rgba(255, 255, 255, 1)';
           } else {
-            const opacity = 1 - (j / 5);
-            ctx.fillStyle = i % 2 === 0 ? `rgba(217, 70, 239, ${opacity})` : `rgba(6, 182, 212, ${opacity})`;
+            // TRAIL COLORS
+            if (i % 2 === 0) {
+              // GOLD TRAIL
+              ctx.fillStyle = isSunshineMode 
+                ? `rgba(139, 110, 49, ${opacity * 0.9})` 
+                : `rgba(229, 199, 139, ${opacity * 0.8})`;
+            } else {
+              // BLUE TRAIL
+              ctx.fillStyle = isSunshineMode 
+                ? `rgba(8, 145, 178, ${opacity * 0.9})` 
+                : `rgba(6, 182, 212, ${opacity * 0.8})`;
+            }
           }
           
           const text = characters[Math.floor(Math.random() * characters.length)];
@@ -47,7 +64,7 @@ export const MatrixXRay: React.FC = () => {
         if (y > height && Math.random() > 0.985) {
           drops[i] = 0;
         }
-        drops[i] += isMobile ? 0.1 : 0.15;
+        drops[i] += isMobile ? 0.15 : 0.2;
       }
     };
 
@@ -75,17 +92,17 @@ export const MatrixXRay: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isSunshineMode]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[1]"
+      className="fixed inset-0 pointer-events-none z-[1] transition-opacity duration-1000"
       style={{
-        // DEFINED SHARPNESS: Radius cut to 80px for high-precision X-ray effect
-        maskImage: `radial-gradient(circle 80px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 50%, transparent 100%)`,
-        WebkitMaskImage: `radial-gradient(circle 80px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 50%, transparent 100%)`,
-        opacity: 0.8
+        // Higher opacity in Sunshine mode to contrast the light background
+        opacity: isSunshineMode ? 0.9 : 0.3,
+        maskImage: `radial-gradient(circle 120px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 40%, transparent 100%)`,
+        WebkitMaskImage: `radial-gradient(circle 120px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 40%, transparent 100%)`,
       }}
     />
   );

@@ -1,12 +1,13 @@
+
 import React, { useEffect, useRef } from 'react';
 import { useSovereign } from '../context/SovereignContext.tsx';
 
 export const NeuralBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { isWelcomePlaying, welcomeAnalyser } = useSovereign();
-  
-  const drops = useRef<number[]>([]);
-  const characters = '01SYNKNDISRCG'.split('');
+  const mousePos = useRef({ x: -1000, y: -1000 });
+  const time = useRef(0);
+  const scrollPos = useRef(0);
+  const { isSunshineMode } = useSovereign();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -16,95 +17,113 @@ export const NeuralBackground: React.FC = () => {
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
-    const isMobile = width < 768;
 
-    const fontSize = isMobile ? 18 : 14;
+    const onMouseMove = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    };
+    const onScroll = () => {
+      scrollPos.current = window.scrollY;
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // --- MATRIX RAIN SETUP ---
+    const fontSize = 16;
     const columns = Math.ceil(width / fontSize);
-    
-    // Initialize drops for the full width
-    if (drops.current.length === 0 || drops.current.length !== columns) {
-      drops.current = Array.from({ length: columns }, () => Math.random() * -100);
-    }
+    const drops = Array.from({ length: columns }, () => Math.random() * (height / fontSize));
+    const charPool = '01SYNKNDISRCG$#@%&*'.split('');
+    const tailLength = 22; 
+
+    // Neural Smoke Nodes (Subtle atmospheric depth)
+    const nodes = Array.from({ length: 8 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 600 + 400,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      color: Math.random() > 0.7 ? '#E5C78B' : '#1E293B',
+      opacity: 0.05 
+    }));
 
     const draw = () => {
-      // Base background fill (Slate Blue)
-      ctx.fillStyle = '#334155';
+      time.current += 0.005;
+      
+      // Background base
+      ctx.fillStyle = '#020617';
       ctx.fillRect(0, 0, width, height);
 
-      if (isWelcomePlaying && welcomeAnalyser) {
-        // --- MODE A: NEURAL GREEN HORIZON ---
-        const bufferLength = welcomeAnalyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        welcomeAnalyser.getByteFrequencyData(dataArray);
+      // --- LAYER 1: CHROMATIC MATRIX RAIN (SOFTENED) ---
+      ctx.font = `bold ${fontSize}px "JetBrains Mono"`;
+      
+      // Global opacity multiplier to soften the overall effect
+      const globalOpacity = 0.35;
 
-        const centerY = height * 0.5;
-        const barWidth = (width / bufferLength) * 2.5;
-        
-        ctx.save();
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#00ff41';
-        ctx.beginPath();
-        ctx.moveTo(0, centerY);
-        ctx.lineTo(width, centerY);
-        ctx.strokeStyle = 'rgba(0, 255, 65, 0.4)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.restore();
+      for (let i = 0; i < columns; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-        let x = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          const intensity = dataArray[i] / 255;
-          const barHeight = intensity * (isMobile ? 140 : 220);
+        // Interaction logic
+        const dx = x - mousePos.current.x;
+        const dist = Math.abs(dx);
+        const isNearMouse = dist < 200;
+        const mouseFactor = isNearMouse ? (1 - dist / 200) : 0;
+        // Reduced base speed for calmer atmosphere
+        const currentSpeed = 0.1 + (mouseFactor * 0.3) + (scrollPos.current * 0.00005);
+
+        // --- DRAW TAIL ---
+        for (let j = 0; j < tailLength; j++) {
+          const tailY = y - (j * fontSize);
           
-          if (barHeight > 1) {
-            ctx.fillStyle = `rgba(0, 255, 65, ${intensity * 0.3})`;
-            ctx.fillRect(x, centerY - barHeight, Math.max(1, barWidth), barHeight * 2);
-            const grad = ctx.createLinearGradient(0, centerY - barHeight, 0, centerY + barHeight);
-            grad.addColorStop(0, 'transparent');
-            grad.addColorStop(0.2, 'rgba(0, 255, 65, 0.8)');
-            grad.addColorStop(0.5, '#ffffff'); 
-            grad.addColorStop(0.8, 'rgba(0, 255, 65, 0.8)');
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.fillRect(x + (barWidth * 0.25), centerY - barHeight, Math.max(1, barWidth * 0.5), barHeight * 2);
+          if (tailY < -fontSize || tailY > height + fontSize) continue;
+
+          let alpha = (1 - (j / tailLength)) * globalOpacity;
+          alpha = Math.max(0, alpha);
+
+          if (j === 0) {
+            // THE LEAD SYMBOL: Soft White
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+          } else if (j < 6) {
+            // GOLD TRANSITION: Lowered prominence
+            ctx.fillStyle = `rgba(229, 199, 139, ${alpha * 0.6})`;
+          } else {
+            // DEEP NEON BLUE TAIL: Lowered prominence
+            ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.4})`;
           }
-          x += barWidth;
+
+          const char = charPool[Math.floor(Math.random() * charPool.length)];
+          ctx.fillText(char, x, tailY);
         }
-      } else {
-        // --- MODE B: DEFINED MATRIX WATERFALL (Full Width Tracking) ---
-        ctx.font = `bold ${fontSize}px "JetBrains Mono"`;
-        
-        const step = isMobile ? 2 : 1;
 
-        for (let i = 0; i < columns; i += step) {
-          const x = i * fontSize;
-          const y = drops.current[i] * fontSize;
-
-          // Render trail for "Defined" look (5 glyphs deep)
-          for (let j = 0; j < 6; j++) {
-            const char = characters[Math.floor(Math.random() * characters.length)];
-            const trailY = y - (j * fontSize);
-            
-            if (trailY < 0 || trailY > height) continue;
-
-            if (j === 0) {
-              ctx.fillStyle = '#ffffff';
-            } else {
-              const opacity = 1 - (j / 6);
-              const color = i % 3 === 0 ? `rgba(6, 182, 212, ${opacity})` : `rgba(217, 70, 239, ${opacity})`;
-              ctx.fillStyle = color;
-            }
-            
-            ctx.fillText(char, x, trailY);
-          }
-
-          if (y > height && Math.random() > 0.98) {
-            drops.current[i] = 0;
-          }
-          
-          drops.current[i] += isMobile ? 0.12 : 0.18;
+        // Reset logic
+        if (y - (tailLength * fontSize) > height && Math.random() > 0.985) {
+          drops[i] = 0;
         }
+        drops[i] += currentSpeed;
       }
+
+      // --- LAYER 2: NEURAL SMOKE (Subtle Blends) ---
+      ctx.globalCompositeOperation = 'screen';
+      nodes.forEach((node, i) => {
+        node.x += node.vx + Math.sin(time.current + i) * 0.1;
+        node.y += node.vy + Math.cos(time.current + i) * 0.1;
+
+        if (node.x < -node.radius) node.x = width + node.radius;
+        if (node.x > width + node.radius) node.x = -node.radius;
+        if (node.y < -node.radius) node.y = height + node.radius;
+        if (node.y > height + node.radius) node.y = -node.radius;
+
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, node.radius);
+        const col = node.color === '#E5C78B' ? '229, 199, 139' : '30, 41, 59';
+        gradient.addColorStop(0, `rgba(${col}, ${node.opacity})`);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalCompositeOperation = 'source-over';
     };
 
     let frameId: number;
@@ -117,31 +136,21 @@ export const NeuralBackground: React.FC = () => {
     const handleResize = () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-      const newColumns = Math.ceil(width / fontSize);
-      drops.current = Array.from({ length: newColumns }, () => Math.random() * -100);
     };
     window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(frameId);
     };
-  }, [isWelcomePlaying, welcomeAnalyser]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[1]"
-      style={{
-        // DEFINED SHARPNESS: Radius cut to 100px, falloff tightened to 60-100 range
-        maskImage: isWelcomePlaying 
-          ? 'none' 
-          : `radial-gradient(circle 100px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 60%, transparent 100%)`,
-        WebkitMaskImage: isWelcomePlaying 
-          ? 'none' 
-          : `radial-gradient(circle 100px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 60%, transparent 100%)`,
-        opacity: isWelcomePlaying ? 1.0 : 0.85,
-      }}
+      className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000 ${!isSunshineMode ? 'opacity-100' : 'opacity-0'}`}
     />
   );
 };

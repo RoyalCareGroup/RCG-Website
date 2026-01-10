@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, Mail, Zap, ShieldCheck, Terminal, Activity, ArrowRight, ExternalLink, Loader2, Cpu, MessageSquare, ChevronDown, Volume2, VolumeX, AlertTriangle, Copy, Check, X } from 'lucide-react';
+
+import React, { useState, useRef } from 'react';
+import { Send, Terminal, Activity, Zap, Loader2, Cpu, ChevronDown, Volume2, VolumeX, ShieldCheck, ArrowRight } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { COMPANY_DETAILS } from '../config.ts';
 import { DecodingText } from '../components/DecodingText.tsx';
@@ -8,9 +9,7 @@ import { DecodingText } from '../components/DecodingText.tsx';
 function decodeBase64(base64: string) {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
+  for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
   return bytes;
 }
 
@@ -27,15 +26,22 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
   return buffer;
 }
 
+const INQUIRY_OPTIONS = [
+  "Strategic NDIS Advisory",
+  "SYNK Tech Suite Integration",
+  "Governance & Compliance Hub",
+  "NDIS Audit Diagnostic (TFix)",
+  "Workflow Re-Engineering",
+  "Custom NDIS Software Development",
+  "General Inquiry"
+];
+
 const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', msg: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: INQUIRY_OPTIONS[0], msg: '' });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<{ category: string, recommendation: string, intent: string } | null>(null);
   const [showHandshake, setShowHandshake] = useState(false);
-  const [isBotDetected, setIsBotDetected] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
   
-  // Audio Engine State
   const [isReadingAloud, setIsReadingAloud] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   
@@ -43,25 +49,18 @@ const Contact: React.FC = () => {
   const cachedBufferRef = useRef<AudioBuffer | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  // Formatted intro text for visual spacing (Sentient Humour Tone)
   const introTextRaw = `Look, we’re deep in the AI Golden Age, but let's be real:\nneural networks are terrible at reading the room\nand even worse at sharing a coffee.\n\nIf you're tired of talking to algorithms that have the\npersonality of a spicy spreadsheet, drop your payload here.\n\nA real, breathing human architect—one who actually knows\nwhat a 'Monday morning' feels like—will get back to you.\n\nWe’re hardcore tech-native, but we still haven’t figured out\nhow to automate a proper vibe check. Yet.`;
 
   const handleReadAloud = async () => {
-    // 1. If currently playing, stop it.
     if (isReadingAloud) {
       currentSourceRef.current?.stop();
       setIsReadingAloud(false);
       return;
     }
-
-    // 2. Initialize AudioContext on first interaction
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-    }
+    if (!audioContextRef.current) audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const ctx = audioContextRef.current;
     if (ctx.state === 'suspended') await ctx.resume();
 
-    // 3. Synthesize if no cached buffer exists
     if (!cachedBufferRef.current) {
       setIsSynthesizing(true);
       try {
@@ -71,224 +70,135 @@ const Contact: React.FC = () => {
           contents: [{ parts: [{ text: introTextRaw.replace(/\n/g, ' ') }] }],
           config: {
             responseModalities: [Modality.AUDIO],
-            speechConfig: {
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: 'Kore' },
-              },
-            },
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
           },
         });
-
         const base64Audio = response.candidates?.[0]?.content?.parts[0]?.inlineData?.data;
-        if (base64Audio) {
-          const audioBuffer = await decodeAudioData(decodeBase64(base64Audio), ctx, 24000, 1);
-          cachedBufferRef.current = audioBuffer;
-        } else {
-          throw new Error("Neural voice node failed to return audio bytes.");
-        }
-      } catch (err) {
-        console.error("Audio Synthesis Error:", err);
-        alert("Neural Voice Node temporarily unavailable. Manual reading recommended.");
-        setIsSynthesizing(false);
-        return;
-      } finally {
-        setIsSynthesizing(false);
-      }
+        if (base64Audio) cachedBufferRef.current = await decodeAudioData(decodeBase64(base64Audio), ctx, 24000, 1);
+      } catch (err) { console.error(err); } finally { setIsSynthesizing(false); }
     }
 
-    // 4. Play the synthesized buffer
     if (cachedBufferRef.current) {
       const source = ctx.createBufferSource();
       source.buffer = cachedBufferRef.current;
       source.connect(ctx.destination);
       source.onended = () => setIsReadingAloud(false);
-      
       currentSourceRef.current = source;
       setIsReadingAloud(true);
       source.start();
     }
   };
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(COMPANY_DETAILS.email);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
-  };
-
   const analyzeIntent = async () => {
     if (!formData.msg.trim() || isAnalyzing) return;
     setIsAnalyzing(true);
-    setIsBotDetected(false);
-
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `Analyze this NDIS provider inquiry for integrity and intent:
-      NAME: "${formData.name}"
-      EMAIL: "${formData.email}"
-      MESSAGE: "${formData.msg}"
-      
-      Return a JSON object with: 
-      1. category (short 2-3 word title)
-      2. intent (one sentence)
-      3. recommendation (department)
-      4. emailIntegrity (boolean: false if the email looks like a bot, fake domain, gibberish name, or disposable email service. true if it looks like a legitimate person or business)
-      5. reason (one short phrase if integrity is false).
-      
-      Maintain an elite, architectural tone.`;
-
+      const prompt = `Analyze this NDIS provider inquiry for integrity and intent: NAME: "${formData.name}", MESSAGE: "${formData.msg}". Return JSON: {category, intent}.`;
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: { responseMimeType: "application/json" }
       });
-
-      const result = JSON.parse(response.text || '{}');
-      
-      if (result.emailIntegrity === false) {
-        setIsBotDetected(true);
-      } else {
-        setAnalysis(result);
-        setShowHandshake(true);
-      }
-    } catch (err) {
-      console.error("Neural analysis failed:", err);
+      setAnalysis(JSON.parse(response.text || '{}'));
       setShowHandshake(true);
-    } finally {
-      setIsAnalyzing(false);
-    }
+    } catch (err) { setShowHandshake(true); } finally { setIsAnalyzing(false); }
   };
 
   const finalizeUplink = (e: React.FormEvent) => {
     e.preventDefault();
-    const recipient = COMPANY_DETAILS.email; 
-    const subject = `[UPLINK] Strategic Inquiry: ${formData.name}`;
-    const body = `ROYAL CARE GROUP - CONTACT MATRIX PAYLOAD\n` +
-                 `------------------------------------------\n` +
-                 `OPERATOR: ${formData.name}\n` +
-                 `REPLY_NODE: ${formData.email}\n` +
-                 `INTENT: ${analysis?.intent || 'Not Analyzed'}\n` +
-                 `CATEGORY: ${analysis?.category || 'Standard Inquiry'}\n\n` +
-                 `MESSAGE PAYLOAD:\n` +
-                 `${formData.msg}\n` +
-                 `------------------------------------------\n` +
-                 `Sent via Sovereign Uplink Protocol v${COMPANY_DETAILS.appVersion}`;
-    
-    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const subject = `[UPLINK] ${formData.subject}: ${formData.name}`;
+    const body = `RCG PAYLOAD\nOPERATOR: ${formData.name}\nREPLY: ${formData.email}\nMSG: ${formData.msg}`;
+    window.location.href = `mailto:${COMPANY_DETAILS.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
-    <div className="flex flex-col bg-[#334155] overflow-x-hidden min-h-screen selection:bg-neon-blue/30 selection:text-white px-6 sm:px-16 lg:px-24 font-sans font-bold relative">
-      
-      {/* --- ATMOSPHERE NODES --- */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-[#334155]"></div>
-        <div className="absolute top-[10%] left-[-10%] w-[100%] h-[100%] bg-neon-purple/[0.08] rounded-full blur-[200px] animate-blob-drift opacity-60"></div>
-        <div className="absolute bottom-[-10%] right-[-15%] w-[100%] h-[100%] bg-neon-blue/[0.08] rounded-full blur-[250px] animate-blob-drift opacity-60"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto pt-32 pb-40 relative z-10 w-full flex flex-col items-center">
+    <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
+      <div className="max-w-7xl mx-auto pt-48 pb-32 relative z-10 w-full flex flex-col items-center">
         
-        {/* HEADING SECTION */}
-        <div className="text-center mb-16 animate-hero-reveal max-w-4xl">
-          <div className="circuit-capsule border-2 border-white/80 bg-black text-white px-8 py-2.5 shadow-3xl inline-flex items-center gap-4 mb-10">
-            <Terminal size={14} className="animate-pulse text-neon-blue" /> Smart_Human_Sync_Protocol_v5
+        <div className="text-center mb-24 animate-hero-reveal max-w-5xl flex flex-col items-center">
+          <div className="circuit-capsule border border-neon-gold/30 bg-black/40 text-neon-gold px-10 py-3 shadow-3xl mb-12 inline-flex items-center gap-4">
+            <Terminal size={18} className="animate-pulse" /> 
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Smart_Human_Sync_Protocol</span>
           </div>
-          <h1 className="text-5xl md:text-8xl font-display font-black uppercase tracking-tighter leading-[0.85] mb-12">
-            <span className="block text-white mb-2">Contact</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-white to-neon-purple drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Matrix.</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-12 animate-liquid-shimmer">
+            <span className="block text-chiseled-silver mb-6 text-stroked-black">Contact</span>
+            <span className="text-chiseled-gold text-stroked-black">Matrix.</span>
           </h1>
 
-          {/* COMPACT HUMOUR TILE */}
-          <div className="banner-pop bg-black/40 backdrop-blur-md p-10 md:p-14 lg:p-16 shadow-2xl border border-white/10 rounded-[3rem] mx-auto group relative max-w-3xl">
-            <div className="absolute -top-3.5 left-10 px-6 py-1.5 bg-neon-purple rounded-full text-[9px] text-white uppercase tracking-widest font-black shadow-2xl group-hover:animate-pulse z-[30] border border-white/10">
-              Sentient_Humour_Override
+          <div className="orbital-tile p-12 md:p-20 shadow-[0_60px_120px_rgba(0,0,0,1)] mx-auto group relative max-w-3xl bg-black/60">
+            <div className="absolute -top-4 left-12 px-10 py-2.5 bg-neon-gold rounded-full text-[10px] text-black uppercase tracking-[0.5em] font-black shadow-3xl z-30 border-2 border-black">
+              Human_Intelligence_Override
             </div>
-            
-            <div className="relative z-10 flex flex-col items-center text-center">
-               <p className="text-sm md:text-base text-white/90 font-black leading-relaxed tracking-wide italic whitespace-pre-line">
-                 <DecodingText 
-                    text={introTextRaw}
-                    className="text-white/90"
-                    stagger={1}
-                 />
+            <div className="relative z-10 text-center">
+               <p className="text-xl md:text-2xl text-slate-400 font-bold leading-relaxed italic whitespace-pre-line tracking-tight uppercase">
+                 <DecodingText text={introTextRaw} stagger={1} />
                </p>
             </div>
-
-            {/* AUDIO TRIGGER ICON - SYNCED WITH MENU BUTTON AESTHETIC */}
             <button 
               onClick={handleReadAloud}
               disabled={isSynthesizing}
-              className={`absolute bottom-6 right-8 group/audio w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-500 rounded-xl bg-black border-[1.5px] shadow-2xl z-20 ${
-                isReadingAloud 
-                  ? 'border-neon-purple ring-4 ring-neon-purple/10 scale-105' 
-                  : isSynthesizing ? 'border-amber-500 ring-4 ring-amber-500/10' : 'border-neon-blue ring-4 ring-neon-blue/5 hover:border-white hover:ring-white/10 hover:scale-110 active:scale-95'
-              } ${isSynthesizing ? 'opacity-70' : 'opacity-100'}`}
-              aria-label={isReadingAloud ? "Stop Narration" : "Listen to Neural Voice"}
+              className={`absolute bottom-10 right-10 w-20 h-20 flex items-center justify-center transition-all duration-500 rounded-2xl bg-black border-2 shadow-3xl z-20 ${
+                isReadingAloud ? 'border-neon-gold scale-110 shadow-[0_0_40px_rgba(229,199,139,0.3)]' : 'border-white/10 hover:border-neon-gold'
+              }`}
             >
-              {/* Internal Glow Layer */}
-              <div className={`absolute inset-0 rounded-lg opacity-20 transition-opacity group-hover/audio:opacity-40 ${isReadingAloud ? 'bg-neon-purple' : 'bg-neon-blue'}`}></div>
-              
-              {/* Status LED */}
-              <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full transition-all duration-500 ${
-                isReadingAloud 
-                  ? 'bg-neon-purple shadow-[0_0_8px_#d946ef]' 
-                  : isSynthesizing ? 'bg-amber-500 animate-pulse' : 'bg-neon-green shadow-[0_0_8px_#10b981] animate-pulse'
-              }`}></div>
-
-              <div className="relative z-10 text-white transition-transform duration-500 group-hover/audio:scale-110">
-                {isSynthesizing ? <Loader2 size={26} className="animate-spin text-amber-500" /> : isReadingAloud ? <VolumeX size={26} className="animate-pulse" /> : <Volume2 size={26} />}
-              </div>
-
-              {/* Hover Label */}
-              <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black tracking-[0.4em] text-slate-500 uppercase opacity-0 group-hover/audio:opacity-100 transition-opacity whitespace-nowrap">
-                {isSynthesizing ? 'Syncing...' : isReadingAloud ? 'Stop' : 'Listen'}
-              </span>
+              {isSynthesizing ? <Loader2 size={32} className="animate-spin text-neon-gold" /> : isReadingAloud ? <VolumeX size={32} className="text-white animate-pulse" /> : <Volume2 size={32} className="text-white" />}
             </button>
           </div>
         </div>
 
-        {/* SMART FORM SECTION */}
         <div className="w-full max-w-4xl mb-32">
-          <div 
-            data-cursor-contrast="true"
-            className="orbital-tile p-8 md:p-14 shadow-[0_80px_160px_rgba(0,0,0,0.5)] relative overflow-hidden bg-white border-2 border-white min-h-[600px] flex flex-col transition-all duration-700 hover:shadow-[0_100px_180px_rgba(0,0,0,0.6)]"
-          >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-neon-purple via-slate-200 to-neon-blue"></div>
+          <div className="orbital-tile p-12 md:p-20 shadow-[0_80px_160px_rgba(0,0,0,1)] relative overflow-hidden bg-black/80 border-2 border-white/10 min-h-[750px] flex flex-col transition-all duration-700">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-gold via-white/10 to-neon-gold"></div>
             
             {!showHandshake ? (
-              <div className="relative z-10 space-y-10 animate-in fade-in duration-1000">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-6">
-                  <div className="flex items-center gap-4 text-slate-400">
-                     <Activity size={14} className="text-neon-blue" />
-                     <span className="text-[9px] font-black uppercase tracking-[0.5em] font-mono">Operator_Initiation_Mode</span>
-                  </div>
+              <div className="relative z-10 space-y-16 animate-in fade-in duration-1000">
+                <div className="flex items-center gap-8 text-slate-600 border-b border-white/5 pb-10">
+                   <Activity size={24} className="text-neon-gold" />
+                   <span className="text-[11px] font-black uppercase tracking-[0.8em] font-mono">Operator_Initiation_v5</span>
                 </div>
 
-                <form onSubmit={(e) => { e.preventDefault(); analyzeIntent(); }} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] font-mono ml-1">Operator Identity</label>
+                <form onSubmit={(e) => { e.preventDefault(); analyzeIntent(); }} className="space-y-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Operator Identity</label>
                       <input 
-                        type="text" required placeholder="Full Name Required"
-                        className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm text-black focus:border-neon-blue focus:bg-white outline-none transition-all placeholder:text-slate-300 font-black shadow-sm" 
+                        type="text" required placeholder="FULL NAME"
+                        className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
                         value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} 
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] font-mono ml-1">Response Node</label>
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Response Node</label>
                       <input 
-                        type="email" required placeholder="Work Email Required"
-                        className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl text-sm text-black focus:border-neon-blue focus:bg-white outline-none transition-all placeholder:text-slate-300 font-black shadow-sm" 
+                        type="email" required placeholder="WORK EMAIL"
+                        className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
                         value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} 
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] font-mono ml-1">Inquiry Context</label>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Inquiry Vector</label>
+                    <div className="relative">
+                      <select 
+                        className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all appearance-none font-bold shadow-inner"
+                        value={formData.subject}
+                        onChange={e => setFormData({...formData, subject: e.target.value})}
+                      >
+                        {INQUIRY_OPTIONS.map(opt => (
+                          <option key={opt} value={opt} className="bg-royal-950 text-white">{opt.toUpperCase()}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" size={28} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Inquiry Context</label>
                     <textarea 
-                      required rows={5} placeholder="Describe the structural goals, barriers, or scaling requirements..."
-                      className="w-full bg-slate-50 border border-slate-200 p-6 rounded-2xl text-sm text-black resize-none focus:border-neon-purple focus:bg-white outline-none transition-all placeholder:text-slate-300 font-black shadow-sm" 
+                      required rows={5} placeholder="Describe the structural goals or scaling requirements..."
+                      className="w-full bg-black/40 border-2 border-white/5 p-10 rounded-[2.5rem] text-lg text-white resize-none focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
                       value={formData.msg} onChange={e => setFormData({...formData, msg: e.target.value})}
                     />
                   </div>
@@ -296,143 +206,54 @@ const Contact: React.FC = () => {
                   <button 
                     type="submit" 
                     disabled={isAnalyzing || !formData.msg.trim()}
-                    className="slim-orbital-btn w-full py-6 text-white bg-black font-black text-[11px] tracking-[0.6em] uppercase flex items-center justify-center gap-6 group active:scale-95 shadow-2xl disabled:opacity-50 transition-all hover:bg-slate-900"
+                    className="w-full py-8 bg-black border-[3px] border-neon-gold rounded-2xl text-white font-black text-[12px] tracking-[0.6em] uppercase hover:scale-[1.02] active:bg-neon-gold active:text-black transition-all shadow-3xl disabled:opacity-50 flex items-center justify-center gap-6"
                   >
-                    {isAnalyzing ? <Loader2 size={20} className="animate-spin text-neon-blue" /> : <Zap size={18} className="text-neon-purple" />}
-                    <span>{isAnalyzing ? 'Mapping Intent...' : 'Initialize Logic Scan'}</span>
+                    {isAnalyzing ? <Loader2 size={24} className="animate-spin text-neon-gold" /> : <Zap size={24} className="text-neon-gold" />}
+                    <span>{isAnalyzing ? 'Mapping Intent...' : 'Initialize Human Sync'}</span>
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="relative z-10 space-y-10 animate-in slide-in-from-right-10 duration-700 flex flex-col h-full">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-6">
-                  <div className="flex items-center gap-6">
-                     <div className="p-3 bg-neon-purple/5 border border-neon-purple/10 rounded-xl">
-                        <ShieldCheck className="text-neon-purple" size={24} />
-                     </div>
-                     <div>
-                        <h3 className="text-2xl font-display font-black text-black uppercase tracking-tight">Neural Handshake</h3>
-                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em] mt-1 font-mono">Verified for Human Dispatch</p>
-                     </div>
-                  </div>
+              <div className="relative z-10 space-y-16 animate-in slide-in-from-right-10 duration-1000 flex flex-col h-full">
+                <div className="flex items-center gap-10 border-b border-white/5 pb-12">
+                   <div className="p-6 bg-royal-950 border-2 border-neon-gold/30 rounded-2xl shadow-3xl">
+                      <ShieldCheck className="text-neon-gold" size={48} />
+                   </div>
+                   <div>
+                      <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter">Neural Handshake</h3>
+                      <p className="text-[11px] text-slate-600 font-black uppercase tracking-[0.8em] mt-3 font-mono">Transmission_Ready // AU_EAST_CLOUD</p>
+                   </div>
                 </div>
 
-                <div className="space-y-6 flex-grow">
-                   <div className="p-8 bg-slate-50 border border-slate-200 rounded-3xl relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-4 opacity-[0.03] text-black"><MessageSquare size={60} /></div>
-                      <div className="text-[9px] font-black text-neon-blue uppercase tracking-widest mb-3">Structural Categorization</div>
-                      <h4 className="text-xl font-display font-black text-black uppercase tracking-tight mb-3">
+                <div className="space-y-10 flex-grow">
+                   <div className="p-12 bg-black/40 border border-white/10 rounded-[3rem] relative shadow-inner">
+                      <div className="text-[10px] font-black text-neon-gold uppercase tracking-[0.8em] mb-6">Structural Categorization</div>
+                      <h4 className="text-3xl font-display font-black text-white uppercase tracking-tight mb-6">
                          {analysis?.category || 'Strategic Growth Node'}
                       </h4>
-                      <p className="text-slate-600 text-sm leading-relaxed italic font-bold">
+                      <p className="text-slate-400 text-xl leading-relaxed italic font-bold">
                          "{analysis?.intent || 'Transmission protocol ready to bridge your inquiry to our lead architects.'}"
                       </p>
                    </div>
                 </div>
 
-                <div className="space-y-4 pt-6">
+                <div className="space-y-8 pt-12">
                    <button 
                       onClick={finalizeUplink}
-                      className="slim-orbital-btn w-full py-6 text-white bg-neon-blue font-black text-[12px] tracking-[0.7em] uppercase flex items-center justify-center gap-6 shadow-[0_20px_60px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all"
+                      className="w-full py-8 bg-black border-[4px] border-neon-gold rounded-2xl text-white font-black text-[14px] tracking-[0.6em] uppercase hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-3xl flex items-center justify-center gap-8 group"
                    >
-                      <Send size={20} />
-                      <span>Deploy Uplink Now</span>
+                      <Send size={24} className="text-neon-gold group-active:text-black" />
+                      <span>Deploy Final Uplink</span>
                    </button>
-                   <button 
-                      onClick={() => setShowHandshake(false)}
-                      className="w-full py-3 text-slate-400 font-black text-[8px] uppercase tracking-[0.5em] hover:text-black transition-colors"
-                   >
-                      Revision Required // Back to Editor
+                   <button onClick={() => setShowHandshake(false)} className="w-full py-4 text-slate-700 font-black text-[10px] uppercase tracking-[1em] hover:text-white transition-colors">
+                      Protocol Revision // Back to Editor
                    </button>
                 </div>
               </div>
             )}
           </div>
-          
-          <div className="mt-8 text-center text-[9px] font-black text-slate-500 uppercase tracking-[0.6em] animate-pulse">
-            AU_SECURE_GATEWAY // HUMAN_SYNC_10.13
-          </div>
         </div>
-
-        {/* SECONDARY TILES */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-          {[
-            { icon: <ShieldCheck className="text-neon-blue" />, label: "Security", val: "Sovereign Encryption Active", desc: "Your organizational data is protected by end-to-end RCG security nodes before a human even touches it." },
-            { icon: <Cpu className="text-neon-purple" />, label: "Dispatcher", val: "Neural Intent Discovery Enabled", desc: "Our Gemini-3 Flash engine handles initial mapping so our human architects can skip the small talk and get to the strategy." },
-          ].map((node, i) => (
-            <div key={i} className="orbital-tile p-10 bg-black/60 backdrop-blur-3xl border border-white/10 shadow-2xl flex flex-col gap-6 group hover:border-white/30 transition-all duration-700">
-              <div className="flex items-center gap-6">
-                <div className="p-4 bg-royal-950 rounded-2xl border border-white/5 group-hover:scale-110 transition-transform">{node.icon}</div>
-                <div>
-                  <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-1 font-mono">{node.label}</h4>
-                  <p className="text-white text-[11px] font-black">{node.val}</p>
-                </div>
-              </div>
-              <p className="text-slate-400 text-[12px] font-bold italic leading-relaxed opacity-60">"{node.desc}"</p>
-            </div>
-          ))}
-        </div>
-
       </div>
-
-      {/* --- BOT DETECTION / DIRECT UPLINK MODAL --- */}
-      {isBotDetected && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="max-w-md w-full bg-white rounded-[2.5rem] p-10 sm:p-12 shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/20 relative overflow-hidden flex flex-col items-center text-center">
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-neon-red"></div>
-              
-              <button 
-                onClick={() => setIsBotDetected(false)}
-                className="absolute top-6 right-6 p-2 text-slate-300 hover:text-black transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="mb-8 p-6 bg-red-50 rounded-3xl">
-                 <AlertTriangle className="text-neon-red w-12 h-12" />
-              </div>
-
-              <h3 className="text-2xl font-display font-black text-black uppercase tracking-tight mb-4">Uplink Anomaly Detected</h3>
-              <p className="text-slate-500 text-sm font-bold leading-relaxed italic mb-8">
-                "Our neural firewall flagged this entry node as potentially suspicious. To ensure your inquiry reaches our human architects, please email us directly."
-              </p>
-
-              <div className="w-full space-y-4">
-                 <div className="relative group">
-                    <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-center justify-between group-hover:border-neon-blue transition-all">
-                       <span className="text-black font-mono text-[11px] sm:text-sm font-bold">{COMPANY_DETAILS.email}</span>
-                       <button 
-                         onClick={handleCopyEmail}
-                         className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-neon-blue hover:border-neon-blue transition-all active:scale-95 shadow-sm"
-                       >
-                          {copySuccess ? <Check size={16} className="text-neon-green" /> : <Copy size={16} />}
-                       </button>
-                    </div>
-                    {copySuccess && (
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-black text-neon-green uppercase tracking-widest animate-fade-in">
-                        Copied to clipboard
-                      </div>
-                    )}
-                 </div>
-
-                 <a 
-                   href={`mailto:${COMPANY_DETAILS.email}`}
-                   className="block w-full py-5 bg-black text-white font-black text-[10px] tracking-[0.4em] uppercase rounded-2xl hover:bg-slate-900 transition-all shadow-xl active:scale-95 mt-8"
-                 >
-                   Launch Mail Interface
-                 </a>
-
-                 <button 
-                   onClick={() => setIsBotDetected(false)}
-                   className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-4 hover:text-black transition-colors"
-                 >
-                   Return to Contact Matrix
-                 </button>
-              </div>
-           </div>
-        </div>
-      )}
-
     </div>
   );
 };
