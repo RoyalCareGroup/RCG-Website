@@ -43,10 +43,17 @@ const Home = () => {
   const handleVoiceTest = async () => {
     if (isTestingVoice) return;
     
-    // CRITICAL: Immediately initialize audio on the click event to capture User Gesture
+    // 1. Check for API Key presence before initializing expensive hardware
+    const apiKey = process.env.API_KEY;
+    if (!apiKey || apiKey === "undefined" || apiKey === "") {
+      alert("Neural Configuration Error: The API_KEY environment variable is not set in your host (Cloudflare) settings. Please add it to your project variables and redeploy.");
+      return;
+    }
+
+    // 2. Immediately initialize audio on the click event to capture User Gesture
     const success = await initializeAudio();
     if (!success) {
-      alert("Hardware Blocked: Browser rejected audio context initialization. Ensure site permissions allow audio.");
+      alert("Hardware Blocked: Browser rejected audio context initialization. Ensure site permissions allow audio output.");
       return;
     }
 
@@ -56,10 +63,7 @@ const Home = () => {
     try {
       const ctx = getAudioContext();
       
-      // CALL API
-      if (!process.env.API_KEY) throw new Error("API_KEY_MISSING");
-
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
         contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group live environment. Systemizing success through binary logic." }] }],
@@ -115,10 +119,10 @@ const Home = () => {
       setIsWelcomePlaying(false);
       setWelcomeAnalyser(null);
       
-      if (err.message === "API_KEY_MISSING") {
-        alert("Neural Error: API Key is not configured for this environment.");
+      if (err.message?.includes("API key not valid")) {
+        alert("Neural Error: The provided API Key is invalid. Check your Google AI Studio credentials.");
       } else {
-        alert("Neural Link Error: The system could not synthesize audio. Check your connection to the grid.");
+        alert("Neural Link Error: The system could not synthesize audio. Ensure your internet connection is stable and the API Key is correctly configured in your project settings.");
       }
     }
   };
