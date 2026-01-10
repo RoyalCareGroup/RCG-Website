@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, Gavel, Scale, ShieldAlert, Cpu, Database, ArrowLeft, FileText, Globe, CheckCircle2, AlertOctagon } from 'lucide-react';
+import { Shield, Gavel, Scale, ShieldAlert, Cpu, Database, ArrowLeft, FileText, Globe, CheckCircle2, AlertOctagon, Lock, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 import { DecodingText } from '../components/DecodingText.tsx';
@@ -66,10 +66,31 @@ const Compliance: React.FC = () => {
             </div>
           </div>
 
+          {/* Section: Confidentiality Protocol (NEW) */}
+          <div className="orbital-tile p-10 bg-black border-2 border-neon-green/20 shadow-2xl group">
+            <div className="flex items-center gap-6 mb-8">
+              <div className="p-4 bg-royal-950 rounded-2xl border border-neon-green/30 text-neon-green shadow-inner group-hover:scale-110 transition-transform">
+                <EyeOff size={28} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">Confidential Inquiry Node</h2>
+                <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mt-1">Ref: SYNK_PRIV_HANDSHAKE</p>
+              </div>
+            </div>
+            <div className="space-y-6 text-slate-300 text-base font-bold italic leading-relaxed">
+              <p>
+                Communication integrity is paramount. Any information provided via our <span className="text-white">Inquiry Portals</span>, <span className="text-white">Contact Matrix</span>, or <span className="text-white">Strategic Chat Nodes</span> is kept strictly confidential within the Royal Care Group internal architecture. 
+              </p>
+              <p className="border-l-2 border-neon-green pl-6 py-2 bg-neon-green/5 rounded-r-xl">
+                We maintain a <span className="text-neon-green">zero-disclosure policy</span>: your organizational data and strategic queries are never shared, traded, or disclosed to any third-party entities, government bodies (unless legally mandated by AU law), or commercial partners. 
+              </p>
+            </div>
+          </div>
+
           {/* Section: AU Conduct Node */}
           <div className="orbital-tile p-10 bg-black border-2 border-white/10 shadow-2xl group">
             <div className="flex items-center gap-6 mb-8">
-              <div className="p-4 bg-royal-950 rounded-2xl border border-neon-green/30 text-neon-green shadow-inner group-hover:scale-110 transition-transform">
+              <div className="p-4 bg-royal-950 rounded-2xl border border-neon-blue/30 text-neon-blue shadow-inner group-hover:scale-110 transition-transform">
                 <Globe size={28} />
               </div>
               <div>
