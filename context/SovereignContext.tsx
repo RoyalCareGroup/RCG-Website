@@ -80,7 +80,11 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
   const initializeAudio = useCallback(async (): Promise<boolean> => {
     try {
       const ctx = getAudioContext();
-      if (ctx.state === 'suspended') await ctx.resume();
+      
+      // Explicitly resume on every call to ensure the User Gesture is captured
+      if (ctx.state !== 'running') {
+        await ctx.resume();
+      }
       
       if (!heartbeatRef.current) {
         const heartbeat = ctx.createOscillator();
@@ -96,6 +100,7 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
       setAudioReady(true);
       return true;
     } catch (err) {
+      console.error("Audio Initialization Error:", err);
       setAudioReady(false);
       return false;
     }

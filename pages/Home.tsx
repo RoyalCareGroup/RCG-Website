@@ -42,22 +42,23 @@ const Home = () => {
   
   const handleVoiceTest = async () => {
     if (isTestingVoice) return;
+    
+    // CRITICAL: Immediately initialize audio on the click event to capture User Gesture
+    const success = await initializeAudio();
+    if (!success) {
+      alert("Hardware Blocked: Browser rejected audio context initialization. Ensure site permissions allow audio.");
+      return;
+    }
+
     setIsTestingVoice(true);
     setIsThinking(true);
 
     try {
-      // 1. Initialize/Resume Audio Context
-      await initializeAudio();
       const ctx = getAudioContext();
       
-      // 2. Immediate silent trigger to unlock hardware on live site
-      const silentBuf = ctx.createBuffer(1, 1, 22050);
-      const silentSource = ctx.createBufferSource();
-      silentSource.buffer = silentBuf;
-      silentSource.connect(ctx.destination);
-      silentSource.start(0);
+      // CALL API
+      if (!process.env.API_KEY) throw new Error("API_KEY_MISSING");
 
-      // 3. Call Gemini TTS
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -105,15 +106,20 @@ const Home = () => {
         };
         source.start(0);
       } else {
-        throw new Error("No audio payload returned.");
+        throw new Error("EMPTY_PAYLOAD");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Voice test failed:", err);
       setIsTestingVoice(false);
       setIsThinking(false);
       setIsWelcomePlaying(false);
       setWelcomeAnalyser(null);
-      alert("Voice diagnostic failed. Ensure your microphone/audio permissions are granted for this site.");
+      
+      if (err.message === "API_KEY_MISSING") {
+        alert("Neural Error: API Key is not configured for this environment.");
+      } else {
+        alert("Neural Link Error: The system could not synthesize audio. Check your connection to the grid.");
+      }
     }
   };
 
