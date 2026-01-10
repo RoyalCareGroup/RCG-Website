@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight, Wifi, AlertCircle, ShieldOff } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
 
@@ -31,7 +31,24 @@ interface SovereignConsentProps {
 
 export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared }) => {
   const [isInitializing, setIsInitializing] = useState(false);
+  const [connStatus, setConnStatus] = useState<'CHECKING' | 'READY' | 'RESTRICTED'>('CHECKING');
   const { initializeAudio, getAudioContext, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser } = useSovereign();
+
+  // LIVE DIAGNOSTIC: Check if Cloudflare or the browser is restricting our neural uplink
+  useEffect(() => {
+    const checkConnectivity = async () => {
+      try {
+        // Ping Google's model list endpoint as a health check
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models', { method: 'HEAD' });
+        setConnStatus(response.ok ? 'READY' : 'RESTRICTED');
+      } catch (err) {
+        console.warn("Neural Uplink Restricted:", err);
+        setConnStatus('RESTRICTED');
+      }
+    };
+    const timer = setTimeout(checkConnectivity, 800); // Slight delay for visual transition
+    return () => clearTimeout(timer);
+  }, []);
 
   const playWelcome = useCallback(async (ctx: AudioContext) => {
     try {
@@ -43,7 +60,7 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group structural intelligence hub. Systemizing NDIS success through binary logic." }] }],
+        contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group structural intelligence hub. Systems are authorized and active." }] }],
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -85,11 +102,11 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
         source.start(0);
       }
     } catch (err) {
-      console.warn("Structural Welcome Audio Failed:", err);
+      console.warn("Structural Welcome Audio Blocked:", err);
       setIsWelcomePlaying(false);
     } finally {
       setIsInitializing(false);
-      onCleared(); // Proceed to app regardless of audio outcome
+      onCleared(); 
     }
   }, [onCleared, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser]);
 
@@ -97,24 +114,29 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
     if (isInitializing) return;
     setIsInitializing(true);
 
-    // Save state immediately to prevent re-prompts if audio crashes
-    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
+    // PERSISTENCE PROTOCOL: Set the clearance key before the hardware bonding starts
+    localStorage.setItem('rcg_structural_consent', 'AUTHORIZED_' + Date.now());
 
     try {
+      // Bypassing browser-level hardware restriction through direct interaction
       const success = await initializeAudio();
+      const ctx = getAudioContext();
+      
+      // CRITICAL: Force context to resume on the user gesture event to unblock vocal activations
+      if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+        await ctx.resume();
+      }
+
       if (!success) {
+        console.warn("Hardware initialization suppressed by operator permissions.");
         setIsInitializing(false);
         onCleared();
         return;
       }
 
-      const ctx = getAudioContext();
-      // Ensure context is running after user gesture
-      if (ctx.state === 'suspended') await ctx.resume();
-      
       playWelcome(ctx);
     } catch (err) {
-      console.error("Initialization error:", err);
+      console.error("Initialization sequence failure:", err);
       setIsInitializing(false);
       onCleared();
     }
@@ -122,22 +144,21 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
 
   return (
     <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-[#334155] overflow-hidden font-sans">
-      {/* Structural Background Pattern */}
+      {/* Structural Ambience */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
       </div>
 
-      {/* Pulsing Scan Line */}
       <div className="absolute left-0 w-full h-[2px] bg-neon-blue shadow-[0_0_20px_#06b6d4] animate-[scan_4s_ease-in-out_infinite] pointer-events-none" />
 
-      <div className="max-w-xl w-full px-6 text-center space-y-12 animate-in fade-in zoom-in-95 duration-1000 relative z-10">
-        <div className="flex flex-col items-center gap-8">
+      <div className="max-w-xl w-full px-6 text-center space-y-10 animate-in fade-in zoom-in-95 duration-1000 relative z-10">
+        <div className="flex flex-col items-center gap-6">
            <div className="p-6 bg-neon-blue/10 border border-neon-blue/20 rounded-[2.5rem] shadow-[0_0_50px_rgba(6,182,212,0.1)] relative group">
               <div className="absolute inset-0 bg-neon-blue/20 blur-3xl rounded-full opacity-50"></div>
               <ShieldCheck className="text-neon-blue w-16 h-16 relative z-10 animate-pulse" strokeWidth={1.5} />
            </div>
            
-           <div className="space-y-4">
+           <div className="space-y-3">
              <div className="flex items-center justify-center gap-3">
                 <div className="h-[1px] w-8 bg-neon-blue/30"></div>
                 <span className="text-neon-blue text-[10px] font-black uppercase tracking-[0.5em] font-mono">RCG_SYNK_MAINFRAME</span>
@@ -148,8 +169,25 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
              </h1>
            </div>
            
-           <p className="text-slate-200 text-sm sm:text-lg font-bold leading-relaxed italic max-w-sm mx-auto">
-             "Synchronize your hardware to initialize the structural grid and bond with the Aurelia strategic node."
+           {/* Diagnostic HUD */}
+           <div className="bg-black/30 p-5 rounded-2xl border border-white/5 flex flex-col items-center gap-3 mx-auto w-full max-w-[280px]">
+              <div className="flex items-center gap-4">
+                <div className={`p-2 rounded-lg ${connStatus === 'READY' ? 'bg-green-500/10' : connStatus === 'RESTRICTED' ? 'bg-red-500/10' : 'bg-white/5 animate-pulse'}`}>
+                  {connStatus === 'READY' ? <Wifi size={14} className="text-green-500" /> : connStatus === 'RESTRICTED' ? <AlertCircle size={14} className="text-red-500" /> : <Loader2 size={14} className="text-white animate-spin" />}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                  {connStatus === 'READY' ? 'Uplink: NOMINAL' : connStatus === 'RESTRICTED' ? 'Uplink: RESTRICTED' : 'Syncing Grid...'}
+                </span>
+              </div>
+              <div className="w-full h-[1px] bg-white/5"></div>
+              <div className="flex items-center gap-3 text-slate-500">
+                <ShieldCheck size={10} className={connStatus === 'READY' ? 'text-neon-blue' : 'text-slate-700'} />
+                <span className="text-[8px] font-black uppercase tracking-widest">Sovereign Layer Active</span>
+              </div>
+           </div>
+           
+           <p className="text-slate-200 text-sm sm:text-lg font-bold leading-relaxed italic max-w-sm mx-auto opacity-80">
+             "Synchronize your hardware to initialize the structural grid and bond with the Aurelia node."
            </p>
         </div>
 
@@ -168,12 +206,12 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
            </button>
            
            <div className="flex items-center justify-center gap-8 pt-4">
-              <div className="flex items-center gap-2 opacity-40">
+              <div className="flex items-center gap-2 opacity-30">
                  <Cpu size={12} className="text-slate-300" />
                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Neural Sync</span>
               </div>
-              <div className="h-3 w-[1px] bg-slate-500"></div>
-              <div className="flex items-center gap-2 opacity-40">
+              <div className="h-3 w-[1px] bg-slate-600"></div>
+              <div className="flex items-center gap-2 opacity-30">
                  <ShieldCheck size={12} className="text-slate-300" />
                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Sovereign Link</span>
               </div>
