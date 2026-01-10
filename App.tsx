@@ -3,7 +3,7 @@
  * Version: 10.13.31-STABLE
  * Status: OPERATIONAL_NOMINAL
  */
-import React, { useEffect, useState, Suspense, lazy, useCallback } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -102,26 +102,13 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  // SYNCHRONOUS INITIALIZATION: Check storage immediately to prevent frame-one bypass
+  // CRITICAL: Synchronous check. If not cleared, NOTHING else renders.
   const [isCleared, setIsCleared] = useState<boolean>(() => {
     return !!localStorage.getItem('rcg_structural_consent');
   });
 
-  // Provide a global way to reset for testing
-  useEffect(() => {
-    (window as any).RCG_RESET_PROTOCOL = () => {
-      localStorage.removeItem('rcg_structural_consent');
-      window.location.reload();
-    };
-  }, []);
-
-  // STRICT CONDITIONAL GATE: Render ONLY the Consent component if not authorized
   if (!isCleared) {
-    return (
-      <div className="fixed inset-0 bg-[#334155] z-[10000]">
-        <SovereignConsent onCleared={() => setIsCleared(true)} />
-      </div>
-    );
+    return <SovereignConsent onCleared={() => setIsCleared(true)} />;
   }
 
   return (
@@ -129,15 +116,9 @@ const AppContent: React.FC = () => {
       <SovereignSync />
       <GoogleTagTracker />
       
-      {/* Base Layer: Restored Blue Background */}
       <div className="fixed inset-0 bg-[#334155] z-0" />
-      
-      {/* Dynamic Layer: Matrix X-Ray or Green Horizon */}
       <NeuralBackground />
-      
-      {/* Interactive Layer: Sovereign Grid */}
       <SovereignGrid />
-      
       <CustomCursor />
 
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
@@ -163,11 +144,9 @@ const AppContent: React.FC = () => {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/socials" element={<Socials />} />
-                
                 <Route path="/architect" element={<ArchitectPage />} />
                 <Route path="/sandbox" element={<SandboxPage />} />
                 <Route path="/aurelia" element={<AureliaPage />} />
-
                 <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
                 <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
                 <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />

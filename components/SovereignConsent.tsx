@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight, Wifi, AlertCircle, ShieldOff } from 'lucide-react';
+import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight, Wifi, AlertCircle, Lock, Database } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
 
@@ -34,164 +34,125 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
   const [connStatus, setConnStatus] = useState<'CHECKING' | 'READY' | 'RESTRICTED'>('CHECKING');
   const { initializeAudio, getAudioContext, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser } = useSovereign();
 
-  // LIVE DIAGNOSTIC: Check if Cloudflare or the browser is restricting our neural uplink
   useEffect(() => {
     const checkConnectivity = async () => {
       try {
-        // Ping Google's model list endpoint as a health check
         const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models', { method: 'HEAD' });
         setConnStatus(response.ok ? 'READY' : 'RESTRICTED');
       } catch (err) {
-        console.warn("Neural Uplink Restricted:", err);
         setConnStatus('RESTRICTED');
       }
     };
-    const timer = setTimeout(checkConnectivity, 800); // Slight delay for visual transition
+    const timer = setTimeout(checkConnectivity, 1000);
     return () => clearTimeout(timer);
   }, []);
 
   const playWelcome = useCallback(async (ctx: AudioContext) => {
     try {
-      if (!process.env.API_KEY) {
-        onCleared();
-        return;
-      }
-      
+      if (!process.env.API_KEY) { onCleared(); return; }
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group structural intelligence hub. Systems are authorized and active." }] }],
+        contents: [{ parts: [{ text: "Neural link synchronized. Welcome to the Royal Care Group. Our structural systems are now authorized for deployment." }] }],
         config: {
           responseModalities: [Modality.AUDIO],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: 'Kore' }
-            },
-          },
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
         },
       });
 
-      let base64Audio = null;
-      const candidate = (response as any).candidates?.[0];
-      if (candidate?.content?.parts) {
-        for (const part of candidate.content.parts) {
-          if (part.inlineData?.data) {
-            base64Audio = part.inlineData.data;
-            break;
-          }
-        }
-      }
+      let base64Audio = (response as any).candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
       if (base64Audio) {
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 1024;
         setWelcomeAnalyser(analyser);
         setIsWelcomePlaying(true);
-
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(analyser);
         analyser.connect(ctx.destination);
-        
         source.onended = () => {
           stopHeartbeat();
           setIsWelcomePlaying(false);
           setWelcomeAnalyser(null);
+          onCleared();
         };
         source.start(0);
+      } else {
+        onCleared();
       }
     } catch (err) {
-      console.warn("Structural Welcome Audio Blocked:", err);
-      setIsWelcomePlaying(false);
-    } finally {
-      setIsInitializing(false);
-      onCleared(); 
+      onCleared();
     }
   }, [onCleared, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser]);
 
   const handleAccept = async () => {
     if (isInitializing) return;
     setIsInitializing(true);
-
-    // PERSISTENCE PROTOCOL: Set the clearance key before the hardware bonding starts
     localStorage.setItem('rcg_structural_consent', 'AUTHORIZED_' + Date.now());
 
     try {
-      // Bypassing browser-level hardware restriction through direct interaction
       const success = await initializeAudio();
       const ctx = getAudioContext();
+      if (ctx.state === 'suspended') await ctx.resume();
       
-      // CRITICAL: Force context to resume on the user gesture event to unblock vocal activations
-      if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
-        await ctx.resume();
-      }
-
-      if (!success) {
-        console.warn("Hardware initialization suppressed by operator permissions.");
-        setIsInitializing(false);
-        onCleared();
-        return;
-      }
-
+      // Attempt to play welcome, but always clear the gate
       playWelcome(ctx);
+      // Fallback: If audio fails to start/trigger welcome, clear gate after 3s
+      setTimeout(onCleared, 3000);
     } catch (err) {
-      console.error("Initialization sequence failure:", err);
-      setIsInitializing(false);
       onCleared();
     }
   };
 
   return (
     <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-[#334155] overflow-hidden font-sans">
-      {/* Structural Ambience */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
       </div>
 
-      <div className="absolute left-0 w-full h-[2px] bg-neon-blue shadow-[0_0_20px_#06b6d4] animate-[scan_4s_ease-in-out_infinite] pointer-events-none" />
-
-      <div className="max-w-xl w-full px-6 text-center space-y-10 animate-in fade-in zoom-in-95 duration-1000 relative z-10">
-        <div className="flex flex-col items-center gap-6">
+      <div className="max-w-2xl w-full px-6 text-center space-y-12 animate-in fade-in zoom-in-95 duration-1000 relative z-10">
+        <div className="flex flex-col items-center gap-8">
            <div className="p-6 bg-neon-blue/10 border border-neon-blue/20 rounded-[2.5rem] shadow-[0_0_50px_rgba(6,182,212,0.1)] relative group">
               <div className="absolute inset-0 bg-neon-blue/20 blur-3xl rounded-full opacity-50"></div>
-              <ShieldCheck className="text-neon-blue w-16 h-16 relative z-10 animate-pulse" strokeWidth={1.5} />
+              <Lock className="text-neon-blue w-16 h-16 relative z-10 animate-pulse" strokeWidth={1.5} />
            </div>
            
-           <div className="space-y-3">
+           <div className="space-y-4">
              <div className="flex items-center justify-center gap-3">
                 <div className="h-[1px] w-8 bg-neon-blue/30"></div>
-                <span className="text-neon-blue text-[10px] font-black uppercase tracking-[0.5em] font-mono">RCG_SYNK_MAINFRAME</span>
+                <span className="text-neon-blue text-[10px] font-black uppercase tracking-[0.5em] font-mono">SOVEREIGN_ACCESS_REQUIRED</span>
                 <div className="h-[1px] w-8 bg-neon-blue/30"></div>
              </div>
              <h1 className="text-white font-display font-black uppercase tracking-tight text-4xl sm:text-6xl">
-               Structural <br/> <span className="text-neon-blue">Gateway.</span>
+               Entrance <br/> <span className="text-neon-blue">Terminal.</span>
              </h1>
            </div>
-           
-           {/* Diagnostic HUD */}
-           <div className="bg-black/30 p-5 rounded-2xl border border-white/5 flex flex-col items-center gap-3 mx-auto w-full max-w-[280px]">
-              <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-lg ${connStatus === 'READY' ? 'bg-green-500/10' : connStatus === 'RESTRICTED' ? 'bg-red-500/10' : 'bg-white/5 animate-pulse'}`}>
-                  {connStatus === 'READY' ? <Wifi size={14} className="text-green-500" /> : connStatus === 'RESTRICTED' ? <AlertCircle size={14} className="text-red-500" /> : <Loader2 size={14} className="text-white animate-spin" />}
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">
-                  {connStatus === 'READY' ? 'Uplink: NOMINAL' : connStatus === 'RESTRICTED' ? 'Uplink: RESTRICTED' : 'Syncing Grid...'}
-                </span>
+
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-lg">
+              <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2">
+                 <Wifi size={14} className="text-neon-blue mx-auto" />
+                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Uplink Status</span>
+                 <span className="text-[10px] text-white font-mono">{connStatus}</span>
               </div>
-              <div className="w-full h-[1px] bg-white/5"></div>
-              <div className="flex items-center gap-3 text-slate-500">
-                <ShieldCheck size={10} className={connStatus === 'READY' ? 'text-neon-blue' : 'text-slate-700'} />
-                <span className="text-[8px] font-black uppercase tracking-widest">Sovereign Layer Active</span>
+              <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2">
+                 <Cpu size={14} className="text-neon-purple mx-auto" />
+                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Hardware Bond</span>
+                 <span className="text-[10px] text-white font-mono italic">REQUIRED</span>
+              </div>
+              <div className="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-2">
+                 <Database size={14} className="text-neon-green mx-auto" />
+                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Cookie Logic</span>
+                 <span className="text-[10px] text-white font-mono">AUTHORIZED</span>
               </div>
            </div>
            
-           <p className="text-slate-200 text-sm sm:text-lg font-bold leading-relaxed italic max-w-sm mx-auto opacity-80">
-             "Synchronize your hardware to initialize the structural grid and bond with the Aurelia node."
-           </p>
+           <div className="space-y-4 text-slate-300 text-xs sm:text-sm font-bold leading-relaxed max-w-md mx-auto italic border-l-2 border-neon-blue/20 pl-6">
+             <p>"By initializing the structural grid, you consent to neural hardware synchronization (Microphone/Audio) and sovereign data governance (Cookies) under the Australian Privacy Principles."</p>
+           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
            <button 
              onClick={handleAccept} 
              disabled={isInitializing} 
@@ -205,28 +166,11 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
              </div>
            </button>
            
-           <div className="flex items-center justify-center gap-8 pt-4">
-              <div className="flex items-center gap-2 opacity-30">
-                 <Cpu size={12} className="text-slate-300" />
-                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Neural Sync</span>
-              </div>
-              <div className="h-3 w-[1px] bg-slate-600"></div>
-              <div className="flex items-center gap-2 opacity-30">
-                 <ShieldCheck size={12} className="text-slate-300" />
-                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Sovereign Link</span>
-              </div>
-           </div>
+           <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.4em]">
+             RCG_PROTOCOL // AU_PRIVATE_SECTOR_COMPLIANCE_v10.13
+           </p>
         </div>
       </div>
-
-      <style>{`
-        @keyframes scan {
-          0% { top: 0; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { top: 100%; opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 };
