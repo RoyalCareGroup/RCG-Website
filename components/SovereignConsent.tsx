@@ -7,6 +7,7 @@ import {
   CheckCircle2, Settings2, BarChart3, Share2,
   Cpu, Activity
 } from 'lucide-react';
+import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
 import { BrandLogo } from './BrandLogo.tsx';
 import { DecodingText } from './DecodingText.tsx';
@@ -15,28 +16,76 @@ interface SovereignConsentProps {
   onAccepted: () => void;
 }
 
+// Helper to decode raw PCM from Gemini TTS
+async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
+  const dataInt16 = new Int16Array(data.buffer);
+  const frameCount = dataInt16.length / numChannels;
+  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+  for (let channel = 0; channel < numChannels; channel++) {
+    const channelData = buffer.getChannelData(channel);
+    for (let i = 0; i < frameCount; i++) {
+      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    }
+  }
+  return buffer;
+}
+
 export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }) => {
   const [view, setView] = useState<'base' | 'permissions' | 'signup'>('base');
   const [isInitializing, setIsInitializing] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', org: '' });
   
-  // Detailed Permissions State
   const [prefs, setPrefs] = useState({
-    essential: true, // Always required
+    essential: true,
     analytics: true,
     marketing: false,
     mic: false,
     audio: true
   });
 
-  const { initializeAudio, establishPassport } = useSovereign();
+  const { initializeAudio, establishPassport, getAudioContext } = useSovereign();
+
+  const playWelcome = async () => {
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') await ctx.resume();
+
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-preview-tts",
+        contents: [{ parts: [{ text: 'Speak with a soft, welcoming Australian accent: Welcome to Royal Care Group. My name is Aurelia, the Royal Care Group website assistant. You will be able to access my assistance throughout this website if you want to.' }] }],
+        config: {
+          responseModalities: [Modality.AUDIO],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Zephyr' },
+            },
+          },
+        },
+      });
+
+      const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+      if (base64Audio) {
+        const binaryString = atob(base64Audio);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+        
+        const audioBuffer = await decodeAudioData(bytes, ctx, 24000, 1);
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(ctx.destination);
+        source.start();
+      }
+    } catch (err) {
+      console.error("Welcome TTS Failure:", err);
+    }
+  };
 
   const savePreferences = () => {
     localStorage.setItem('rcg_consent_v2', JSON.stringify({
       ...prefs,
       timestamp: Date.now()
     }));
-    // Also sync to hardware prefs used in Compliance.tsx
     localStorage.setItem('rcg_hardware_prefs', JSON.stringify({
       mic: prefs.mic,
       speaker: prefs.audio,
@@ -47,9 +96,10 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
   const handleSimpleEnter = async () => {
     setIsInitializing(true);
     savePreferences();
-    if (prefs.audio || prefs.mic) {
-      await initializeAudio();
-    }
+    await initializeAudio();
+    // Fire and forget welcome audio
+    playWelcome();
+    
     setTimeout(() => {
       onAccepted();
       setIsInitializing(false);
@@ -61,10 +111,11 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
     setIsInitializing(true);
     savePreferences();
     
-    setTimeout(async () => {
-      if (prefs.audio || prefs.mic) {
-        await initializeAudio();
-      }
+    await initializeAudio();
+    // Fire and forget welcome audio
+    playWelcome();
+
+    setTimeout(() => {
       establishPassport({
         ...formData,
         timestamp: Date.now()
