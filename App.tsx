@@ -1,9 +1,9 @@
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.13.30-STABLE
+ * Version: 10.13.31-STABLE
  * Status: OPERATIONAL_NOMINAL
  */
-import React, { useEffect, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useState, Suspense, lazy, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -102,20 +102,23 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  const [isCleared, setIsCleared] = useState<boolean | null>(null);
+  // SYNCHRONOUS INITIALIZATION: Check storage immediately to prevent frame-one bypass
+  const [isCleared, setIsCleared] = useState<boolean>(() => {
+    return !!localStorage.getItem('rcg_structural_consent');
+  });
 
+  // Provide a global way to reset for testing
   useEffect(() => {
-    const consent = localStorage.getItem('rcg_structural_consent');
-    setIsCleared(!!consent);
+    (window as any).RCG_RESET_PROTOCOL = () => {
+      localStorage.removeItem('rcg_structural_consent');
+      window.location.reload();
+    };
   }, []);
 
-  // While checking local storage, show nothing to prevent flash
-  if (isCleared === null) return null;
-
-  // STRICT CONDITIONAL GATE: If not consented, only render the Gateway
+  // STRICT CONDITIONAL GATE: Render ONLY the Consent component if not authorized
   if (!isCleared) {
     return (
-      <div className="fixed inset-0 bg-[#334155]">
+      <div className="fixed inset-0 bg-[#334155] z-[10000]">
         <SovereignConsent onCleared={() => setIsCleared(true)} />
       </div>
     );

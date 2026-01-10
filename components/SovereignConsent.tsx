@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
@@ -33,9 +33,12 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
   const [isInitializing, setIsInitializing] = useState(false);
   const { initializeAudio, getAudioContext, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser } = useSovereign();
 
-  const playWelcome = async (ctx: AudioContext) => {
+  const playWelcome = useCallback(async (ctx: AudioContext) => {
     try {
-      if (!process.env.API_KEY) return;
+      if (!process.env.API_KEY) {
+        onCleared();
+        return;
+      }
       
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
@@ -52,9 +55,9 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
       });
 
       let base64Audio = null;
-      const candidates = (response as any).candidates;
-      if (candidates?.[0]?.content?.parts) {
-        for (const part of candidates[0].content.parts) {
+      const candidate = (response as any).candidates?.[0];
+      if (candidate?.content?.parts) {
+        for (const part of candidate.content.parts) {
           if (part.inlineData?.data) {
             base64Audio = part.inlineData.data;
             break;
@@ -82,36 +85,43 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared })
         source.start(0);
       }
     } catch (err) {
-      console.error("Welcome trigger failed:", err);
+      console.warn("Structural Welcome Audio Failed:", err);
       setIsWelcomePlaying(false);
     } finally {
       setIsInitializing(false);
-      onCleared(); // Complete the gate cycle
+      onCleared(); // Proceed to app regardless of audio outcome
     }
-  };
+  }, [onCleared, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser]);
 
   const handleAccept = async () => {
     if (isInitializing) return;
     setIsInitializing(true);
 
-    const success = await initializeAudio();
-    
-    // Save to storage immediately to ensure future visits skip this
+    // Save state immediately to prevent re-prompts if audio crashes
     localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
 
-    if (!success) {
-      // If hardware blocks, we still allow entry but skip audio welcome
+    try {
+      const success = await initializeAudio();
+      if (!success) {
+        setIsInitializing(false);
+        onCleared();
+        return;
+      }
+
+      const ctx = getAudioContext();
+      // Ensure context is running after user gesture
+      if (ctx.state === 'suspended') await ctx.resume();
+      
+      playWelcome(ctx);
+    } catch (err) {
+      console.error("Initialization error:", err);
       setIsInitializing(false);
       onCleared();
-      return;
     }
-
-    const ctx = getAudioContext();
-    playWelcome(ctx);
   };
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#334155] overflow-hidden font-sans">
+    <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-[#334155] overflow-hidden font-sans">
       {/* Structural Background Pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
