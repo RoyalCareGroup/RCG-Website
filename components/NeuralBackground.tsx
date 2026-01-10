@@ -138,13 +138,13 @@ export const NeuralBackground: React.FC = () => {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-[1]"
       style={{
-        // CRITICAL: Radial Mask only applies when IDLE to create the X-ray light pool effect
+        // INCREASED RADIUS (520px) and SOFTNESS for the beam effect
         maskImage: isWelcomePlaying 
           ? 'none' 
-          : `radial-gradient(circle 320px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 30%, transparent 95%)`,
+          : `radial-gradient(circle 520px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 20%, rgba(0,0,0,0.8) 40%, transparent 100%)`,
         WebkitMaskImage: isWelcomePlaying 
           ? 'none' 
-          : `radial-gradient(circle 320px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 30%, transparent 95%)`,
+          : `radial-gradient(circle 520px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 20%, rgba(0,0,0,0.8) 40%, transparent 100%)`,
         opacity: isWelcomePlaying ? 1.0 : 0.8,
         transition: 'opacity 0.8s ease-in-out, mask-image 0.5s ease-in-out'
       }}

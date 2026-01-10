@@ -75,24 +75,28 @@ export const CustomCursor: React.FC = () => {
         style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
       >
         <div className={`relative flex items-center justify-center transition-transform duration-300 ${isPointer ? 'scale-110' : 'scale-100'}`}>
+          {/* PRIMARY ATMOSPHERIC GLOW - Made larger (w-24/w-32) and brighter */}
           <div className={`absolute rounded-full transition-all duration-500 ease-out ${
-            isPointer ? 'bg-neon-blue shadow-[0_0_40px_#06b6d4]' : 'bg-white shadow-[0_0_40px_#ffffff]'
+            isPointer ? 'bg-neon-blue shadow-[0_0_60px_#06b6d4]' : 'bg-white shadow-[0_0_60px_#ffffff]'
           } ${
             isPointer 
-              ? 'w-20 h-20 opacity-40 blur-xl scale-125' 
-              : 'w-16 h-16 opacity-30 blur-lg scale-100'
+              ? 'w-32 h-32 opacity-40 blur-2xl scale-150' 
+              : 'w-24 h-24 opacity-30 blur-xl scale-125'
           } ${isMouseDown ? 'scale-75 opacity-60' : ''}`} />
+
+          {/* INTENSE CORE LIGHT - New high-intensity center to justify the beam */}
+          <div className={`absolute rounded-full w-8 h-8 bg-white/40 blur-md transition-opacity duration-500 ${isPointer ? 'opacity-80' : 'opacity-40'}`} />
 
           <div className={`relative transition-all duration-300 ease-out ${isMouseDown ? 'scale-75' : 'scale-100'}`}>
             <svg 
               viewBox="0 0 24 24" 
-              width="22" 
-              height="22" 
+              width="24" 
+              height="24" 
               className={`transition-colors duration-500 -translate-x-1/2 -translate-y-1/2 absolute top-0 left-0 ${
                 isPointer ? 'text-neon-blue' : 'text-white'
               }`}
               fill="currentColor" 
-              fillOpacity={isPointer ? "0.4" : "0.1"}
+              fillOpacity={isPointer ? "0.6" : "0.2"}
               stroke="currentColor" 
               strokeWidth="2.5"
             >
@@ -101,14 +105,14 @@ export const CustomCursor: React.FC = () => {
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
                 className={`transition-all duration-500 ${
-                  isPointer ? 'drop-shadow-[0_0_8px_#06b6d4]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+                  isPointer ? 'drop-shadow-[0_0_12px_#06b6d4]' : 'drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]'
                 }`}
               />
             </svg>
           </div>
 
           {isPointer && (
-            <div className="absolute w-12 h-12 border-2 border-neon-blue/40 rounded-full animate-ping pointer-events-none" />
+            <div className="absolute w-16 h-16 border-2 border-neon-blue/40 rounded-full animate-ping pointer-events-none" />
           )}
         </div>
       </div>
