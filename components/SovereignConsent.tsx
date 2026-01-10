@@ -13,13 +13,12 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
   const { initializeAudio, getAudioContext } = useSovereign();
 
   useEffect(() => {
-    // Unified check: if either structural or legal consent is missing, show the master protocol
+    // Check immediately on mount for structural or legal flags
     const structuralConsent = localStorage.getItem('rcg_structural_consent');
     const legalConsent = localStorage.getItem('rcg_legal_v2');
     
     if (!structuralConsent || !legalConsent) {
-      const timer = setTimeout(() => setIsVisible(true), 1200);
-      return () => clearTimeout(timer);
+      setIsVisible(true);
     }
   }, []);
 
@@ -27,37 +26,44 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
     if (isInitializing) return;
     setIsInitializing(true);
 
-    // Initialise audio hardware for all neural/voice features
-    const success = await initializeAudio();
-    if (!success) {
+    try {
+      // Initialise audio hardware for all neural/voice features
+      await initializeAudio();
+
+      // Capture user gesture for AudioContext
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+      
+      const silentBuf = ctx.createBuffer(1, 1, 22050);
+      const silentSource = ctx.createBufferSource();
+      silentSource.buffer = silentBuf;
+      silentSource.connect(ctx.destination);
+      silentSource.start(0);
+
+      const stamp = Date.now();
+      localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + stamp);
+      localStorage.setItem('rcg_legal_v2', 'ENFORCED_PROTOCOL_' + stamp);
+      
+      setIsVisible(false);
+      if (onAccepted) onAccepted();
+    } catch (err) {
       console.warn("Hardware bonding partially failed. Continuing to UI...");
+      // Still allow entry if audio fails
+      const stamp = Date.now();
+      localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + stamp);
+      localStorage.setItem('rcg_legal_v2', 'ENFORCED_PROTOCOL_' + stamp);
+      setIsVisible(false);
+    } finally {
+      setIsInitializing(false);
     }
-
-    // Capture user gesture for AudioContext
-    const ctx = getAudioContext();
-    if (ctx.state === 'suspended') {
-      await ctx.resume();
-    }
-    
-    const silentBuf = ctx.createBuffer(1, 1, 22050);
-    const silentSource = ctx.createBufferSource();
-    silentSource.buffer = silentBuf;
-    silentSource.connect(ctx.destination);
-    silentSource.start(0);
-
-    const stamp = Date.now();
-    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + stamp);
-    localStorage.setItem('rcg_legal_v2', 'ENFORCED_PROTOCOL_' + stamp);
-    
-    setIsInitializing(false);
-    setIsVisible(false);
-    if (onAccepted) onAccepted();
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-10 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4 sm:p-10 pointer-events-none overflow-hidden">
       {/* Heavy Backdrop */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-1000 pointer-events-auto" />
 
@@ -98,6 +104,7 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
               </div>
               <Link 
                 to="/compliance" 
+                onClick={() => setIsVisible(false)}
                 className="text-[10px] text-neon-blue hover:text-white font-black uppercase tracking-[0.3em] flex items-center gap-2"
               >
                 Review Compliance <ArrowRight size={14} />

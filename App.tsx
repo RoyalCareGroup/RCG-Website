@@ -1,10 +1,10 @@
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.13.90-UNIFIED
+ * Version: 10.14.00-FORCE_HOME
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
@@ -57,6 +57,25 @@ const NeuralFallback = () => (
   </div>
 );
 
+// --- FORCED LANDING PROTOCOL ---
+const EntrySequenceProtocol = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // If it's a fresh session, always force landing on Home
+    const sessionInit = sessionStorage.getItem('rcg_session_init');
+    if (!sessionInit && location.pathname !== '/') {
+      sessionStorage.setItem('rcg_session_init', 'ACTIVE');
+      navigate('/', { replace: true });
+    } else if (!sessionInit) {
+      sessionStorage.setItem('rcg_session_init', 'ACTIVE');
+    }
+  }, [navigate, location]);
+
+  return null;
+};
+
 const SovereignSync = () => {
   const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
   useEffect(() => {
@@ -97,7 +116,6 @@ const GoogleTagTracker = () => {
 const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
   const { triggerPulse } = useSovereign();
   const handleInteraction = (e: React.MouseEvent) => {
-    // Only trigger pulse if the target is not a button or link
     const target = e.target as HTMLElement;
     if (target.tagName !== 'BUTTON' && target.tagName !== 'A' && !target.closest('button') && !target.closest('a')) {
       triggerPulse(e.clientX, e.clientY);
@@ -109,6 +127,7 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 const AppContent: React.FC = () => {
   return (
     <GridInteractionLayer>
+      <EntrySequenceProtocol />
       <SovereignSync />
       <GoogleTagTracker />
       
@@ -118,8 +137,10 @@ const AppContent: React.FC = () => {
       <SovereignGrid />
       <CustomCursor />
 
-      {/* Persistent UI Overlays (Outside of pointer-events-none) */}
+      {/* Primary Modal Overlay - Highest Priority */}
       <SovereignConsent />
+
+      {/* Heads-Up Display Overlays */}
       <AetherSentinelHUD />
 
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
