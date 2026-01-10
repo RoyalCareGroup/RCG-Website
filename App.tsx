@@ -9,7 +9,7 @@ import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
 import LiveStatusHUD from './components/LiveStatusHUD.tsx';
 import { CustomCursor } from './components/CustomCursor.tsx';
-import { MatrixXRay } from './components/MatrixXRay.tsx';
+import { NeuralBackground } from './components/NeuralBackground.tsx';
 import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
@@ -50,7 +50,7 @@ const NeuralFallback = () => (
       <Loader2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neon-blue animate-pulse" size={32} />
     </div>
     <div className="text-center space-y-2">
-      <div className="text-[10px] font-black text-white uppercase tracking-[0.6em]">Synchronizing_Node</div>
+      <div className="text-[10px] font-black text-white uppercase tracking-tight">Synchronizing_Node</div>
       <div className="text-[8px] font-mono text-slate-500 uppercase tracking-widest italic">Fetching neural assets from grid...</div>
     </div>
   </div>
@@ -107,9 +107,15 @@ const AppContent: React.FC = () => {
       <SovereignSync />
       <GoogleTagTracker />
       
+      {/* Base Layer: Restored Blue Background */}
       <div className="fixed inset-0 bg-[#334155] z-0" />
-      <MatrixXRay />
+      
+      {/* Dynamic Layer: Matrix X-Ray or Green Horizon */}
+      <NeuralBackground />
+      
+      {/* Interactive Layer: Sovereign Grid */}
       <SovereignGrid />
+      
       <CustomCursor />
       <SovereignConsent />
 
