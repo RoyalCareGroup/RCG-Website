@@ -5,6 +5,7 @@ export const CustomCursor: React.FC = () => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isOnLightBg, setIsOnLightBg] = useState(false);
   
   const cursorRef = useRef<HTMLDivElement>(null);
   const mousePos = useRef({ x: -200, y: -200 }); 
@@ -34,10 +35,12 @@ export const CustomCursor: React.FC = () => {
         target.closest('button') !== null ||
         target.closest('a') !== null
       );
+
+      // Detect if we are over an area requiring high contrast (like the white contact form)
+      const contrastElement = target.closest('[data-cursor-contrast="true"]');
+      setIsOnLightBg(!!contrastElement);
     };
 
-    // STANDARD TRACKING: Removed Lerp for 1:1 hardware parity.
-    // This eliminates the 'heavy' or 'floaty' feel.
     const updateCursor = () => {
       const { x, y } = mousePos.current;
 
@@ -45,7 +48,6 @@ export const CustomCursor: React.FC = () => {
         cursorRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
       
-      // Sync background masks with high precision
       root.style.setProperty('--cursor-x', `${x}px`);
       root.style.setProperty('--cursor-y', `${y}px`);
       
@@ -86,17 +88,21 @@ export const CustomCursor: React.FC = () => {
       className={`fixed left-0 top-0 pointer-events-none z-[99999] will-change-transform flex items-center justify-center transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
     >
       <div className={`relative flex items-center justify-center transition-transform duration-300 ${isPointer ? 'scale-110' : 'scale-100'}`}>
-        {/* ATMOSPHERIC GLOW: Restored previous look with soft brand radiance */}
+        {/* ATMOSPHERIC GLOW: Inverts color if over light background */}
         <div className={`absolute rounded-full transition-all duration-500 ease-out ${
-          isPointer ? 'bg-neon-blue shadow-[0_0_40px_#06b6d4]' : 'bg-white shadow-[0_0_30px_#ffffff]'
+          isOnLightBg 
+            ? 'bg-royal-950 shadow-[0_0_30px_rgba(8,12,29,0.4)]' 
+            : isPointer ? 'bg-neon-blue shadow-[0_0_40px_#06b6d4]' : 'bg-white shadow-[0_0_30px_#ffffff]'
         } ${
           isPointer 
             ? 'w-20 h-20 opacity-30 blur-xl scale-125' 
             : 'w-16 h-16 opacity-20 blur-lg scale-110'
         } ${isMouseDown ? 'scale-75 opacity-50' : ''}`} />
 
-        {/* CORE LIGHT: Sharp central point for visibility */}
-        <div className={`absolute rounded-full w-6 h-6 bg-white/40 blur-md transition-opacity duration-500 ${isPointer ? 'opacity-70' : 'opacity-30'}`} />
+        {/* CORE LIGHT */}
+        <div className={`absolute rounded-full w-6 h-6 blur-md transition-all duration-500 ${
+          isOnLightBg ? 'bg-royal-900/60 opacity-80' : isPointer ? 'bg-white/40 opacity-70' : 'bg-white/40 opacity-30'
+        }`} />
 
         <div className={`relative transition-all duration-300 ease-out ${isMouseDown ? 'scale-75' : 'scale-100'}`}>
           <svg 
@@ -104,7 +110,7 @@ export const CustomCursor: React.FC = () => {
             width="22" 
             height="22" 
             className={`transition-colors duration-500 -translate-x-1/2 -translate-y-1/2 absolute top-0 left-0 ${
-              isPointer ? 'text-neon-blue' : 'text-white'
+              isOnLightBg ? 'text-royal-950' : isPointer ? 'text-neon-blue' : 'text-white'
             }`}
             fill="currentColor" 
             fillOpacity={isPointer ? "0.7" : "0.3"}
@@ -116,13 +122,13 @@ export const CustomCursor: React.FC = () => {
               strokeLinecap="round" 
               strokeLinejoin="round" 
               className={`transition-all duration-500 ${
-                isPointer ? 'drop-shadow-[0_0_8px_#06b6d4]' : 'drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]'
+                isOnLightBg ? 'drop-shadow-none' : isPointer ? 'drop-shadow-[0_0_8px_#06b6d4]' : 'drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]'
               }`}
             />
           </svg>
         </div>
 
-        {isPointer && (
+        {isPointer && !isOnLightBg && (
           <div className="absolute w-12 h-12 border-2 border-neon-blue/40 rounded-full animate-ping pointer-events-none" />
         )}
       </div>

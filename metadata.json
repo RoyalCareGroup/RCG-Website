@@ -1,11 +1,11 @@
 {
   "name": "Royal Care Group - Structural Intelligence Hub",
-  "version": "10.13.30-STABLE",
+  "version": "10.13.40-STABLE",
   "design_standard": "V10-COMPACT",
   "requestFramePermissions": [
     "microphone",
     "camera",
     "geolocation"
   ],
-  "description": "National NDIS Business Intelligence ecosystem. Compact Structural Identity Active."
+  "description": "National NDIS Business Intelligence ecosystem. Specialized AI assistive tools working alongside providers to protect revenue and ensure compliance."
 }

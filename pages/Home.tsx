@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { 
   ArrowRight, Rocket, Layout, FileSearch, Radio, Sparkles,
   ShieldCheck, HeartHandshake, 
-  ClipboardCheck, History, Boxes, Terminal
+  ClipboardCheck, History, Boxes, Terminal, Briefcase
 } from 'lucide-react';
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
 import { useSovereign } from '../context/SovereignContext.tsx';
+import { DecodingText } from '../components/DecodingText.tsx';
 
 const Home = () => {
   const { audioReady } = useSovereign();
@@ -35,7 +36,7 @@ const Home = () => {
   const painNodes = [
     { icon: <History className="text-neon-red" size={18} />, title: "Exhaustion", desc: "Constant policy shifts creating a paperwork death-spiral." },
     { icon: <ShieldCheck className="text-neon-purple" size={18} />, title: "The Shadow", desc: "Fear of documentation gaps triggering clawbacks." },
-    { icon: <ClipboardCheck className="text-neon-blue" size={18} />, title: "Legacy Debt", desc: "Manual systems breaking under the weight of growth." }
+    { icon: <ClipboardCheck className="text-neon-blue" size={18} />, title: "Wasted Revenue", desc: "Manual errors and slow systems leak money. Our assistive tools stop the waste and maximize your NDIS income." }
   ];
 
   return (
@@ -57,9 +58,14 @@ const Home = () => {
 
              <div className="flex items-center gap-6 mt-4">
                 <div className="h-[1px] w-12 bg-white/10"></div>
-                <p className="text-[10px] sm:text-[12px] text-slate-500 font-black uppercase tracking-[0.5em] italic">
-                   Systematizing Your NDIS Knowledge
-                </p>
+                <div className="text-[10px] sm:text-[12px] text-slate-500 font-black uppercase tracking-[0.5em] italic">
+                   <DecodingText 
+                    text="Systematizing Your NDIS Knowledge"
+                    stagger={25}
+                    glow={true}
+                    className="text-slate-500"
+                   />
+                </div>
                 <div className="h-[1px] w-12 bg-white/10"></div>
              </div>
           </div>
@@ -84,14 +90,18 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-20 items-center">
              <div className="space-y-8 animate-hero-reveal">
-                <div className="p-4 bg-royal-950 border border-white/10 rounded-2xl w-fit shadow-2xl">
-                   <HeartHandshake size={24} className="text-neon-purple" />
+                {/* SOVEREIGN STYLE STATIC ICON */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl bg-black border-[1.5px] border-neon-blue shadow-2xl relative mb-8">
+                   <div className="absolute inset-0 rounded-lg opacity-20 bg-neon-blue"></div>
+                   <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#10b981] animate-pulse"></div>
+                   <Briefcase size={26} className="text-white relative z-10" />
                 </div>
+                
                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.9]">
                    We carried the <br/><span className="text-neon-blue italic">weight too.</span>
                 </h2>
                 <div className="space-y-4 sm:space-y-6 text-lg sm:text-xl text-slate-400 font-bold italic leading-relaxed border-l-4 border-neon-purple pl-8 sm:pl-10">
-                   <p>"Royal Care Group started in SIL houses, fighting the manual red tape we now automate for national providers."</p>
+                   <p>"Composed of former NDIA staffers, Plan Managers, SIL/SDA owners, and clinical experts, our team has lived the manual red tape. We now build specialized AI tools that work alongside your people—cutting complex details through research and keeping every outcome human-verified."</p>
                    <p className="text-white">Built by providers, for providers.</p>
                 </div>
              </div>
@@ -149,10 +159,10 @@ const Home = () => {
       <section className="py-20 sm:py-32 relative z-10 border-t border-white/5 px-4 text-center">
          <div className="max-w-4xl mx-auto space-y-12">
            <div className="circuit-capsule border-[0.5px] border-neon-purple/50 text-[8px] sm:text-[9px] px-10 py-3 inline-flex bg-black shadow-3xl items-center gap-4">
-              <Sparkles size={14} className="text-neon-purple animate-pulse" /> Automated Regulatory Parity
+              <Sparkles size={14} className="text-neon-purple animate-pulse" /> Human-Verified Regulatory Parity
            </div>
            <h2 className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-[0.9]">
-              Automate administrative debt <br/><span className="text-neon-purple italic">and return to service delivery.</span>
+              Cut administrative debt with specialized tools <br/><span className="text-neon-purple italic">and return to service delivery.</span>
            </h2>
            <Link 
              to="/services" 

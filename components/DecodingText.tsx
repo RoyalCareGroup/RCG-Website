@@ -7,9 +7,10 @@ interface DecodingTextProps {
   baseDelay?: number; 
   stagger?: number;   
   wrapperClassName?: string;
+  glow?: boolean;
 }
 
-const DecodingChar = ({ char, trigger, delay }: { char: string, trigger: boolean, delay: number }) => {
+const DecodingChar = ({ char, trigger, delay, glow }: { char: string, trigger: boolean, delay: number, glow?: boolean }) => {
   const [display, setDisplay] = useState('');
   const [isLocked, setIsLocked] = useState(false);
   
@@ -37,7 +38,11 @@ const DecodingChar = ({ char, trigger, delay }: { char: string, trigger: boolean
   }, [trigger, char, delay]);
 
   return (
-    <span className={`transition-colors duration-300 inline-block whitespace-pre font-black ${isLocked ? '' : 'text-neon-blue opacity-50'}`}>
+    <span className={`transition-all duration-500 inline-block whitespace-pre font-black ${
+      isLocked 
+        ? (glow ? 'text-white animate-neon-hum' : '') 
+        : 'text-neon-blue opacity-50'
+    }`}>
       {display || " "}
     </span>
   );
@@ -49,7 +54,8 @@ export const DecodingText: React.FC<DecodingTextProps> = ({
   trigger = true, 
   baseDelay = 0,
   stagger = 30, 
-  wrapperClassName = ""
+  wrapperClassName = "",
+  glow = false
 }) => {
   const words = text.split(' ');
   let charCumulativeIndex = 0;
@@ -64,13 +70,13 @@ export const DecodingText: React.FC<DecodingTextProps> = ({
               charCumulativeIndex++;
               return (
                 <span key={charIndex} className={className}>
-                  <DecodingChar char={char} trigger={trigger} delay={delay} />
+                  <DecodingChar char={char} trigger={trigger} delay={delay} glow={glow} />
                 </span>
               );
             })}
             {wordIndex < words.length - 1 && (
               <span className={className}>
-                <DecodingChar char=" " trigger={trigger} delay={baseDelay + (charCumulativeIndex * stagger)} />
+                <DecodingChar char=" " trigger={trigger} delay={baseDelay + (charCumulativeIndex * stagger)} glow={glow} />
               </span>
             )}
             {(() => { if (wordIndex < words.length - 1) charCumulativeIndex++; return null; })()}

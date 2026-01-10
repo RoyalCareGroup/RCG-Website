@@ -5,12 +5,12 @@ import { DecodingText } from '../components/DecodingText.tsx';
 
 const ServicesPage: React.FC = () => {
   const businessServices = [
-    { icon: <Terminal size={20} className="text-neon-blue" />, title: "Tech Engineering", desc: "Custom NDIS operating systems, private CRMs, and automated billing engines architected for high-fidelity scale." },
-    { icon: <GraduationCap size={20} className="text-neon-purple" />, title: "Training Protocols", desc: "High-performance training modules for staff and leadership. Compliance mastery and support protocols." },
-    { icon: <Database size={20} className="text-neon-blue" />, title: "Structural Intelligence", desc: "Elite consultancy re-engineering organizational workflows. Infrastructure that is audit-proof and efficient." },
-    { icon: <TrendingUp size={20} className="text-neon-purple" />, title: "Acquisition Audit", desc: "Technical due diligence for buyers and sellers of NDIS entities. Sound structural asset verification." },
-    { icon: <ShieldCheck size={20} className="text-neon-blue" />, title: "Sovereign Compliance", desc: "Automated logic ensuring every line item matches NDIS standards in real-time. Zero-compromise adherence." },
-    { icon: <Code size={20} className="text-neon-purple" />, title: "SYNK Implementation", desc: "Direct deployment of the SYNK AI Ecosystem to automate manual administrative debt instantly." }
+    { icon: <Terminal size={20} className="text-neon-blue" />, title: "Tech Engineering", desc: "Custom NDIS operating systems and AI assistive billing engines architected for high-fidelity scale and human verification." },
+    { icon: <GraduationCap size={20} className="text-neon-purple" />, title: "Training Protocols", desc: "High-performance training modules for staff and leadership. Compliance mastery and support protocols for modern teams." },
+    { icon: <Database size={20} className="text-neon-blue" />, title: "Structural Intelligence", desc: "Elite consultancy re-engineering organizational workflows. Infrastructure that is audit-proof and assistive by design." },
+    { icon: <TrendingUp size={20} className="text-neon-purple" />, title: "Acquisition Audit", desc: "Technical due diligence for buyers and sellers of NDIS entities. Sound structural asset verification and risk mapping." },
+    { icon: <ShieldCheck size={20} className="text-neon-blue" />, title: "Sovereign Compliance", desc: "Assistive logic ensuring every line item matches NDIS standards in real-time, working alongside your team for zero compromise." },
+    { icon: <Code size={20} className="text-neon-purple" />, title: "SYNK Implementation", desc: "Direct deployment of SYNK AI assistive tools to cut manual administrative debt through high-precision research and data nodes." }
   ];
 
   return (
@@ -35,7 +35,7 @@ const ServicesPage: React.FC = () => {
           </div>
           <div className="max-w-lg mx-auto mt-6">
             <DecodingText 
-              text="Elite Consulting • Custom Tech • National Grid"
+              text="Elite Consulting • Assistive Tech • National Grid"
               className="text-slate-500 text-[9px] font-black uppercase tracking-[0.5em]"
               stagger={6}
             />
