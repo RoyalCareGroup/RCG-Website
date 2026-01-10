@@ -102,6 +102,25 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
+  const [isCleared, setIsCleared] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const consent = localStorage.getItem('rcg_structural_consent');
+    setIsCleared(!!consent);
+  }, []);
+
+  // While checking local storage, show nothing to prevent flash
+  if (isCleared === null) return null;
+
+  // STRICT CONDITIONAL GATE: If not consented, only render the Gateway
+  if (!isCleared) {
+    return (
+      <div className="fixed inset-0 bg-[#334155]">
+        <SovereignConsent onCleared={() => setIsCleared(true)} />
+      </div>
+    );
+  }
+
   return (
     <GridInteractionLayer>
       <SovereignSync />
@@ -117,7 +136,6 @@ const AppContent: React.FC = () => {
       <SovereignGrid />
       
       <CustomCursor />
-      <SovereignConsent />
 
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
         <SystemTicker />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ShieldCheck, Zap, Loader2, Cpu, ArrowRight } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
@@ -25,18 +25,13 @@ function decode(base64: string) {
   return bytes;
 }
 
-export const SovereignConsent: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
+interface SovereignConsentProps {
+  onCleared: () => void;
+}
+
+export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onCleared }) => {
   const [isInitializing, setIsInitializing] = useState(false);
   const { initializeAudio, getAudioContext, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser } = useSovereign();
-
-  useEffect(() => {
-    // Check if user has already bonded with the grid
-    const consent = localStorage.getItem('rcg_structural_consent');
-    if (!consent) {
-      setIsVisible(true);
-    }
-  }, []);
 
   const playWelcome = async (ctx: AudioContext) => {
     try {
@@ -57,8 +52,9 @@ export const SovereignConsent: React.FC = () => {
       });
 
       let base64Audio = null;
-      if (response.candidates?.[0]?.content?.parts) {
-        for (const part of response.candidates[0].content.parts) {
+      const candidates = (response as any).candidates;
+      if (candidates?.[0]?.content?.parts) {
+        for (const part of candidates[0].content.parts) {
           if (part.inlineData?.data) {
             base64Audio = part.inlineData.data;
             break;
@@ -90,7 +86,7 @@ export const SovereignConsent: React.FC = () => {
       setIsWelcomePlaying(false);
     } finally {
       setIsInitializing(false);
-      setIsVisible(false);
+      onCleared(); // Complete the gate cycle
     }
   };
 
@@ -99,33 +95,34 @@ export const SovereignConsent: React.FC = () => {
     setIsInitializing(true);
 
     const success = await initializeAudio();
+    
+    // Save to storage immediately to ensure future visits skip this
+    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
+
     if (!success) {
       // If hardware blocks, we still allow entry but skip audio welcome
-      localStorage.setItem('rcg_structural_consent', 'ACCEPTED_NO_AUDIO_' + Date.now());
-      setIsVisible(false);
+      setIsInitializing(false);
+      onCleared();
       return;
     }
 
     const ctx = getAudioContext();
-    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
     playWelcome(ctx);
   };
 
-  if (!isVisible) return null;
-
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#020617] overflow-hidden font-sans">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#334155] overflow-hidden font-sans">
       {/* Structural Background Pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
       </div>
 
       {/* Pulsing Scan Line */}
-      <div className="absolute left-0 w-full h-[2px] bg-neon-blue/30 shadow-[0_0_20px_#06b6d4] animate-[scan_4s_ease-in-out_infinite] pointer-events-none" />
+      <div className="absolute left-0 w-full h-[2px] bg-neon-blue shadow-[0_0_20px_#06b6d4] animate-[scan_4s_ease-in-out_infinite] pointer-events-none" />
 
       <div className="max-w-xl w-full px-6 text-center space-y-12 animate-in fade-in zoom-in-95 duration-1000 relative z-10">
         <div className="flex flex-col items-center gap-8">
-           <div className="p-6 bg-neon-blue/5 border border-neon-blue/20 rounded-[2.5rem] shadow-[0_0_50px_rgba(6,182,212,0.1)] relative group">
+           <div className="p-6 bg-neon-blue/10 border border-neon-blue/20 rounded-[2.5rem] shadow-[0_0_50px_rgba(6,182,212,0.1)] relative group">
               <div className="absolute inset-0 bg-neon-blue/20 blur-3xl rounded-full opacity-50"></div>
               <ShieldCheck className="text-neon-blue w-16 h-16 relative z-10 animate-pulse" strokeWidth={1.5} />
            </div>
@@ -141,7 +138,7 @@ export const SovereignConsent: React.FC = () => {
              </h1>
            </div>
            
-           <p className="text-slate-400 text-sm sm:text-lg font-bold leading-relaxed italic max-w-sm mx-auto">
+           <p className="text-slate-200 text-sm sm:text-lg font-bold leading-relaxed italic max-w-sm mx-auto">
              "Synchronize your hardware to initialize the structural grid and bond with the Aurelia strategic node."
            </p>
         </div>
@@ -162,13 +159,13 @@ export const SovereignConsent: React.FC = () => {
            
            <div className="flex items-center justify-center gap-8 pt-4">
               <div className="flex items-center gap-2 opacity-40">
-                 <Cpu size={12} className="text-slate-500" />
-                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Neural Sync</span>
+                 <Cpu size={12} className="text-slate-300" />
+                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Neural Sync</span>
               </div>
-              <div className="h-3 w-[1px] bg-slate-800"></div>
+              <div className="h-3 w-[1px] bg-slate-500"></div>
               <div className="flex items-center gap-2 opacity-40">
-                 <ShieldCheck size={12} className="text-slate-500" />
-                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Sovereign Link</span>
+                 <ShieldCheck size={12} className="text-slate-300" />
+                 <span className="text-[8px] font-black uppercase tracking-widest text-slate-300">Sovereign Link</span>
               </div>
            </div>
         </div>
