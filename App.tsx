@@ -14,7 +14,6 @@ import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
 import { AetherSentinelHUD } from './components/AetherSentinelHUD.tsx';
-import { SovereignConsent } from './components/SovereignConsent.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -102,17 +101,11 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  const [isCleared, setIsCleared] = useState<boolean>(() => {
-    return !!localStorage.getItem('rcg_structural_consent');
-  });
-
   return (
     <GridInteractionLayer>
       <SovereignSync />
       <GoogleTagTracker />
       
-      {!isCleared && <SovereignConsent onAccepted={() => setIsCleared(true)} />}
-
       <div className="fixed inset-0 bg-[#334155] z-0" />
       <NeuralBackground />
       <SovereignGrid />
