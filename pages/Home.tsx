@@ -43,17 +43,19 @@ const Home = () => {
   const handleVoiceTest = async () => {
     if (isTestingVoice) return;
     
-    // 1. Check for API Key presence before initializing expensive hardware
+    // 1. Check for API Key presence
     const apiKey = process.env.API_KEY;
-    if (!apiKey || apiKey === "undefined" || apiKey === "") {
-      alert("Neural Configuration Error: The API_KEY environment variable is not set in your host (Cloudflare) settings. Please add it to your project variables and redeploy.");
+    
+    // Check for common falsy values or strings injected by build tools
+    if (!apiKey || apiKey === "undefined" || apiKey === "null" || apiKey === "") {
+      alert("Neural Configuration Error: The API_KEY is not detected in this build. \n\nACTION REQUIRED: \n1. Go to Cloudflare Dashboard -> Settings -> Environment Variables. \n2. Add 'API_KEY' to 'Build variables'. \n3. Trigger a NEW deployment.");
       return;
     }
 
-    // 2. Immediately initialize audio on the click event to capture User Gesture
+    // 2. Capture User Gesture and Initialize
     const success = await initializeAudio();
     if (!success) {
-      alert("Hardware Blocked: Browser rejected audio context initialization. Ensure site permissions allow audio output.");
+      alert("Hardware Blocked: Audio initialization failed. Check browser permissions.");
       return;
     }
 
@@ -62,7 +64,6 @@ const Home = () => {
 
     try {
       const ctx = getAudioContext();
-      
       const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-preview-tts",
@@ -120,9 +121,9 @@ const Home = () => {
       setWelcomeAnalyser(null);
       
       if (err.message?.includes("API key not valid")) {
-        alert("Neural Error: The provided API Key is invalid. Check your Google AI Studio credentials.");
+        alert("Neural Error: Invalid API Key. Check Google AI Studio.");
       } else {
-        alert("Neural Link Error: The system could not synthesize audio. Ensure your internet connection is stable and the API Key is correctly configured in your project settings.");
+        alert("Neural Link Error: System could not synthesize audio. Check connection.");
       }
     }
   };
@@ -180,7 +181,7 @@ const Home = () => {
                Structural <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-white to-neon-purple">Intelligence.</span>
              </h1>
 
-             {/* VOICE TEST BUTTON NODE */}
+             {/* MANUAL WELCOME TRIGGER */}
              <div className="mt-4">
                 <button 
                   onClick={handleVoiceTest}
