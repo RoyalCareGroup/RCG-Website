@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu as MenuIcon, X, Home as HomeIcon, Briefcase, Terminal, Zap, Users, Star, Mail, Target, Shield, Cpu, Lock } from 'lucide-react';
+import { Menu as MenuIcon, X, Home as HomeIcon, Briefcase, Terminal, Zap, Users, Star, Mail, Target, Shield, Cpu, Lock, Scale } from 'lucide-react';
 import { BrandLogo } from './BrandLogo.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
 
@@ -25,6 +25,7 @@ const Header = () => {
     { path: '/governance', label: 'GOVERNANCE HUB', icon: <Shield size={14} className="mr-3 text-neon-blue" /> },
     { path: '/services', label: 'SERVICE NODES', icon: <Briefcase size={14} className="mr-3 text-slate-500" /> },
     { path: '/intelligence', label: 'NEURAL HUB', icon: <Zap size={14} className="mr-3 text-neon-purple animate-pulse" />, highlight: true },
+    { path: '/compliance', label: 'COMPLIANCE NODE', icon: <Scale size={14} className="mr-3 text-neon-blue" /> },
     { path: '/about', label: 'DNA & ORIGINS', icon: <Users size={14} className="mr-3 text-slate-500" /> },
     { path: '/casestudies', label: 'CASE STUDIES', icon: <Star size={14} className="mr-3 text-slate-500" /> },
     { path: '/contact', label: 'CONTACT MATRIX', icon: <Mail size={14} className="mr-3 text-slate-500" /> }

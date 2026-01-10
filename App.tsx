@@ -29,6 +29,7 @@ const Contact = lazy(() => import('./pages/Contact.tsx'));
 const DesignSystem = lazy(() => import('./pages/DesignSystem.tsx'));
 const Privacy = lazy(() => import('./pages/Privacy.tsx'));
 const Terms = lazy(() => import('./pages/Terms.tsx'));
+const Compliance = lazy(() => import('./pages/Compliance.tsx'));
 const Socials = lazy(() => import('./pages/Socials.tsx'));
 const Consultancy = lazy(() => import('./pages/Consultancy.tsx'));
 const Governance = lazy(() => import('./pages/Governance.tsx'));
@@ -135,6 +136,7 @@ const AppContent: React.FC = () => {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/compliance" element={<Compliance />} />
                 <Route path="/socials" element={<Socials />} />
                 <Route path="/architect" element={<ArchitectPage />} />
                 <Route path="/sandbox" element={<SandboxPage />} />
