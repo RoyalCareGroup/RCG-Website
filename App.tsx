@@ -102,7 +102,15 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  // CRITICAL: Synchronous check. If not cleared, NOTHING else renders.
+  // CRITICAL: Check for 'reset' parameter in URL to force terminal appearance
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset') === 'true') {
+      localStorage.removeItem('rcg_structural_consent');
+      window.location.href = window.location.origin + window.location.pathname;
+    }
+  }, []);
+
   const [isCleared, setIsCleared] = useState<boolean>(() => {
     return !!localStorage.getItem('rcg_structural_consent');
   });
