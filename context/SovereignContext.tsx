@@ -210,7 +210,7 @@ export const SovereignProvider: React.FC<{ children?: React.ReactNode }> = ({ ch
           inputAudioTranscription: {},
           outputAudioTranscription: {},
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
-          systemInstruction: "You are Aurelia, the RCG Visionary Strategist. Speak with peer-level empathy to NDIS providers."
+          systemInstruction: "You are Aurelia, the RCG Visionary Strategist. Speak with peer-level empathy to NDIS providers. Frame your advice with the empathy of someone who has managed SIL houses, battled audit notices, and handled the paperwork death-spiral."
         }
       });
       sessionRef.current = await sessionPromise;

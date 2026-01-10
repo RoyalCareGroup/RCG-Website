@@ -1,6 +1,6 @@
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.13.31-STABLE
+ * Version: 10.13.80-FINAL
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
@@ -102,28 +102,17 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  // CRITICAL: Check for 'reset' parameter in URL to force terminal appearance
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('reset') === 'true') {
-      localStorage.removeItem('rcg_structural_consent');
-      window.location.href = window.location.origin + window.location.pathname;
-    }
-  }, []);
-
   const [isCleared, setIsCleared] = useState<boolean>(() => {
     return !!localStorage.getItem('rcg_structural_consent');
   });
-
-  if (!isCleared) {
-    return <SovereignConsent onCleared={() => setIsCleared(true)} />;
-  }
 
   return (
     <GridInteractionLayer>
       <SovereignSync />
       <GoogleTagTracker />
       
+      {!isCleared && <SovereignConsent onAccepted={() => setIsCleared(true)} />}
+
       <div className="fixed inset-0 bg-[#334155] z-0" />
       <NeuralBackground />
       <SovereignGrid />
