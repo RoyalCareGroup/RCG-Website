@@ -68,14 +68,11 @@ export const SovereignConsent: React.FC = () => {
 
       if (base64Audio) {
         const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
-        
-        // 1. Setup Analyser for Background Reactivity
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 1024;
         setWelcomeAnalyser(analyser);
         setIsWelcomePlaying(true);
 
-        // 2. Connect source -> analyser -> destination
         const source = ctx.createBufferSource();
         source.buffer = audioBuffer;
         source.connect(analyser);
@@ -118,6 +115,12 @@ export const SovereignConsent: React.FC = () => {
     playWelcome(ctx);
   };
 
+  const handleDecline = () => {
+    // Save decline state to avoid re-prompting
+    localStorage.setItem('rcg_structural_consent', 'DECLINED_' + Date.now());
+    setIsVisible(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -138,7 +141,7 @@ export const SovereignConsent: React.FC = () => {
              {isInitializing ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} className="text-neon-purple" />}
              Accept Protocol
            </button>
-           <button onClick={() => setIsVisible(false)} className="px-6 py-4 sm:px-8 sm:py-6 bg-royal-950 text-slate-500 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] hover:text-white transition-all border border-white/5">Decline</button>
+           <button onClick={handleDecline} className="px-6 py-4 sm:px-8 sm:py-6 bg-royal-950 text-slate-500 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] hover:text-white transition-all border border-white/5">Decline</button>
         </div>
       </div>
     </div>
