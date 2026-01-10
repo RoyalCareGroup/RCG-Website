@@ -1,6 +1,6 @@
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.14.00-FORCE_HOME
+ * Version: 10.15.00-GATEWAY_LOCK
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
@@ -14,7 +14,6 @@ import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
 import { SovereignConsent } from './components/SovereignConsent.tsx';
-import { AetherSentinelHUD } from './components/AetherSentinelHUD.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -56,25 +55,6 @@ const NeuralFallback = () => (
     </div>
   </div>
 );
-
-// --- FORCED LANDING PROTOCOL ---
-const EntrySequenceProtocol = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    // If it's a fresh session, always force landing on Home
-    const sessionInit = sessionStorage.getItem('rcg_session_init');
-    if (!sessionInit && location.pathname !== '/') {
-      sessionStorage.setItem('rcg_session_init', 'ACTIVE');
-      navigate('/', { replace: true });
-    } else if (!sessionInit) {
-      sessionStorage.setItem('rcg_session_init', 'ACTIVE');
-    }
-  }, [navigate, location]);
-
-  return null;
-};
 
 const SovereignSync = () => {
   const [envStatus, setEnvStatus] = useState<'LIVE' | 'STAGING' | 'LOCAL'>('LOCAL');
@@ -125,64 +105,63 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
+  const [isGridInitialized, setIsGridInitialized] = useState(false);
+
   return (
     <GridInteractionLayer>
-      <EntrySequenceProtocol />
       <SovereignSync />
       <GoogleTagTracker />
       
-      {/* Background Layer */}
+      {/* Background Layer (Persistent for aesthetic continuity) */}
       <div className="fixed inset-0 bg-[#334155] z-0" />
       <NeuralBackground />
       <SovereignGrid />
       <CustomCursor />
 
-      {/* Primary Modal Overlay - Highest Priority */}
-      <SovereignConsent />
-
-      {/* Heads-Up Display Overlays */}
-      <AetherSentinelHUD />
-
-      <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
-        <SystemTicker />
-        <LiveStatusHUD />
-        
-        <div className="flex-grow flex flex-col pointer-events-auto">
-          <Header />
-          <main className="flex-grow">
-            <Suspense fallback={<NeuralFallback />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<AdminLogin />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/consultancy" element={<Consultancy />} />
-                <Route path="/governance" element={<Governance />} />
-                <Route path="/tech" element={<Tech />} />
-                <Route path="/intelligence" element={<IntelligenceHub />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/casestudies" element={<CaseStudies />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/compliance" element={<Compliance />} />
-                <Route path="/socials" element={<Socials />} />
-                <Route path="/architect" element={<ArchitectPage />} />
-                <Route path="/sandbox" element={<SandboxPage />} />
-                <Route path="/aurelia" element={<AureliaPage />} />
-                <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
-                <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
-                <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />
-                <Route path="/creative" element={<SovereignRoute><CreativeStudio /></SovereignRoute>} />
-                <Route path="/weblab" element={<SovereignRoute><WebLab /></SovereignRoute>} />
-                <Route path="/video" element={<SovereignRoute><VideoStudio /></SovereignRoute>} />
-                <Route path="/audio" element={<SovereignRoute><AudioStudio /></SovereignRoute>} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </main>
-          <Footer />
+      {!isGridInitialized ? (
+        <SovereignConsent onAccepted={() => setIsGridInitialized(true)} />
+      ) : (
+        <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none animate-in fade-in duration-1000">
+          <SystemTicker />
+          <LiveStatusHUD />
+          
+          <div className="flex-grow flex flex-col pointer-events-auto">
+            <Header />
+            <main className="flex-grow">
+              <Suspense fallback={<NeuralFallback />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<AdminLogin />} />
+                  <Route path="/services" element={<ServicesPage />} />
+                  <Route path="/consultancy" element={<Consultancy />} />
+                  <Route path="/governance" element={<Governance />} />
+                  <Route path="/tech" element={<Tech />} />
+                  <Route path="/intelligence" element={<IntelligenceHub />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/casestudies" element={<CaseStudies />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/compliance" element={<Compliance />} />
+                  <Route path="/socials" element={<Socials />} />
+                  <Route path="/architect" element={<ArchitectPage />} />
+                  <Route path="/sandbox" element={<SandboxPage />} />
+                  <Route path="/aurelia" element={<AureliaPage />} />
+                  <Route path="/command" element={<SovereignRoute><CommandCenter /></SovereignRoute>} />
+                  <Route path="/deploy" element={<SovereignRoute><DeploymentHub /></SovereignRoute>} />
+                  <Route path="/design-system" element={<SovereignRoute><DesignSystem /></SovereignRoute>} />
+                  <Route path="/creative" element={<SovereignRoute><CreativeStudio /></SovereignRoute>} />
+                  <Route path="/weblab" element={<SovereignRoute><WebLab /></SovereignRoute>} />
+                  <Route path="/video" element={<SovereignRoute><VideoStudio /></SovereignRoute>} />
+                  <Route path="/audio" element={<SovereignRoute><AudioStudio /></SovereignRoute>} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </main>
+            <Footer />
+          </div>
         </div>
-      </div>
+      )}
     </GridInteractionLayer>
   );
 };
