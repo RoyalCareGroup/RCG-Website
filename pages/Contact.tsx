@@ -37,8 +37,7 @@ const Contact: React.FC = () => {
   
   // Audio Engine State
   const [isReadingAloud, setIsReadingAloud] = useState(false);
-  const [audioReady, setAudioReady] = useState(false);
-  const [isCaching, setIsCaching] = useState(true);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const cachedBufferRef = useRef<AudioBuffer | null>(null);
@@ -47,9 +46,24 @@ const Contact: React.FC = () => {
   // Formatted intro text for visual spacing (Sentient Humour Tone)
   const introTextRaw = `Look, we’re deep in the AI Golden Age, but let's be real:\nneural networks are terrible at reading the room\nand even worse at sharing a coffee.\n\nIf you're tired of talking to algorithms that have the\npersonality of a spicy spreadsheet, drop your payload here.\n\nA real, breathing human architect—one who actually knows\nwhat a 'Monday morning' feels like—will get back to you.\n\nWe’re hardcore tech-native, but we still haven’t figured out\nhow to automate a proper vibe check. Yet.`;
 
-  // --- PRE-CACHE AUDIO ON MOUNT FOR ZERO LAG ---
-  useEffect(() => {
-    const preCacheAudio = async () => {
+  const handleReadAloud = async () => {
+    // 1. If currently playing, stop it.
+    if (isReadingAloud) {
+      currentSourceRef.current?.stop();
+      setIsReadingAloud(false);
+      return;
+    }
+
+    // 2. Initialize AudioContext on first interaction
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+    }
+    const ctx = audioContextRef.current;
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    // 3. Synthesize if no cached buffer exists
+    if (!cachedBufferRef.current) {
+      setIsSynthesizing(true);
       try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await ai.models.generateContent({
@@ -65,37 +79,25 @@ const Contact: React.FC = () => {
           },
         });
 
-        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        const base64Audio = response.candidates?.[0]?.content?.parts[0]?.inlineData?.data;
         if (base64Audio) {
-          if (!audioContextRef.current) {
-            audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-          }
-          const ctx = audioContextRef.current;
           const audioBuffer = await decodeAudioData(decodeBase64(base64Audio), ctx, 24000, 1);
           cachedBufferRef.current = audioBuffer;
-          setAudioReady(true);
+        } else {
+          throw new Error("Neural voice node failed to return audio bytes.");
         }
       } catch (err) {
-        console.error("Audio pre-cache failure:", err);
+        console.error("Audio Synthesis Error:", err);
+        alert("Neural Voice Node temporarily unavailable. Manual reading recommended.");
+        setIsSynthesizing(false);
+        return;
       } finally {
-        setIsCaching(false);
+        setIsSynthesizing(false);
       }
-    };
-
-    preCacheAudio();
-  }, []);
-
-  const handleReadAloud = async () => {
-    if (isReadingAloud) {
-      currentSourceRef.current?.stop();
-      setIsReadingAloud(false);
-      return;
     }
 
-    if (cachedBufferRef.current && audioContextRef.current) {
-      const ctx = audioContextRef.current;
-      if (ctx.state === 'suspended') await ctx.resume();
-      
+    // 4. Play the synthesized buffer
+    if (cachedBufferRef.current) {
       const source = ctx.createBufferSource();
       source.buffer = cachedBufferRef.current;
       source.connect(ctx.destination);
@@ -215,12 +217,12 @@ const Contact: React.FC = () => {
             {/* AUDIO TRIGGER ICON - SYNCED WITH MENU BUTTON AESTHETIC */}
             <button 
               onClick={handleReadAloud}
-              disabled={isCaching && !audioReady}
+              disabled={isSynthesizing}
               className={`absolute bottom-6 right-8 group/audio w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all duration-500 rounded-xl bg-black border-[1.5px] shadow-2xl z-20 ${
                 isReadingAloud 
                   ? 'border-neon-purple ring-4 ring-neon-purple/10 scale-105' 
-                  : 'border-neon-blue ring-4 ring-neon-blue/5 hover:border-white hover:ring-white/10 hover:scale-110 active:scale-95'
-              } ${isCaching && !audioReady ? 'opacity-30 cursor-not-allowed' : 'opacity-100'}`}
+                  : isSynthesizing ? 'border-amber-500 ring-4 ring-amber-500/10' : 'border-neon-blue ring-4 ring-neon-blue/5 hover:border-white hover:ring-white/10 hover:scale-110 active:scale-95'
+              } ${isSynthesizing ? 'opacity-70' : 'opacity-100'}`}
               aria-label={isReadingAloud ? "Stop Narration" : "Listen to Neural Voice"}
             >
               {/* Internal Glow Layer */}
@@ -230,16 +232,16 @@ const Contact: React.FC = () => {
               <div className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full transition-all duration-500 ${
                 isReadingAloud 
                   ? 'bg-neon-purple shadow-[0_0_8px_#d946ef]' 
-                  : audioReady ? 'bg-neon-green shadow-[0_0_8px_#10b981] animate-pulse' : 'bg-amber-500 animate-pulse'
+                  : isSynthesizing ? 'bg-amber-500 animate-pulse' : 'bg-neon-green shadow-[0_0_8px_#10b981] animate-pulse'
               }`}></div>
 
               <div className="relative z-10 text-white transition-transform duration-500 group-hover/audio:scale-110">
-                {isReadingAloud ? <VolumeX size={26} className="animate-pulse" /> : <Volume2 size={26} />}
+                {isSynthesizing ? <Loader2 size={26} className="animate-spin text-amber-500" /> : isReadingAloud ? <VolumeX size={26} className="animate-pulse" /> : <Volume2 size={26} />}
               </div>
 
               {/* Hover Label */}
               <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black tracking-[0.4em] text-slate-500 uppercase opacity-0 group-hover/audio:opacity-100 transition-opacity whitespace-nowrap">
-                {isReadingAloud ? 'Stop' : 'Listen'}
+                {isSynthesizing ? 'Syncing...' : isReadingAloud ? 'Stop' : 'Listen'}
               </span>
             </button>
           </div>

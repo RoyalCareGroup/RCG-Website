@@ -16,8 +16,8 @@ export const LegalUplink: React.FC = () => {
       }
     };
 
-    // Delay initialization slightly for smooth UI reveal
-    const timer = setTimeout(checkLegal, 1500);
+    // Global reveal delay for smooth loading sequence
+    const timer = setTimeout(checkLegal, 2500);
     
     // Global listener for cross-tab sync
     window.addEventListener('storage', checkLegal);
@@ -35,7 +35,7 @@ export const LegalUplink: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-8 left-8 z-[3000] w-[calc(100vw-64px)] sm:w-full max-w-[400px] animate-in slide-in-from-left-10 fade-in duration-700 pointer-events-none">
+    <div className="fixed bottom-8 left-8 z-[10000] w-[calc(100vw-64px)] sm:w-full max-w-[400px] animate-in slide-in-from-left-10 fade-in duration-700 pointer-events-none">
       <div className="bg-black/95 backdrop-blur-3xl border-2 border-neon-blue/50 rounded-[2rem] p-8 sm:p-10 shadow-[0_40px_120px_rgba(0,0,0,1)] pointer-events-auto ring-1 ring-white/20">
         <div className="flex flex-col gap-8">
           <div className="flex items-start gap-6">
@@ -69,6 +69,7 @@ export const LegalUplink: React.FC = () => {
               </div>
               <Link 
                 to="/compliance" 
+                onClick={() => setIsVisible(false)}
                 className="text-[9px] text-neon-blue hover:text-white font-black uppercase tracking-[0.3em] flex items-center gap-2 transition-colors"
               >
                 Review Compliance <ArrowRight size={12} />

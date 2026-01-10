@@ -1,6 +1,6 @@
 /**
  * RCG MAINFRAME - SYNK_CORE_STABLE
- * Version: 10.13.80-FINAL
+ * Version: 10.13.90-UNIFIED
  * Status: OPERATIONAL_NOMINAL
  */
 import React, { useEffect, useState, Suspense, lazy } from 'react';
@@ -13,7 +13,8 @@ import { NeuralBackground } from './components/NeuralBackground.tsx';
 import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
-import { LegalUplink } from './components/LegalUplink.tsx';
+import { SovereignConsent } from './components/SovereignConsent.tsx';
+import { AetherSentinelHUD } from './components/AetherSentinelHUD.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -96,7 +97,11 @@ const GoogleTagTracker = () => {
 const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
   const { triggerPulse } = useSovereign();
   const handleInteraction = (e: React.MouseEvent) => {
-    triggerPulse(e.clientX, e.clientY);
+    // Only trigger pulse if the target is not a button or link
+    const target = e.target as HTMLElement;
+    if (target.tagName !== 'BUTTON' && target.tagName !== 'A' && !target.closest('button') && !target.closest('a')) {
+      triggerPulse(e.clientX, e.clientY);
+    }
   };
   return <div onClick={handleInteraction} className="min-h-screen flex flex-col">{children}</div>;
 };
@@ -107,15 +112,19 @@ const AppContent: React.FC = () => {
       <SovereignSync />
       <GoogleTagTracker />
       
+      {/* Background Layer */}
       <div className="fixed inset-0 bg-[#334155] z-0" />
       <NeuralBackground />
       <SovereignGrid />
       <CustomCursor />
 
+      {/* Persistent UI Overlays (Outside of pointer-events-none) */}
+      <SovereignConsent />
+      <AetherSentinelHUD />
+
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
         <SystemTicker />
         <LiveStatusHUD />
-        <LegalUplink />
         
         <div className="flex-grow flex flex-col pointer-events-auto">
           <Header />

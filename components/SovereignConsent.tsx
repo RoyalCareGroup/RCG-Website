@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Zap, Loader2 } from 'lucide-react';
+import { ShieldCheck, Zap, Loader2, Scale, ArrowRight } from 'lucide-react';
 import { useSovereign } from '../context/SovereignContext.tsx';
+import { Link } from 'react-router-dom';
 
 interface SovereignConsentProps {
   onAccepted?: () => void;
@@ -12,9 +13,12 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
   const { initializeAudio, getAudioContext } = useSovereign();
 
   useEffect(() => {
-    const consent = localStorage.getItem('rcg_structural_consent');
-    if (!consent) {
-      const timer = setTimeout(() => setIsVisible(true), 800);
+    // Unified check: if either structural or legal consent is missing, show the master protocol
+    const structuralConsent = localStorage.getItem('rcg_structural_consent');
+    const legalConsent = localStorage.getItem('rcg_legal_v2');
+    
+    if (!structuralConsent || !legalConsent) {
+      const timer = setTimeout(() => setIsVisible(true), 1200);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -23,29 +27,29 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
     if (isInitializing) return;
     setIsInitializing(true);
 
+    // Initialise audio hardware for all neural/voice features
     const success = await initializeAudio();
     if (!success) {
-      setIsInitializing(false);
-      return;
+      console.warn("Hardware bonding partially failed. Continuing to UI...");
     }
 
-    // Silence trigger to unlock hardware
+    // Capture user gesture for AudioContext
     const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    
     const silentBuf = ctx.createBuffer(1, 1, 22050);
     const silentSource = ctx.createBufferSource();
     silentSource.buffer = silentBuf;
     silentSource.connect(ctx.destination);
     silentSource.start(0);
 
-    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
+    const stamp = Date.now();
+    localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + stamp);
+    localStorage.setItem('rcg_legal_v2', 'ENFORCED_PROTOCOL_' + stamp);
     
     setIsInitializing(false);
-    setIsVisible(false);
-    if (onAccepted) onAccepted();
-  };
-
-  const handleDecline = () => {
-    localStorage.setItem('rcg_structural_consent', 'DECLINED_' + Date.now());
     setIsVisible(false);
     if (onAccepted) onAccepted();
   };
@@ -53,24 +57,52 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center p-4 sm:p-10 pointer-events-none overflow-hidden">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-xl animate-in fade-in duration-1000 pointer-events-auto" />
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-10 pointer-events-none overflow-hidden">
+      {/* Heavy Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-1000 pointer-events-auto" />
 
-      <div className="max-w-4xl w-full bg-black/90 backdrop-blur-3xl border-2 border-neon-blue/30 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-14 shadow-[0_50px_150px_rgba(0,0,0,1)] pointer-events-auto flex flex-col md:flex-row items-center gap-8 sm:gap-10 animate-in slide-in-from-bottom-40 duration-1000">
-        <div className="flex-shrink-0 p-4 sm:p-6 bg-neon-blue/10 rounded-3xl border border-neon-blue/20 relative group">
-           <div className="absolute inset-0 bg-neon-blue/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <ShieldCheck className="text-neon-blue w-10 h-10 sm:w-16 sm:h-16 animate-pulse relative z-10" />
+      <div className="max-w-4xl w-full bg-black/95 backdrop-blur-3xl border-2 border-neon-blue/30 rounded-[3rem] p-8 sm:p-16 shadow-[0_80px_200px_rgba(0,0,0,1)] pointer-events-auto flex flex-col items-center text-center gap-10 animate-in slide-in-from-bottom-20 duration-1000">
+        
+        <div className="flex-shrink-0 p-6 bg-neon-blue/10 rounded-full border-2 border-neon-blue/20 relative group">
+           <div className="absolute inset-0 bg-neon-blue/30 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
+           <ShieldCheck className="text-neon-blue w-12 h-12 sm:w-20 sm:h-20 animate-pulse relative z-10" />
         </div>
-        <div className="flex-grow space-y-3 sm:space-y-4 text-center md:text-left">
-           <h3 className="text-white font-display font-black uppercase tracking-tight text-xl sm:text-4xl">Protocol: <span className="text-neon-blue">Grid Consent.</span></h3>
-           <p className="text-slate-400 text-xs sm:text-base font-bold leading-relaxed italic opacity-80 max-w-2xl">"By accepting, you initialize the structural grid and bond your hardware for neural interaction nodes."</p>
+
+        <div className="space-y-6 max-w-3xl">
+           <div className="flex flex-col items-center gap-3">
+              <h3 className="text-white font-display font-black uppercase tracking-tight text-3xl sm:text-5xl">
+                Sovereign <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-white to-neon-purple">Entry Protocol.</span>
+              </h3>
+              <div className="h-[2px] w-24 bg-neon-blue/50"></div>
+           </div>
+
+           <p className="text-slate-400 text-sm sm:text-lg font-bold leading-relaxed italic opacity-90 px-4">
+             "By initializing, you accept our <span className="text-white underline underline-offset-4 decoration-neon-blue/50">Terms of Engagement</span> and authorize hardware bonding for AI assistive tools. You acknowledge that every structural outcome is human-verified to protect your organizational integrity."
+           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full md:w-auto">
-           <button onClick={handleAccept} disabled={isInitializing} className="px-8 py-5 sm:px-12 sm:py-6 bg-white text-black rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] hover:bg-neon-blue hover:text-white transition-all shadow-3xl active:scale-95 whitespace-nowrap flex items-center justify-center gap-3 disabled:opacity-50">
-             {isInitializing ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} className="text-neon-purple" />}
-             Accept Protocol
+
+        <div className="w-full flex flex-col items-center gap-8">
+           <button 
+             onClick={handleAccept} 
+             disabled={isInitializing} 
+             className="w-full max-w-md py-6 sm:py-8 bg-white text-black rounded-3xl font-black text-[12px] sm:text-[14px] uppercase tracking-[0.5em] hover:bg-neon-blue hover:text-white transition-all shadow-[0_20px_60px_rgba(6,182,212,0.3)] active:scale-95 whitespace-nowrap flex items-center justify-center gap-4 disabled:opacity-50 group"
+           >
+             {isInitializing ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} className="text-neon-purple group-hover:animate-bounce" />}
+             Initialize Grid
            </button>
-           <button onClick={handleDecline} className="px-6 py-4 sm:px-8 sm:py-6 bg-royal-950 text-slate-500 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] hover:text-white transition-all border border-white/5">Decline</button>
+           
+           <div className="flex items-center gap-10 opacity-50 hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-3">
+                 <Scale size={14} className="text-slate-600" />
+                 <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">AU Regulatory Adherent</span>
+              </div>
+              <Link 
+                to="/compliance" 
+                className="text-[10px] text-neon-blue hover:text-white font-black uppercase tracking-[0.3em] flex items-center gap-2"
+              >
+                Review Compliance <ArrowRight size={14} />
+              </Link>
+           </div>
         </div>
       </div>
     </div>
