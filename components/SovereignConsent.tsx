@@ -1,29 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Zap, Loader2 } from 'lucide-react';
-import { GoogleGenAI, Modality } from "@google/genai";
 import { useSovereign } from '../context/SovereignContext.tsx';
-
-async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
-  const alignedBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
-  const length = Math.floor(alignedBuffer.byteLength / 2);
-  const dataInt16 = new Int16Array(alignedBuffer, 0, length);
-  const frameCount = dataInt16.length / numChannels;
-  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
-    }
-  }
-  return buffer;
-}
-
-function decode(base64: string) {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-  return bytes;
-}
 
 interface SovereignConsentProps {
   onAccepted?: () => void;
@@ -32,7 +9,7 @@ interface SovereignConsentProps {
 export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
-  const { initializeAudio, getAudioContext, stopHeartbeat, setIsWelcomePlaying, setWelcomeAnalyser } = useSovereign();
+  const { initializeAudio, getAudioContext } = useSovereign();
 
   useEffect(() => {
     const consent = localStorage.getItem('rcg_structural_consent');
@@ -41,67 +18,6 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
       return () => clearTimeout(timer);
     }
   }, []);
-
-  const playWelcome = async (ctx: AudioContext) => {
-    try {
-      if (!process.env.API_KEY) {
-        setIsVisible(false);
-        if (onAccepted) onAccepted();
-        return;
-      }
-      
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group structural intelligence hub. Systemizing success through binary logic." }] }],
-        config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: { voiceName: 'Kore' }
-            },
-          },
-        },
-      });
-
-      let base64Audio = null;
-      if (response.candidates?.[0]?.content?.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData?.data) {
-            base64Audio = part.inlineData.data;
-            break;
-          }
-        }
-      }
-
-      if (base64Audio) {
-        const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 1024;
-        setWelcomeAnalyser(analyser);
-        setIsWelcomePlaying(true);
-
-        const source = ctx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(analyser);
-        analyser.connect(ctx.destination);
-        
-        source.onended = () => {
-          stopHeartbeat();
-          setIsWelcomePlaying(false);
-          setWelcomeAnalyser(null);
-        };
-        source.start(0);
-      }
-    } catch (err) {
-      console.error("Welcome trigger failed:", err);
-      setIsWelcomePlaying(false);
-    } finally {
-      setIsInitializing(false);
-      setIsVisible(false);
-      if (onAccepted) onAccepted();
-    }
-  };
 
   const handleAccept = async () => {
     if (isInitializing) return;
@@ -113,6 +29,7 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
       return;
     }
 
+    // Silence trigger to unlock hardware
     const ctx = getAudioContext();
     const silentBuf = ctx.createBuffer(1, 1, 22050);
     const silentSource = ctx.createBufferSource();
@@ -121,7 +38,10 @@ export const SovereignConsent: React.FC<SovereignConsentProps> = ({ onAccepted }
     silentSource.start(0);
 
     localStorage.setItem('rcg_structural_consent', 'ACCEPTED_' + Date.now());
-    playWelcome(ctx);
+    
+    setIsInitializing(false);
+    setIsVisible(false);
+    if (onAccepted) onAccepted();
   };
 
   const handleDecline = () => {

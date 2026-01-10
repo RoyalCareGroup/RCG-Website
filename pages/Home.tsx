@@ -1,16 +1,122 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Zap, ArrowRight, Rocket, Layout, FileSearch, Radio, Sparkles,
-  Fingerprint, Activity, Terminal, ShieldCheck, HeartHandshake, 
-  ClipboardCheck, History, Cpu, Boxes
+  ShieldCheck, HeartHandshake, 
+  ClipboardCheck, History, Boxes, Loader2, Volume2, Terminal
 } from 'lucide-react';
 import { HeroLogoAnimation } from '../components/HeroLogoAnimation.tsx';
 import { useSovereign } from '../context/SovereignContext.tsx';
+import { GoogleGenAI, Modality } from "@google/genai";
+
+// Helper for PCM decoding
+async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number, numChannels: number): Promise<AudioBuffer> {
+  const alignedBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+  const length = Math.floor(alignedBuffer.byteLength / 2);
+  const dataInt16 = new Int16Array(alignedBuffer, 0, length);
+  const frameCount = dataInt16.length / numChannels;
+  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+  for (let channel = 0; channel < numChannels; channel++) {
+    const channelData = buffer.getChannelData(channel);
+    for (let i = 0; i < frameCount; i++) {
+      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+    }
+  }
+  return buffer;
+}
+
+function decode(base64: string) {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+  return bytes;
+}
 
 const Home = () => {
-  const { audioReady } = useSovereign();
+  const { 
+    audioReady, initializeAudio, getAudioContext, 
+    setIsThinking, setIsWelcomePlaying, setWelcomeAnalyser,
+    stopHeartbeat
+  } = useSovereign();
+  const [isTestingVoice, setIsTestingVoice] = useState(false);
   
+  const handleVoiceTest = async () => {
+    if (isTestingVoice) return;
+    setIsTestingVoice(true);
+    setIsThinking(true);
+
+    try {
+      // 1. Initialize/Resume Audio Context
+      await initializeAudio();
+      const ctx = getAudioContext();
+      
+      // 2. Immediate silent trigger to unlock hardware on live site
+      const silentBuf = ctx.createBuffer(1, 1, 22050);
+      const silentSource = ctx.createBufferSource();
+      silentSource.buffer = silentBuf;
+      silentSource.connect(ctx.destination);
+      silentSource.start(0);
+
+      // 3. Call Gemini TTS
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-preview-tts",
+        contents: [{ parts: [{ text: "Neural link established. Welcome to the Royal Care Group live environment. Systemizing success through binary logic." }] }],
+        config: {
+          responseModalities: [Modality.AUDIO],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: 'Kore' }
+            },
+          },
+        },
+      });
+
+      let base64Audio = null;
+      if (response.candidates?.[0]?.content?.parts) {
+        for (const part of response.candidates[0].content.parts) {
+          if (part.inlineData?.data) {
+            base64Audio = part.inlineData.data;
+            break;
+          }
+        }
+      }
+
+      if (base64Audio) {
+        const audioBuffer = await decodeAudioData(decode(base64Audio), ctx, 24000, 1);
+        
+        // Setup Visualizer Node
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 1024;
+        setWelcomeAnalyser(analyser);
+        setIsWelcomePlaying(true);
+
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+        
+        source.onended = () => {
+          setIsTestingVoice(false);
+          setIsThinking(false);
+          setIsWelcomePlaying(false);
+          setWelcomeAnalyser(null);
+          stopHeartbeat();
+        };
+        source.start(0);
+      } else {
+        throw new Error("No audio payload returned.");
+      }
+    } catch (err) {
+      console.error("Voice test failed:", err);
+      setIsTestingVoice(false);
+      setIsThinking(false);
+      setIsWelcomePlaying(false);
+      setWelcomeAnalyser(null);
+      alert("Voice diagnostic failed. Ensure your microphone/audio permissions are granted for this site.");
+    }
+  };
+
   const featurePortal = [
     {
       title: "Design Future",
@@ -52,7 +158,6 @@ const Home = () => {
       <section className="relative min-h-[50vh] sm:min-h-[60vh] flex flex-col justify-center items-center text-center pt-24 sm:pt-32 pb-8 sm:pb-12 z-10">
         <div className="max-w-5xl mx-auto w-full animate-hero-reveal">
           
-          {/* Mainframe Status Header */}
           <div className="flex flex-col items-center gap-6 mb-8">
              <div className="flex items-center gap-4 px-4 py-2 bg-royal-950/80 border border-white/10 rounded-full shadow-inner">
                 <div className={`w-2 h-2 rounded-full ${audioReady ? 'bg-neon-green animate-pulse shadow-[0_0_10px_#10b981]' : 'bg-slate-700'}`}></div>
@@ -64,6 +169,24 @@ const Home = () => {
              <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-none max-w-4xl">
                Structural <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-white to-neon-purple">Intelligence.</span>
              </h1>
+
+             {/* VOICE TEST BUTTON NODE */}
+             <div className="mt-4">
+                <button 
+                  onClick={handleVoiceTest}
+                  disabled={isTestingVoice}
+                  className="group flex items-center gap-4 px-8 py-4 bg-white/5 border-2 border-white/10 rounded-2xl hover:border-neon-blue transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isTestingVoice ? (
+                    <Loader2 size={18} className="text-neon-blue animate-spin" />
+                  ) : (
+                    <Volume2 size={18} className="text-neon-blue group-hover:animate-bounce" />
+                  )}
+                  <span className="text-white font-black text-[10px] uppercase tracking-[0.3em]">
+                    {isTestingVoice ? 'Initiating Link...' : 'Welcome, say hi now'}
+                  </span>
+                </button>
+             </div>
 
              <div className="flex items-center gap-6 mt-4">
                 <div className="h-[1px] w-12 bg-white/10"></div>
@@ -90,7 +213,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Empathy Hero Node */}
       <section className="py-16 sm:py-20 relative z-10 border-t border-white/5">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-20 items-center">
