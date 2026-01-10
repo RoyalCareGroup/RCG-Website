@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, Gavel, Scale, ShieldAlert, Cpu, Database, ArrowLeft, FileText, Globe, CheckCircle2 } from 'lucide-react';
+import { Shield, Gavel, Scale, ShieldAlert, Cpu, Database, ArrowLeft, FileText, Globe, CheckCircle2, AlertOctagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 import { DecodingText } from '../components/DecodingText.tsx';
@@ -48,8 +48,8 @@ const Compliance: React.FC = () => {
           {/* Section: Liability Node */}
           <div className="orbital-tile p-10 bg-black border-2 border-white/10 shadow-2xl group">
             <div className="flex items-center gap-6 mb-8">
-              <div className="p-4 bg-royal-950 rounded-2xl border border-neon-blue/30 text-neon-blue shadow-inner group-hover:scale-110 transition-transform">
-                <ShieldAlert size={28} />
+              <div className="p-4 bg-royal-950 rounded-2xl border border-neon-red/30 text-neon-red shadow-inner group-hover:scale-110 transition-transform">
+                <AlertOctagon size={28} />
               </div>
               <div>
                 <h2 className="text-2xl font-display font-black text-white uppercase tracking-tight">Environmental Liability</h2>
@@ -58,10 +58,10 @@ const Compliance: React.FC = () => {
             </div>
             <div className="space-y-6 text-slate-300 text-base font-bold italic leading-relaxed">
               <p>
-                {COMPANY_DETAILS.legalName} ("RCG") provides a high-fidelity structural intelligence grid. By accessing this grid, the user acknowledges that RCG assumes no responsibility for any direct, indirect, or consequential damage to the user's local software, firmware, or hardware environments.
+                {COMPANY_DETAILS.legalName} ("RCG") provides a high-fidelity structural intelligence grid. By accessing this grid, the user acknowledges and agrees that RCG assumes no responsibility or liability for any direct, indirect, or consequential damage, data loss, or performance degradation to the user's local software, third-party firmware, or hardware environments.
               </p>
               <p>
-                Utilization of high-performance rendering nodes (Visual Synthesis, Kinetic Engine) is at the user's own risk. RCG maintains structural integrity of its own servers but provides no warranty for local device compatibility or failure during data-intensive neural uplink sessions.
+                Utilization of high-performance rendering nodes (Visual Synthesis, Kinetic Engine) is conducted at the user's own risk. RCG maintains the structural integrity of its core sovereign servers but provides no warranty regarding local device compatibility, overheating, or circuit failure during data-intensive neural uplink sessions.
               </p>
             </div>
           </div>
@@ -79,10 +79,10 @@ const Compliance: React.FC = () => {
             </div>
             <div className="space-y-6 text-slate-300 text-base font-bold italic leading-relaxed">
               <p>
-                We operate in strict adherence to the <span className="text-white underline decoration-neon-green">Australian Guidelines for Electronic Commerce</span> and the <span className="text-white underline decoration-neon-green">Privacy Act 1988 (Cth)</span>. Our digital operations are grounded in the principles of transparency, sovereignty, and ethical data management.
+                Royal Care Group operates in strict adherence to the <span className="text-white underline decoration-neon-green">Australian Guidelines for Electronic Commerce</span> and the <span className="text-white underline decoration-neon-green">Privacy Act 1988 (Cth)</span>. Our digital operations are grounded in the principles of transparency, sovereignty, and ethical data management.
               </p>
               <p>
-                As a national NDIS technology partner, we maintain the highest standard of professional conduct, ensuring our structural AI nodes (Aurelia, TFix) do not substitute for mandatory legal or clinical oversight required by Australian regulatory bodies.
+                We abide by all Australian website codes of conduct and digital operations standards. As a national NDIS technology partner, we maintain the highest level of professional conduct, ensuring our structural AI nodes (Aurelia, TFix) do not substitute for mandatory legal or clinical oversight required by Australian regulatory bodies.
               </p>
             </div>
           </div>
@@ -99,7 +99,7 @@ const Compliance: React.FC = () => {
               </div>
             </div>
             <p className="text-slate-300 text-base font-bold italic leading-relaxed">
-              We collect structural data only to optimize NDIS scaling logic. All information is managed under the Australian Privacy Principles (APPs). We do not sell or trade neural analytics to unauthorized third-party nodes. Your data sovereignty is our primary directive.
+              We collect structural data only to optimize NDIS scaling logic and system telemetry. All information is managed under the Australian Privacy Principles (APPs). We do not sell or trade neural analytics to unauthorized third-party nodes. Your data sovereignty is our primary directive.
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@ const Compliance: React.FC = () => {
            <CheckCircle2 className="text-neon-blue mx-auto mb-6" size={48} />
            <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-4">Regulatory Parity</h3>
            <p className="text-slate-500 text-sm font-bold italic mb-10 max-w-xl mx-auto">
-             For specific legal inquiries or requests regarding organizational data deletion, please contact our Compliance Architect.
+             For specific legal inquiries or requests regarding organizational data deletion or structural audit logs, please contact our Compliance Architect.
            </p>
            <a href={`mailto:${COMPANY_DETAILS.email}`} className="px-12 py-5 bg-white text-black font-black text-[10px] tracking-[0.4em] uppercase rounded-2xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl inline-block">
              Contact Compliance Node
