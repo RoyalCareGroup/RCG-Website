@@ -24,7 +24,6 @@ const Header = () => {
     { path: '/tech', label: 'SYNK TECH SUITE', icon: <Cpu size={14} className="mr-3 text-slate-500" /> },
     { path: '/governance', label: 'GOVERNANCE HUB', icon: <Shield size={14} className="mr-3 text-neon-blue" /> },
     { path: '/services', label: 'SERVICE NODES', icon: <Briefcase size={14} className="mr-3 text-slate-500" /> },
-    { path: '/intelligence', label: 'NEURAL HUB', icon: <Zap size={14} className="mr-3 text-neon-purple animate-pulse" />, highlight: true },
     { path: '/compliance', label: 'COMPLIANCE NODE', icon: <Scale size={14} className="mr-3 text-neon-blue" /> },
     { path: '/about', label: 'DNA & ORIGINS', icon: <Users size={14} className="mr-3 text-slate-500" /> },
     { path: '/casestudies', label: 'CASE STUDIES', icon: <Star size={14} className="mr-3 text-slate-500" /> },

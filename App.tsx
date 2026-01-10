@@ -13,7 +13,6 @@ import { NeuralBackground } from './components/NeuralBackground.tsx';
 import { SystemTicker } from './components/SystemTicker.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
-import { AetherSentinelHUD } from './components/AetherSentinelHUD.tsx';
 import { LegalUplink } from './components/LegalUplink.tsx';
 import { COMPANY_DETAILS } from './config.ts';
 import { AlertTriangle, Loader2 } from 'lucide-react';
@@ -116,7 +115,6 @@ const AppContent: React.FC = () => {
       <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white pointer-events-none">
         <SystemTicker />
         <LiveStatusHUD />
-        <AetherSentinelHUD />
         <LegalUplink />
         
         <div className="flex-grow flex flex-col pointer-events-auto">

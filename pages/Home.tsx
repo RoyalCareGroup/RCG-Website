@@ -29,15 +29,6 @@ const Home = () => {
       path: "/sandbox",
       btnText: "Audit Scan",
       accent: "border-neon-purple/20"
-    },
-    {
-      title: "Talk Strategy",
-      subtitle: "Aurelia",
-      icon: <Radio size={24} className="text-neon-green" />,
-      desc: "Speak with our AI peer who understands the NDIS burden.",
-      path: "/aurelia",
-      btnText: "Conversation",
-      accent: "border-neon-green/20"
     }
   ];
 
@@ -123,7 +114,7 @@ const Home = () => {
       </section>
 
       <section className="py-16 sm:py-24 relative z-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 px-4">
           {featurePortal.map((item, i) => (
             <Link 
               to={item.path} 
@@ -184,7 +175,7 @@ const Home = () => {
                        <Terminal size={20} className="text-neon-blue" />
                     </div>
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.6em] text-neon-blue/80">The 2026 Strategy Convergence</span>
-                    <h2 className="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-[0.85]">
+                    <h2 className="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none">
                       Unified <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-white to-neon-purple">SYNK OS.</span>
                     </h2>
                  </div>
