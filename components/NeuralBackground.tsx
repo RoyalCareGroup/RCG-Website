@@ -30,7 +30,7 @@ export const NeuralBackground: React.FC = () => {
     }
 
     const draw = () => {
-      // 1. BASE BACKGROUND FILL - Restored to previous blue
+      // 1. BASE BACKGROUND FILL - Slate Blue standard
       ctx.fillStyle = '#334155';
       ctx.fillRect(0, 0, width, height);
 
@@ -138,7 +138,7 @@ export const NeuralBackground: React.FC = () => {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-[1]"
       style={{
-        // INCREASED RADIUS (520px) and SOFTNESS for the beam effect
+        // RADIUS SET TO 520px for high-fidelity scanning effect
         maskImage: isWelcomePlaying 
           ? 'none' 
           : `radial-gradient(circle 520px at var(--cursor-x, 50%) var(--cursor-y, 50%), black 20%, rgba(0,0,0,0.8) 40%, transparent 100%)`,
