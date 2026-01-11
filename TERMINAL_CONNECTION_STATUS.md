@@ -126,5 +126,7 @@ If you're having issues with the GitHub panel in Google AI Studio, that's a sepa
 
 ---
 
-**Last Updated:** 2026-01-11T00:21:57.500Z  
+**Report Generated:** 2026-01-11  
 **Status:** All critical systems operational ✅
+
+*Note: This status report reflects the connection state at the time of diagnosis. Run `./check-terminal-connection.sh` for current status.*

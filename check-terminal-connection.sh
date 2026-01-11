@@ -23,11 +23,11 @@ check_status() {
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "1. GIT CONFIGURATION"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-git config user.name > /dev/null 2>&1
+git config --get user.name > /dev/null 2>&1
 printf "   Git User Configured: "
 check_status
-echo "   User: $(git config user.name)"
-echo "   Email: $(git config user.email)"
+echo "   User: $(git config --get user.name)"
+echo "   Email: $(git config --get user.email)"
 echo "   Remote: $(git remote get-url origin)"
 echo ""
 
@@ -48,7 +48,12 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 printf "   Resolve github.com: "
 nslookup github.com > /dev/null 2>&1
 check_status
-GITHUB_IP=$(nslookup github.com 2>/dev/null | grep "Address:" | tail -1 | awk '{print $2}')
+# Try dig first (more reliable), fallback to nslookup
+if command -v dig > /dev/null 2>&1; then
+    GITHUB_IP=$(dig +short github.com 2>/dev/null | head -1)
+else
+    GITHUB_IP=$(nslookup github.com 2>/dev/null | grep "Address:" | tail -1 | awk '{print $2}')
+fi
 echo "   GitHub IP: $GITHUB_IP"
 echo ""
 
@@ -82,9 +87,11 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 printf "   Primary Interface: "
 ip addr show eth0 > /dev/null 2>&1
 check_status
-ETH0_IP=$(ip addr show eth0 2>/dev/null | grep "inet " | awk '{print $2}' | cut -d'/' -f1)
+# Store output to avoid duplicate command execution
+ETH0_INFO=$(ip addr show eth0 2>/dev/null)
+ETH0_IP=$(echo "$ETH0_INFO" | grep "inet " | awk '{print $2}' | cut -d'/' -f1)
+ETH0_STATE=$(echo "$ETH0_INFO" | grep -o "state [A-Z]*" | awk '{print $2}')
 echo "   IP Address: $ETH0_IP"
-ETH0_STATE=$(ip addr show eth0 2>/dev/null | grep -o "state [A-Z]*" | awk '{print $2}')
 echo "   State: $ETH0_STATE"
 echo ""
 
@@ -116,7 +123,7 @@ if [ "$HTTP_STATUS" != "200" ]; then
     ((ISSUES++))
 fi
 
-if ! git config user.name > /dev/null 2>&1; then
+if ! git config --get user.name > /dev/null 2>&1; then
     echo "❌ Git not configured properly"
     ((ISSUES++))
 fi
