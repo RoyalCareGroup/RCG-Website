@@ -15,21 +15,21 @@ const Home = () => {
       title: "Our Services",
       subtitle: "What We Offer",
       icon: <Briefcase size={18} className="text-neon-gold" />,
-      desc: "Business consulting, custom training packages, and tech solutions — with deep expertise in NDIS, aged care, and allied health.",
+      desc: "Consulting, training, and software — built for businesses in NDIS, aged care, allied health, and beyond.",
       path: "/services",
     },
     {
       title: "Business Consulting",
       subtitle: "Strategic Advisory",
       icon: <Target size={18} className="text-neon-blue" />,
-      desc: "Strategic guidance to build, scale, and future-proof your business — from compliance-heavy industries to professional services.",
+      desc: "Hands-on advice to restructure operations, fix compliance gaps, and build systems that scale.",
       path: "/consultancy",
     },
     {
       title: "SYNK Tech Suite",
       subtitle: "Built for Business",
       icon: <Cpu size={18} className="text-neon-gold" />,
-      desc: "Smart tools that automate compliance, notes, invoicing, and communication for businesses of all sizes.",
+      desc: "Apps that handle notes, invoicing, forms, and client management — so you can focus on your actual work.",
       path: "/tech",
     }
   ];
@@ -139,8 +139,8 @@ const Home = () => {
               <Scale size={14} className="animate-pulse" /> Business Intelligence
            </div>
            <h2 className="text-xl sm:text-2xl md:text-3xl font-mono font-black uppercase tracking-tighter leading-[0.9] animate-liquid-shimmer">
-              <span className="text-chiseled-silver block mb-2 text-stroked-black">Eliminate administrative burden</span> 
-              <span className="text-chiseled-gold text-stroked-black italic">and return to purpose.</span>
+              <span className="text-chiseled-silver block mb-2 text-stroked-black">Less admin.</span> 
+              <span className="text-chiseled-gold text-stroked-black italic">More impact.</span>
            </h2>
            <Link 
              to="/contact" 

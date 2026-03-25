@@ -25,7 +25,7 @@ const Tech: React.FC = () => {
       version: 'v1.2',
       status: 'STABLE', 
       logo: <SynkCrmLogo width={200} height={45} />, 
-      desc: 'Smart client management. Automated lifecycle tracking and predictive analytics to scale your business with confidence.',
+      desc: 'All your clients in one place. Track relationships, automate follow-ups, and know exactly where every client stands.',
       capabilities: ['Client Management', 'Plan Tracking', 'Integrations', 'Churn Prevention'],
       color: 'text-neon-blue'
     },
@@ -35,7 +35,7 @@ const Tech: React.FC = () => {
       version: 'v5.4',
       status: 'STABLE', 
       logo: <ClaimSynkLogo size={50} isStable={true} />, 
-      desc: 'Invoicing and claims made simple. Real-time validation, batch processing, and automatic error detection to protect your revenue.',
+      desc: 'Submit invoices with confidence. Auto-checks every line item before it goes out — catches errors before they cost you.',
       capabilities: ['Real-time Checks', 'Error Detection', 'Batch Processing', 'Revenue Recovery'],
       color: 'text-neon-blue'
     },
@@ -45,7 +45,7 @@ const Tech: React.FC = () => {
       version: 'v2.1',
       status: 'STABLE', 
       logo: <ReportSynkLogo size={50} isStable={true} />, 
-      desc: 'Turn voice notes into professional reports in seconds. AI-powered documentation that saves hours every week.',
+      desc: 'Talk, and it writes. Voice-to-text case notes that meet compliance standards — done in seconds, not hours.',
       capabilities: ['Voice to Text', 'Smart Templates', 'Instant Reports', 'AI Assistance'],
       color: 'text-neon-purple'
     },
@@ -55,7 +55,7 @@ const Tech: React.FC = () => {
       version: 'v1.0',
       status: 'BETA', 
       logo: <FormSynkLogo size={50} isStable={false} />, 
-      desc: 'Smart intake forms with automated risk flagging, agreement generation, and digital signatures built in.',
+      desc: 'Intake forms that think. Auto-fills known data, flags risks, and handles digital signatures.',
       capabilities: ['Risk Flagging', 'Auto-Fill', 'Secure Storage', 'Smart Logic'],
       color: 'text-neon-purple'
     },
@@ -65,7 +65,7 @@ const Tech: React.FC = () => {
       version: 'v1.0',
       status: 'PREVIEW', 
       logo: <ChargeSynkLogo size={50} isStable={true} />, 
-      desc: 'Billing and payroll automation. Multi-location support with real-time reconciliation and revenue tracking.',
+      desc: 'Billing on autopilot. Calendar-to-invoice generation with automatic rate matching and payroll sync.',
       capabilities: ['Payroll Sync', 'Multi-Location', 'Revenue Tracking', 'Reconciliation'],
       color: 'text-neon-blue'
     }
@@ -124,28 +124,28 @@ const Tech: React.FC = () => {
               <Layers size={16} className="mr-4 animate-pulse" /> Coming Soon
             </div>
             <h2 className="text-5xl md:text-7xl font-mono font-black text-white uppercase tracking-tighter leading-none mb-8 text-spotlight">
-              The Full SYNK<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-white to-neon-blue">Ecosystem.</span>
+              Everything We're<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-white to-neon-blue">Building.</span>
             </h2>
             <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">
-              Every tool we're building — some launched, some on the way.
+              Live products, betas, and what's coming next.
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8 relative z-10">
             {[
-              { name: 'SynkCRM', desc: 'Client relationship management', status: 'LIVE' as const },
-              { name: 'ClaimSYNK', desc: 'Invoice validation & claims', status: 'LIVE' as const },
-              { name: 'ReportSYNK', desc: 'AI-powered documentation', status: 'LIVE' as const },
-              { name: 'FormSYNK', desc: 'Smart intake forms', status: 'BETA' as const },
-              { name: 'ChargeSYNK', desc: 'Billing & payroll automation', status: 'BETA' as const },
-              { name: 'NoteSYNK', desc: 'NDIS compliance notes', status: 'COMING SOON' as const },
-              { name: 'TextSYNK', desc: 'SMS to business logging', status: 'COMING SOON' as const },
-              { name: 'CallSYNK', desc: 'Automatic call tracking', status: 'COMING SOON' as const },
-              { name: 'mySYNK', desc: 'Participant self-management', status: 'COMING SOON' as const },
-              { name: 'TrainSYNK', desc: 'Custom training packages', status: 'COMING SOON' as const },
-              { name: 'SignSYNK', desc: 'Digital signatures & agreements', status: 'COMING SOON' as const },
-              { name: 'BudgetSYNK', desc: 'Financial planning tools', status: 'COMING SOON' as const },
-              { name: 'StoreSYNK', desc: 'Document vault & storage', status: 'COMING SOON' as const },
+              { name: 'SynkCRM', desc: 'Client management', status: 'LIVE' as const },
+              { name: 'ClaimSYNK', desc: 'Invoice validation', status: 'LIVE' as const },
+              { name: 'ReportSYNK', desc: 'AI case notes', status: 'LIVE' as const },
+              { name: 'FormSYNK', desc: 'Smart forms', status: 'BETA' as const },
+              { name: 'ChargeSYNK', desc: 'Billing automation', status: 'BETA' as const },
+              { name: 'NoteSYNK', desc: 'Compliance notes', status: 'COMING SOON' as const },
+              { name: 'TextSYNK', desc: 'SMS logging', status: 'COMING SOON' as const },
+              { name: 'CallSYNK', desc: 'Call tracking', status: 'COMING SOON' as const },
+              { name: 'mySYNK', desc: 'Self-management portal', status: 'COMING SOON' as const },
+              { name: 'TrainSYNK', desc: 'Team training', status: 'COMING SOON' as const },
+              { name: 'SignSYNK', desc: 'Digital signatures', status: 'COMING SOON' as const },
+              { name: 'BudgetSYNK', desc: 'Financial planning', status: 'COMING SOON' as const },
+              { name: 'StoreSYNK', desc: 'Secure document storage', status: 'COMING SOON' as const },
               { name: 'MapSYNK', desc: 'Service area mapping', status: 'COMING SOON' as const },
             ].map((product) => (
               <div
@@ -197,16 +197,16 @@ const Tech: React.FC = () => {
                   <h2 className="text-4xl md:text-6xl font-mono font-black text-white uppercase tracking-tighter leading-[1] mb-8 text-spotlight">
                     How We<br/>Solve It.
                   </h2>
-                  <p className="text-xl text-slate-300 font-light leading-relaxed border-l-4 border-neon-purple pl-10 italic">
-                    "Select a business challenge to see how our tools solve it."
+                  <p className="text-xl text-slate-300 font-light leading-relaxed border-l-4 border-neon-purple pl-10">
+                    Select a business challenge to see how our tools solve it.
                   </p>
                </div>
                
                <div className="space-y-4">
                   {[
-                    { id: 'compliance', label: 'Compliance Gaps', desc: 'Manual processes leading to missed audits, inconsistent records, and compliance risks.' },
-                    { id: 'leakage', label: 'Revenue Leakage', desc: 'Unbilled services, missed invoices, and payment gaps eating into your bottom line.' },
-                    { id: 'debt', label: 'Admin Overload', desc: 'Too much paperwork slowing your team down and limiting your capacity to grow.' }
+                    { id: 'compliance', label: 'Compliance Gaps', desc: 'Records aren\'t consistent. Audits feel risky. You know things are slipping but there\'s no time to fix it.' },
+                    { id: 'leakage', label: 'Revenue Leakage', desc: 'Services delivered but not billed. Invoices rejected. Money left on the table every single week.' },
+                    { id: 'debt', label: 'Admin Overload', desc: 'Your team spends more time on paperwork than on the work that actually matters.' }
                   ].map(matrix => (
                     <button
                       key={matrix.id}
@@ -238,8 +238,8 @@ const Tech: React.FC = () => {
                           <div className="hover:scale-110 transition-transform duration-500"><FormSynkLogo size={100} isStable={false} /></div>
                        </div>
                        <h4 className="text-3xl font-mono font-black text-white uppercase tracking-tighter">Complete Compliance Solution</h4>
-                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto italic">
-                          "Combining **ReportSYNK** automated documentation with **FormSYNK** smart intake creates a seamless, error-free compliance pipeline."
+                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto">
+                          ReportSYNK writes audit-ready notes from voice. FormSYNK catches risks at intake. Together — zero gaps.
                        </p>
                        <div className="flex flex-wrap justify-center gap-4">
                           {['AUDIT-READY', 'AUTOMATED', 'ERROR-FREE'].map(tag => (
@@ -256,8 +256,8 @@ const Tech: React.FC = () => {
                           <div className="hover:scale-110 transition-transform duration-500"><ChargeSynkLogo size={100} isStable={true} /></div>
                        </div>
                        <h4 className="text-3xl font-mono font-black text-white uppercase tracking-tighter">Revenue Protection</h4>
-                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto italic">
-                          "**ClaimSYNK** audits your history to find missed income, while **ChargeSYNK** ensures every future invoice is billed accurately."
+                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto">
+                          ClaimSYNK validates every invoice before submission. ChargeSYNK automates billing from your calendar. Nothing missed.
                        </p>
                        <div className="flex flex-wrap justify-center gap-4">
                           {['REVENUE-SECURE', 'AUTO-RECOVERY', 'OPTIMISED'].map(tag => (
@@ -272,8 +272,8 @@ const Tech: React.FC = () => {
                           <SynkCrmLogo width={350} height={80} />
                        </div>
                        <h4 className="text-3xl font-mono font-black text-white uppercase tracking-tighter">Operations Hub</h4>
-                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto italic">
-                          "**SynkCRM** acts as your central operations layer, automating the entire flow from client onboarding to billing."
+                       <p className="text-slate-300 text-lg font-light leading-relaxed max-w-lg mx-auto">
+                          SynkCRM centralises everything — clients, notes, invoices, tasks. One system instead of ten spreadsheets.
                        </p>
                        <div className="flex flex-wrap justify-center gap-4">
                           {['PAPERLESS', 'AUTOMATED', 'SCALABLE'].map(tag => (

@@ -5,12 +5,12 @@ import { DecodingText } from '../components/DecodingText.tsx';
 
 const ServicesPage: React.FC = () => {
   const businessServices = [
-    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Custom Business Software", desc: "Purpose-built apps and systems designed for your industry. From compliance tools to client management — tailored to how you actually work." },
-    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "Custom Training Packages", desc: "Training designed for your team. Compliance, best practice, and operational efficiency modules for NDIS, aged care, allied health, and more." },
-    { icon: <Database size={24} className="text-neon-gold" />, title: "Business Consulting", desc: "Strategic consulting to restructure your operations. Audit-ready processes and scalable systems for regulated and growing businesses." },
-    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "Business Acquisitions & Due Diligence", desc: "Due diligence and risk assessment for buying or selling businesses — with specialist expertise in NDIS registered providers." },
-    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Compliance Solutions", desc: "Real-time compliance monitoring and audit preparation. Stay ahead of regulatory requirements across NDIS, aged care, and allied health." },
-    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Product Integration", desc: "Direct setup and onboarding of our SYNK suite tools to streamline your daily operations — for any business, any industry." }
+    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Custom Business Software", desc: "We build apps and systems around how your business actually works. Not off-the-shelf. Not one-size-fits-all." },
+    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "Custom Training Packages", desc: "Practical training for your team — compliance, operations, and best practice. Designed for your industry and delivered your way." },
+    { icon: <Database size={24} className="text-neon-gold" />, title: "Business Consulting", desc: "We look at how your business runs and fix what's broken. Processes, systems, compliance — we make it work." },
+    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "Business Acquisitions & Due Diligence", desc: "Buying or selling a business? We assess the real risks, review compliance, and tell you what the numbers don't." },
+    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Compliance Solutions", desc: "Stay audit-ready without the stress. We set up systems that monitor compliance automatically across NDIS, aged care, and allied health." },
+    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Product Integration", desc: "Already running a business? We plug our SYNK tools into your existing workflow — minimal disruption, maximum impact." }
   ];
 
   return (
@@ -42,8 +42,8 @@ const ServicesPage: React.FC = () => {
               <h3 className="text-3xl font-mono font-black text-white mb-4 uppercase tracking-tighter leading-none group-hover:text-chiseled-gold transition-colors">
                 {service.title}
               </h3>
-              <p className="text-slate-400 text-base leading-relaxed font-bold mb-6 flex-grow italic opacity-80 group-hover:opacity-100 transition-opacity">
-                "{service.desc}"
+              <p className="text-slate-400 text-base leading-relaxed font-bold mb-6 flex-grow opacity-80 group-hover:opacity-100 transition-opacity">
+                {service.desc}
               </p>
               <Link to="/contact" className="w-full py-5 bg-black border-2 border-neon-gold text-white rounded-xl font-black text-[11px] tracking-[0.4em] uppercase hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-xl flex items-center justify-center gap-4 group/btn">
                 <Zap size={18} className="text-neon-gold group-active:text-black" />
@@ -60,8 +60,8 @@ const ServicesPage: React.FC = () => {
                 <span className="text-chiseled-silver block mb-2 text-stroked-black">Automate Your</span>
                 <span className="text-chiseled-gold text-stroked-black">Compliance.</span>
               </h2>
-              <p className="text-xl text-slate-300 font-bold italic leading-relaxed">
-                Connect your existing software ecosystem to our SYNK platform and eliminate administrative burden instantly.
+              <p className="text-xl text-slate-300 font-bold leading-relaxed">
+                Already using other tools? We integrate with what you have. No rip-and-replace.
               </p>
               <Link to="/contact" className="px-12 py-6 bg-white text-black font-black text-[12px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-gold hover:text-black transition-all inline-flex items-center gap-6">
                 Connect My Systems <ArrowRight size={20} />

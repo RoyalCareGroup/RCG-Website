@@ -47,7 +47,7 @@ const Contact: React.FC = () => {
   const cachedBufferRef = useRef<AudioBuffer | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const introTextRaw = `We're a tech company built by people who've actually\nrun businesses in complex, regulated industries.\n\nWe know the compliance headaches, the admin overload,\nand the gap between what businesses need and what\nmost software actually delivers.\n\nSo we built something better.\n\nDrop us a message below and a real person from our\nteam will get back to you — usually within 24 hours.`;
+  const introTextRaw = `We're real people who've run real businesses.\n\nWe've dealt with the compliance headaches, the admin\noverload, and software that promises everything but\ndelivers nothing.\n\nTell us what you're dealing with and we'll tell you\nhonestly if we can help.\n\nDrop us a message below — a real person will\nget back to you within 24 hours.`;
 
   const handleReadAloud = async () => {
     if (isReadingAloud) {
@@ -129,7 +129,7 @@ const Contact: React.FC = () => {
               A Real Person Will Reply
             </div>
             <div className="relative z-10 text-center">
-               <p className="text-xl md:text-2xl text-slate-400 font-bold leading-relaxed italic whitespace-pre-line tracking-tight uppercase">
+               <p className="text-xl md:text-2xl text-slate-400 font-bold leading-relaxed whitespace-pre-line tracking-tight uppercase">
                  <DecodingText text={introTextRaw} stagger={1} />
                </p>
             </div>
@@ -229,8 +229,8 @@ const Contact: React.FC = () => {
                       <h4 className="text-3xl font-mono font-black text-white uppercase tracking-tight mb-6">
                          {analysis?.category || 'Your Inquiry'}
                       </h4>
-                      <p className="text-slate-400 text-xl leading-relaxed italic font-bold">
-                         "{analysis?.intent || 'Your message is ready to be sent to our team. We\'ll review and get back to you shortly.'}"
+                      <p className="text-slate-400 text-xl leading-relaxed font-bold">
+                         {analysis?.intent || 'Your message is ready to be sent to our team. We\'ll review and get back to you shortly.'}
                       </p>
                    </div>
                 </div>

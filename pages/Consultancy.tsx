@@ -19,22 +19,22 @@ const Consultancy: React.FC = () => {
     {
       icon: <Compass size={28} className="text-neon-gold" />,
       title: "Workflow Re-Engineering",
-      desc: "We replace manual legacy processes with automated, efficient systems — using our SYNK platform and proven methodology."
+      desc: "We map your current processes, find the bottlenecks, and replace them with systems that actually work."
     },
     {
       icon: <BarChart3 size={28} className="text-slate-400" />,
       title: "Revenue Optimisation",
-      desc: "Identifying revenue leakage through detailed auditing. We optimise billing, utilisation, and service delivery across your operations."
+      desc: "We audit your billing, find what's been missed, and set up systems so nothing slips through again."
     },
     {
       icon: <ShieldCheck size={28} className="text-neon-gold" />,
       title: "Governance & Compliance",
-      desc: "Building compliance frameworks that protect your business. Audit-ready systems for NDIS, aged care, allied health, and regulated industries."
+      desc: "We build compliance frameworks that run themselves. Audit-ready from day one — NDIS, aged care, and beyond."
     },
     {
       icon: <Users size={28} className="text-slate-400" />,
-      title: "Strategic Advisory",
-      desc: "High-level consultation for business owners, boards, and leadership teams. Strategic guidance for critical business decisions."
+      title: "Executive Strategic Advisory",
+      desc: "Big decisions need clear thinking. We work with owners and boards to cut through complexity and move forward."
     }
   ];
 
@@ -53,7 +53,7 @@ const Consultancy: React.FC = () => {
           </h1>
           <div className="max-w-2xl mx-auto text-center">
             <div className="text-xl text-slate-600 dark:text-slate-400 font-bold leading-relaxed italic opacity-90 tracking-tight uppercase">
-               <DecodingText text="Expert consulting for growing businesses. We restructure operations for scalable, compliant growth — with deep NDIS expertise." stagger={8} />
+               <DecodingText text="We fix how businesses run. Operations, compliance, revenue — we've seen it all." stagger={8} />
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ const Consultancy: React.FC = () => {
                   {s.icon}
                 </div>
                 <h3 className="text-2xl font-mono font-black text-white uppercase tracking-tighter mb-6 leading-none group-hover:text-chiseled-gold transition-colors">{s.title}</h3>
-                <p className="text-slate-400 text-base font-bold leading-relaxed mb-6 flex-grow italic opacity-80 group-hover:opacity-100 transition-opacity">"{s.desc}"</p>
+                <p className="text-slate-400 text-base font-bold leading-relaxed mb-6 flex-grow opacity-80 group-hover:opacity-100 transition-opacity">{s.desc}</p>
                 <Link to="/contact" className="w-full py-5 bg-black border-2 border-neon-gold text-white rounded-xl font-black text-[11px] tracking-[0.4em] uppercase rounded-xl hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-xl flex items-center justify-center gap-4">
                   <Zap size={18} className="text-neon-gold group-active:text-black" />
                   <span>Get Started</span>

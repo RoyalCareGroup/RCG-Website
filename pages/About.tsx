@@ -58,17 +58,17 @@ const About: React.FC = () => {
               <div className="relative z-10 space-y-6">
                 <div className="border-l-4 border-neon-gold pl-6 space-y-4">
                   <h3 className="text-3xl sm:text-4xl font-mono font-black text-white uppercase tracking-tight leading-none">Experience-Led <br/>Innovation.</h3>
-                  <p className="text-xl sm:text-2xl text-slate-300 font-bold leading-relaxed italic opacity-90">
-                    "We started in one of Australia's most complex industries — the NDIS. Now we build smart tools for businesses of all sizes."
+                  <p className="text-xl sm:text-2xl text-slate-300 font-bold leading-relaxed opacity-90">
+                    We started in one of Australia's most complex industries — the NDIS. Now we build smart tools for businesses of all sizes.
                   </p>
                 </div>
                 
-                <div className="space-y-4 text-lg font-bold text-slate-400 leading-relaxed italic">
+                <div className="space-y-4 text-lg font-bold text-slate-400 leading-relaxed">
                   <p>
                     Our team cut its teeth in the trenches — running NDIS services, managing compliance, and living the manual red tape that slows businesses down. We didn't just study the problem. We lived it.
                   </p>
                   <p>
-                    That experience became the foundation for everything we build today. Smart tools that work <span className="text-white">alongside</span> your people — cutting admin, simplifying compliance, and keeping every outcome human-verified. Built for NDIS. Ready for any business.
+                    That experience became the foundation for everything we build today. Smart tools that work <span className="text-white">alongside</span> your people — cutting admin, simplifying compliance, and keeping every outcome human-verified. Built in NDIS. Ready for any business.
                   </p>
                 </div>
 
@@ -93,8 +93,8 @@ const About: React.FC = () => {
                     <Cpu size={20} className="text-neon-gold opacity-30 group-hover:opacity-100 transition-opacity" />
                  </div>
                  <h4 className="text-2xl font-mono font-black text-white uppercase tracking-tight mb-4 group-hover:text-chiseled-gold transition-colors">{item.title}</h4>
-                 <p className="text-sm text-slate-400 font-bold italic leading-relaxed">
-                    "{item.desc}"
+                 <p className="text-sm text-slate-400 font-bold leading-relaxed">
+                    {item.desc}
                  </p>
               </div>
             ))}
