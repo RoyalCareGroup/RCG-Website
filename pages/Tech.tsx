@@ -13,6 +13,7 @@ import { ClaimSynkLogo } from '../components/logos/ClaimSynkLogo.tsx';
 import { ReportSynkLogo } from '../components/logos/ReportSynkLogo.tsx';
 import { FormSynkLogo } from '../components/logos/FormSynkLogo.tsx';
 import { ChargeSynkLogo } from '../components/logos/ChargeSynkLogo.tsx';
+import { LaunchCountdown } from '../components/LaunchCountdown.tsx';
 import { COMPANY_DETAILS } from '../config.ts';
 
 const Tech: React.FC = () => {
@@ -159,6 +160,75 @@ const Tech: React.FC = () => {
              <Link to="/contact" className="px-12 py-6 bg-white text-black font-black text-[11px] tracking-[0.6em] uppercase rounded-xl hover:bg-neon-blue hover:text-white transition-all shadow-3xl group active:scale-95">
                 Start a Conversation <ArrowRight className="inline ml-3 group-hover:translate-x-2 transition-transform" />
              </Link>
+          </div>
+        </div>
+
+        {/* SYNK Ecosystem Section */}
+        <div className="mb-40 relative">
+          <div className="absolute inset-0 bg-neon-purple/3 pointer-events-none blur-[200px]"></div>
+          <div className="text-center mb-16 relative z-10">
+            <div className="inline-flex items-center px-5 py-2 rounded-xl bg-neon-purple/10 border border-neon-purple/30 text-neon-purple text-[10px] font-black tracking-[0.6em] uppercase mb-10 shadow-2xl">
+              <Layers size={16} className="mr-4 animate-pulse" /> Coming Soon
+            </div>
+            <h2 className="text-5xl md:text-7xl font-display font-black text-white uppercase tracking-tighter leading-none mb-8 text-spotlight">
+              The Full SYNK<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-white to-neon-blue">Ecosystem.</span>
+            </h2>
+            <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">
+              Every tool we're building — some launched, some on the way.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-16 relative z-10">
+            {[
+              { name: 'SynkCRM', desc: 'Client relationship management', status: 'LIVE' as const },
+              { name: 'ClaimSYNK', desc: 'Invoice validation & claims', status: 'LIVE' as const },
+              { name: 'ReportSYNK', desc: 'AI-powered documentation', status: 'LIVE' as const },
+              { name: 'FormSYNK', desc: 'Smart intake forms', status: 'BETA' as const },
+              { name: 'ChargeSYNK', desc: 'Billing & payroll automation', status: 'BETA' as const },
+              { name: 'NoteSYNK', desc: 'NDIS compliance notes', status: 'COMING SOON' as const },
+              { name: 'TextSYNK', desc: 'SMS to business logging', status: 'COMING SOON' as const },
+              { name: 'CallSYNK', desc: 'Automatic call tracking', status: 'COMING SOON' as const },
+              { name: 'mySYNK', desc: 'Participant self-management', status: 'COMING SOON' as const },
+              { name: 'TrainSYNK', desc: 'Custom training packages', status: 'COMING SOON' as const },
+              { name: 'SignSYNK', desc: 'Digital signatures & agreements', status: 'COMING SOON' as const },
+              { name: 'BudgetSYNK', desc: 'Financial planning tools', status: 'COMING SOON' as const },
+              { name: 'StoreSYNK', desc: 'Document vault & storage', status: 'COMING SOON' as const },
+              { name: 'MapSYNK', desc: 'Service area mapping', status: 'COMING SOON' as const },
+            ].map((product) => (
+              <div
+                key={product.name}
+                className={`orbital-tile p-5 bg-royal-900/40 border-white/10 rounded-2xl relative overflow-hidden group/eco transition-all duration-500 hover:scale-[1.03] ${
+                  product.status === 'COMING SOON' ? 'opacity-70 hover:opacity-100' : ''
+                }`}
+              >
+                <div className={`inline-flex items-center px-3 py-1 rounded-lg text-[8px] font-black tracking-[0.3em] uppercase mb-3 border ${
+                  product.status === 'LIVE'
+                    ? 'text-green-400 border-green-400/40 bg-green-400/10'
+                    : product.status === 'BETA'
+                    ? 'text-neon-blue border-neon-blue/40 bg-neon-blue/10'
+                    : 'text-neon-purple border-neon-purple/40 bg-neon-purple/10'
+                }`}>
+                  {product.status}
+                </div>
+                <h4 className="text-white font-black text-sm uppercase tracking-tight mb-1.5 group-hover/eco:text-neon-blue transition-colors">
+                  {product.name}
+                </h4>
+                <p className="text-slate-500 text-[11px] leading-relaxed font-light">
+                  {product.desc}
+                </p>
+                <div className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent to-transparent ${
+                  product.status === 'LIVE'
+                    ? 'via-green-400'
+                    : product.status === 'BETA'
+                    ? 'via-neon-blue'
+                    : 'via-neon-purple'
+                } opacity-40`}></div>
+              </div>
+            ))}
+          </div>
+
+          <div className="relative z-10">
+            <LaunchCountdown />
           </div>
         </div>
 
