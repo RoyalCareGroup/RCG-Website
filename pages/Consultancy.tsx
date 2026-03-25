@@ -40,14 +40,14 @@ const Consultancy: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
-      <div className="max-w-7xl mx-auto relative z-10 pt-32 pb-32 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 pt-24 pb-16 w-full">
         
-        <div className="mb-24 animate-hero-reveal flex flex-col items-center text-center">
-          <div className="circuit-capsule mb-10 px-10 py-3 bg-white dark:bg-black/40 border border-neon-gold/30 text-slate-600 dark:text-neon-gold shadow-3xl inline-flex items-center gap-4">
+        <div className="mb-12 animate-hero-reveal flex flex-col items-center text-center">
+          <div className="circuit-capsule mb-6 px-10 py-3 bg-white dark:bg-black/40 border border-neon-gold/30 text-slate-600 dark:text-neon-gold shadow-3xl inline-flex items-center gap-4">
             <Target size={18} className="animate-pulse" /> 
             <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Strategic Advisory</span>
           </div>
-          <h1 className="text-5xl font-display font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
+          <h1 className="text-5xl font-mono font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
             <span className="text-chiseled-silver block mb-4 text-stroked-black">Business</span> 
             <span className="text-chiseled-gold text-stroked-black">Consulting.</span>
           </h1>
@@ -58,11 +58,11 @@ const Consultancy: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
-           <div className="lg:col-span-8 orbital-tile p-8 shadow-[0_60px_120px_rgba(0,0,0,0.8)] border border-white/10">
-              <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+        <div className="mb-12 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+           <div className="lg:col-span-8 orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-8 rounded-2xl border border-white/10">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-8">
                  <div>
-                    <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Impact Projection</h3>
+                    <h3 className="text-3xl font-mono font-black text-white uppercase tracking-tight">Impact Projection</h3>
                     <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">Performance Metrics</p>
                  </div>
                  <div className="flex gap-8 bg-black/40 px-8 py-4 rounded-2xl border border-white/5 shadow-inner">
@@ -100,10 +100,10 @@ const Consultancy: React.FC = () => {
                 { label: "Audit Readiness", val: "Instant", icon: <Shield className="text-neon-gold" size={24} /> },
                 { label: "Scalability", val: "9.8/10", icon: <Gauge className="text-slate-400" size={24} /> }
               ].map((m, i) => (
-                <div key={i} className="orbital-tile p-10 flex flex-col justify-center shadow-xl flex-1 group">
+                <div key={i} className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-6 flex flex-col justify-center rounded-2xl flex-1 group">
                    <div className="flex items-center justify-between mb-4">
                       <div className="p-5 bg-royal-950 rounded-2xl border border-white/5 transition-all group-hover:scale-110 shadow-inner">{m.icon}</div>
-                      <span className="text-4xl font-display font-black text-white tracking-tighter">{m.val}</span>
+                      <span className="text-4xl font-mono font-black text-white tracking-tighter">{m.val}</span>
                    </div>
                    <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] font-mono">{m.label}</div>
                 </div>
@@ -111,14 +111,14 @@ const Consultancy: React.FC = () => {
            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
            {strategies.map((s, idx) => (
-             <div key={idx} className="orbital-tile p-8 flex flex-col group hover:border-neon-gold/20 transition-all shadow-xl min-h-[320px]">
-                <div className="mb-10 p-6 bg-royal-950 border border-white/10 rounded-2xl w-fit group-hover:scale-110 transition-all shadow-inner">
+             <div key={idx} className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-8 flex flex-col group hover:border-neon-gold/20 transition-all rounded-2xl min-h-[320px]">
+                <div className="mb-6 p-6 bg-royal-950 border border-white/10 rounded-2xl w-fit group-hover:scale-110 transition-all shadow-inner">
                   {s.icon}
                 </div>
-                <h3 className="text-2xl font-display font-black text-white uppercase tracking-tighter mb-6 leading-none group-hover:text-chiseled-gold transition-colors">{s.title}</h3>
-                <p className="text-slate-400 text-base font-bold leading-relaxed mb-12 flex-grow italic opacity-80 group-hover:opacity-100 transition-opacity">"{s.desc}"</p>
+                <h3 className="text-2xl font-mono font-black text-white uppercase tracking-tighter mb-6 leading-none group-hover:text-chiseled-gold transition-colors">{s.title}</h3>
+                <p className="text-slate-400 text-base font-bold leading-relaxed mb-6 flex-grow italic opacity-80 group-hover:opacity-100 transition-opacity">"{s.desc}"</p>
                 <Link to="/contact" className="w-full py-5 bg-black border-2 border-neon-gold text-white rounded-xl font-black text-[11px] tracking-[0.4em] uppercase rounded-xl hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-xl flex items-center justify-center gap-4">
                   <Zap size={18} className="text-neon-gold group-active:text-black" />
                   <span>Get Started</span>
@@ -128,13 +128,13 @@ const Consultancy: React.FC = () => {
            ))}
         </div>
 
-        <div className="orbital-tile !rounded-[4rem] p-12 md:p-20 relative overflow-hidden group shadow-[0_80px_160px_rgba(0,0,0,1)] text-center">
-          <div className="relative z-10 flex flex-col items-center space-y-12">
-             <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
+        <div className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] !rounded-[4rem] p-6 md:p-10 relative overflow-hidden group rounded-2xl text-center">
+          <div className="relative z-10 flex flex-col items-center space-y-6">
+             <h2 className="text-4xl md:text-5xl font-mono font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
               <span className="text-chiseled-silver block mb-2 text-stroked-black">Operational</span> 
               <span className="text-chiseled-gold text-stroked-black">Excellence.</span>
              </h2>
-             <div className="flex flex-wrap justify-center gap-10 pt-10">
+             <div className="flex flex-wrap justify-center gap-4 pt-6">
                 <Link to="/contact" className="px-12 py-6 bg-white text-black font-black text-[12px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-gold hover:text-black transition-all shadow-3xl flex items-center gap-6 group">
                   <Target size={24} />
                   <span>Request a Consultation</span>

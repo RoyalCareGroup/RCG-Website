@@ -38,7 +38,7 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-4 transition-transform hover:scale-[1.01]">
               <BrandLogo size="md" showText={false} />
               <div className="hidden lg:flex flex-col">
-                <span className="text-slate-950 dark:text-white text-[13px] font-display font-black tracking-tighter uppercase leading-none transition-colors duration-1000">Royal Care</span>
+                <span className="text-slate-950 dark:text-white text-[13px] font-mono font-black tracking-tighter uppercase leading-none transition-colors duration-1000">Royal Care</span>
                 <span className="text-indigo-500 text-[7px] font-black uppercase tracking-[0.4em] mt-1 opacity-60">Tech Division</span>
               </div>
             </Link>
@@ -101,7 +101,7 @@ const Header = () => {
                   {link.icon}
                 </div>
                 <div className="flex-grow">
-                  <h4 className="text-slate-950 dark:text-white text-base font-display font-black tracking-tight">
+                  <h4 className="text-slate-950 dark:text-white text-base font-mono font-black tracking-tight">
                     {link.label}
                   </h4>
                   <p className="text-slate-400 dark:text-slate-600 text-xs">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -40,11 +39,11 @@ const Home = () => {
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-4 sm:px-10 lg:px-16 font-sans relative">
       {/* --- HERO SECTION --- */}
-      <section className="relative min-h-[80vh] flex flex-col justify-center items-center text-center pt-28 pb-6 z-10">
+      <section className="relative min-h-[70vh] flex flex-col justify-center items-center text-center pt-28 pb-6 z-10">
         <div className="max-w-5xl mx-auto w-full animate-hero-reveal">
           
           <div className="flex flex-col items-center gap-4 mb-8">
-             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-black uppercase tracking-tighter leading-none max-w-5xl animate-liquid-shimmer group cursor-default flex flex-wrap justify-center gap-x-3 sm:gap-x-4">
+             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-mono font-black uppercase tracking-tighter leading-none max-w-5xl animate-liquid-shimmer group cursor-default flex flex-wrap justify-center gap-x-3 sm:gap-x-4">
                <span className="text-chiseled-silver text-stroked-black">Structural</span> 
                <span className="text-chiseled-gold text-stroked-black">Intelligence.</span>
              </h1>
@@ -87,25 +86,23 @@ const Home = () => {
              </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-4 max-w-md mx-auto">
-            <div className="p-2">
-              <div className="text-xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">4+</div>
-              <div className="text-[7px] text-slate-500 font-black uppercase tracking-[0.3em]">Years in Business</div>
+          {/* MICRO-STAT BADGES */}
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono">
+              <span>⚡</span><span className="text-slate-400 font-bold">4+ Years</span>
             </div>
-            <div className="p-2">
-              <div className="text-xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">170+</div>
-              <div className="text-[7px] text-slate-500 font-black uppercase tracking-[0.3em]">Clients Supported</div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono">
+              <span>👥</span><span className="text-slate-400 font-bold">170+ Clients</span>
             </div>
-            <div className="p-2">
-              <div className="text-xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">5</div>
-              <div className="text-[7px] text-slate-500 font-black uppercase tracking-[0.3em]">SYNK Products</div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono">
+              <span>🔧</span><span className="text-slate-400 font-bold">5 Products</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* --- FEATURE SECTION — CLEAN HORIZONTAL CARDS --- */}
-      <section className="py-10 relative z-10 border-t border-slate-200 dark:border-white/5">
+      <section className="py-6 relative z-10 border-t border-slate-200 dark:border-white/5">
         <div className="max-w-3xl mx-auto space-y-4 px-4">
           {featurePortal.map((item, i) => (
             <Link 
@@ -118,7 +115,7 @@ const Home = () => {
               </div>
               <div className="flex-grow min-w-0">
                 <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-sm font-display font-black text-slate-950 dark:text-white uppercase tracking-tight">
+                  <h3 className="text-sm font-mono font-black text-slate-950 dark:text-white uppercase tracking-tight">
                     {item.title}
                   </h3>
                   <span className="text-[8px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.3em]">
@@ -136,12 +133,12 @@ const Home = () => {
       </section>
 
       {/* --- SECONDARY CTA --- */}
-      <section className="py-14 relative z-10 border-t border-slate-200 dark:border-white/5 px-4 text-center">
+      <section className="py-8 relative z-10 border-t border-slate-200 dark:border-white/5 px-4 text-center">
          <div className="max-w-4xl mx-auto space-y-6">
            <div className="circuit-capsule border border-slate-300 dark:border-neon-gold/20 text-[8px] px-6 py-2 inline-flex bg-white dark:bg-black shadow-lg items-center gap-3 text-slate-600 dark:text-neon-gold/80 uppercase font-black tracking-[0.3em]">
               <Scale size={14} className="animate-pulse" /> Business Intelligence
            </div>
-           <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black uppercase tracking-tighter leading-[0.9] animate-liquid-shimmer">
+           <h2 className="text-xl sm:text-2xl md:text-3xl font-mono font-black uppercase tracking-tighter leading-[0.9] animate-liquid-shimmer">
               <span className="text-chiseled-silver block mb-2 text-stroked-black">Eliminate administrative burden</span> 
               <span className="text-chiseled-gold text-stroked-black italic">and return to purpose.</span>
            </h2>
@@ -156,19 +153,19 @@ const Home = () => {
       </section>
 
       {/* --- SYNK OS FOOTER TEASE --- */}
-      <section className="py-12 relative z-10 border-t border-slate-200 dark:border-white/5 px-4">
+      <section className="py-6 relative z-10 border-t border-slate-200 dark:border-white/5 px-4">
         <div className="max-w-4xl mx-auto w-full">
-           <div className="orbital-tile !rounded-2xl lg:!rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.6)] group flex flex-col items-center text-center">
+           <div className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] !rounded-2xl lg:!rounded-3xl p-8 sm:p-6 relative overflow-hidden group flex flex-col items-center text-center">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-12 opacity-[0.01] pointer-events-none">
                 <Rocket size={400} className="text-neon-gold -rotate-12" />
               </div>
               <div className="relative z-10 space-y-8 max-w-3xl w-full">
                  <div className="flex flex-col items-center gap-4">
-                    <div className="orbital-tile !rounded-xl p-3 bg-royal-950 shadow-inner border-white/5 group-hover:border-neon-gold/30 transition-all">
+                    <div className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] !rounded-xl p-3 bg-royal-950 shadow-inner border-white/5 group-hover:border-neon-gold/30 transition-all">
                        <Terminal size={20} className="text-neon-gold" />
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-500">The 2026 SYNK Ecosystem</span>
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter leading-none">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-mono font-black text-white uppercase tracking-tighter leading-none">
                       Unified <br/> <span className="text-chiseled-gold text-stroked-black">SYNK OS.</span>
                     </h2>
                  </div>
