@@ -103,7 +103,7 @@ const Contact: React.FC = () => {
     } catch (err) { setShowHandshake(true); } finally { setIsAnalyzing(false); }
   };
 
-  const finalizeUplink = (e: React.FormEvent) => {
+  const sendEmail = (e: React.FormEvent) => {
     e.preventDefault();
     const subject = `[RCG Inquiry] ${formData.subject}: ${formData.name}`;
     const body = `Royal Care Group — Contact Form\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.msg}`;
@@ -119,7 +119,7 @@ const Contact: React.FC = () => {
             <Terminal size={18} className="animate-pulse" /> 
             <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Get In Touch</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
+          <h1 className="text-5xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
             <span className="block text-chiseled-silver mb-6 text-stroked-black">Contact</span>
             <span className="text-chiseled-gold text-stroked-black">Us.</span>
           </h1>
@@ -237,7 +237,7 @@ const Contact: React.FC = () => {
 
                 <div className="space-y-8 pt-8">
                    <button 
-                      onClick={finalizeUplink}
+                      onClick={sendEmail}
                       className="w-full py-8 bg-black border-[4px] border-neon-gold rounded-2xl text-white font-black text-[14px] tracking-[0.6em] uppercase hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-3xl flex items-center justify-center gap-8 group"
                    >
                       <Send size={24} className="text-neon-gold group-active:text-black" />

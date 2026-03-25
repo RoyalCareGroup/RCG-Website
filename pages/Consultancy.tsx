@@ -33,21 +33,21 @@ const Consultancy: React.FC = () => {
     },
     {
       icon: <Users size={28} className="text-slate-400" />,
-      title: "Executive Strategic Advisory",
+      title: "Strategic Advisory",
       desc: "High-level consultation for business owners, boards, and leadership teams. Strategic guidance for critical business decisions."
     }
   ];
 
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
-      <div className="max-w-7xl mx-auto relative z-10 pt-48 pb-32 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 pt-32 pb-32 w-full">
         
         <div className="mb-24 animate-hero-reveal flex flex-col items-center text-center">
           <div className="circuit-capsule mb-10 px-10 py-3 bg-white dark:bg-black/40 border border-neon-gold/30 text-slate-600 dark:text-neon-gold shadow-3xl inline-flex items-center gap-4">
             <Target size={18} className="animate-pulse" /> 
             <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Strategic Advisory</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
+          <h1 className="text-5xl font-display font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
             <span className="text-chiseled-silver block mb-4 text-stroked-black">Business</span> 
             <span className="text-chiseled-gold text-stroked-black">Consulting.</span>
           </h1>
@@ -59,11 +59,11 @@ const Consultancy: React.FC = () => {
         </div>
 
         <div className="mb-24 grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
-           <div className="lg:col-span-8 orbital-tile p-12 shadow-[0_60px_120px_rgba(0,0,0,0.8)] border border-white/10">
+           <div className="lg:col-span-8 orbital-tile p-8 shadow-[0_60px_120px_rgba(0,0,0,0.8)] border border-white/10">
               <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
                  <div>
                     <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Impact Projection</h3>
-                    <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">Performance_Metrics</p>
+                    <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">Performance Metrics</p>
                  </div>
                  <div className="flex gap-8 bg-black/40 px-8 py-4 rounded-2xl border border-white/5 shadow-inner">
                     <div className="flex items-center gap-4">
@@ -113,7 +113,7 @@ const Consultancy: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
            {strategies.map((s, idx) => (
-             <div key={idx} className="orbital-tile p-12 flex flex-col group hover:border-neon-gold/20 transition-all shadow-xl min-h-[420px]">
+             <div key={idx} className="orbital-tile p-8 flex flex-col group hover:border-neon-gold/20 transition-all shadow-xl min-h-[320px]">
                 <div className="mb-10 p-6 bg-royal-950 border border-white/10 rounded-2xl w-fit group-hover:scale-110 transition-all shadow-inner">
                   {s.icon}
                 </div>
@@ -128,12 +128,9 @@ const Consultancy: React.FC = () => {
            ))}
         </div>
 
-        <div className="orbital-tile !rounded-[4rem] p-16 md:p-32 relative overflow-hidden group shadow-[0_80px_160px_rgba(0,0,0,1)] text-center">
+        <div className="orbital-tile !rounded-[4rem] p-12 md:p-20 relative overflow-hidden group shadow-[0_80px_160px_rgba(0,0,0,1)] text-center">
           <div className="relative z-10 flex flex-col items-center space-y-12">
-             <div className="circuit-capsule border border-neon-gold/30 text-neon-gold bg-black px-12 py-4 shadow-3xl">
-               <Briefcase size={22} className="mr-4 animate-pulse" /> Executive Strategy
-             </div>
-             <h2 className="text-4xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
+             <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
               <span className="text-chiseled-silver block mb-2 text-stroked-black">Operational</span> 
               <span className="text-chiseled-gold text-stroked-black">Excellence.</span>
              </h2>

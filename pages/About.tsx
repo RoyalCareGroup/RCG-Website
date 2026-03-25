@@ -12,25 +12,22 @@ const About: React.FC = () => {
       label: "Our Origin", 
       title: "Front-Line Experience", 
       desc: "We started in one of Australia's most complex industries — the NDIS. We delivered the care before we built the systems.",
-      id: "ORG_01"
     },
     { 
       label: "Our Approach", 
       title: "Built From Real Problems", 
       desc: "We build the tools we wish we had when scaling our own services. Translating real-world business pain into practical technology.",
-      id: "STR_04"
     },
     { 
       label: "Our Reach", 
       title: "Beyond One Industry", 
       desc: "Our expertise in NDIS compliance powers tools that work for any business — aged care, allied health, trades, consulting, and more.",
-      id: "NAT_09"
     }
   ];
 
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
-      <div className="max-w-7xl mx-auto relative z-10 pt-48 pb-32 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 pt-32 pb-32 w-full">
         
         <div className="mb-20 animate-hero-reveal">
           <Link to="/" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-600 hover:text-neon-gold transition-colors mb-12 group">
@@ -43,7 +40,7 @@ const About: React.FC = () => {
                 <Users size={18} className="animate-pulse" /> 
                 <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">About Us</span>
               </div>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
+              <h1 className="text-5xl font-display font-black uppercase tracking-tighter leading-[0.85] animate-liquid-shimmer">
                 <span className="text-chiseled-silver block mb-4 text-stroked-black">The RCG</span> 
                 <span className="text-chiseled-gold text-stroked-black">Story.</span>
               </h1>
@@ -92,7 +89,7 @@ const About: React.FC = () => {
             {coreValues.map((item, i) => (
               <div key={i} className="orbital-tile p-10 group transition-all shadow-xl flex flex-col justify-center flex-1">
                  <div className="flex items-center justify-between mb-6">
-                    <div className="text-[9px] font-mono text-slate-600 uppercase tracking-[0.4em] font-black">RCG_{item.id}</div>
+                    <div className="text-[9px] font-mono text-slate-600 uppercase tracking-[0.4em] font-black">{item.label}</div>
                     <Cpu size={20} className="text-neon-gold opacity-30 group-hover:opacity-100 transition-opacity" />
                  </div>
                  <h4 className="text-2xl font-display font-black text-white uppercase tracking-tight mb-4 group-hover:text-chiseled-gold transition-colors">{item.title}</h4>
@@ -104,12 +101,12 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        <div className="orbital-tile !rounded-[4rem] p-16 md:p-32 relative overflow-hidden group shadow-[0_80px_160px_rgba(0,0,0,1)] text-center">
+        <div className="orbital-tile !rounded-[4rem] p-12 md:p-20 relative overflow-hidden group shadow-[0_80px_160px_rgba(0,0,0,1)] text-center">
           <div className="relative z-10 flex flex-col items-center space-y-12">
              <div className="circuit-capsule border border-neon-gold/30 text-neon-gold bg-black px-12 py-4 shadow-3xl">
                <Terminal size={22} className="mr-4 animate-pulse" /> Ready to Connect
              </div>
-             <h2 className="text-4xl md:text-7xl font-display font-black text-white uppercase leading-[0.85] tracking-tighter">
+             <h2 className="text-4xl md:text-5xl font-display font-black text-white uppercase leading-[0.85] tracking-tighter">
               Stop Surviving. <br/><span className="text-chiseled-gold">Start Scaling.</span>
              </h2>
              
@@ -128,7 +125,7 @@ const About: React.FC = () => {
 
         <div className="mt-24 text-center">
           <p className="text-[10px] font-mono text-slate-700 uppercase tracking-[1.2em] font-black">
-            Royal_Care_Group // v{COMPANY_DETAILS.appVersion}
+            Royal Care Group // v{COMPANY_DETAILS.appVersion}
           </p>
         </div>
       </div>

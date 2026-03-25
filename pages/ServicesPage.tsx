@@ -15,14 +15,14 @@ const ServicesPage: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
-      <div className="max-w-7xl mx-auto relative z-10 pt-48 pb-32 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 pt-32 pb-32 w-full">
         
         <div className="text-center mb-24 animate-hero-reveal flex flex-col items-center">
           <div className="circuit-capsule border border-slate-300 dark:border-neon-gold/30 bg-white dark:bg-black/40 backdrop-blur-md text-slate-600 dark:text-neon-gold px-10 py-3 shadow-3xl inline-flex items-center gap-4 mb-10">
             <Briefcase size={18} className="animate-pulse" /> 
             <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">What We Do</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
+          <h1 className="text-5xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
             <span className="text-chiseled-silver block mb-4 text-stroked-black">Our</span> 
             <span className="text-chiseled-gold text-stroked-black">Services.</span>
           </h1>
@@ -56,7 +56,7 @@ const ServicesPage: React.FC = () => {
 
         <div className="mt-32 orbital-tile !rounded-[4rem] p-16 md:p-32 shadow-[0_80px_160px_rgba(0,0,0,1)] flex flex-col lg:flex-row items-center justify-between gap-16">
            <div className="max-w-2xl space-y-10">
-              <h2 className="text-4xl md:text-6xl font-display font-black uppercase tracking-tighter leading-none animate-liquid-shimmer">
+              <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter leading-none animate-liquid-shimmer">
                 <span className="text-chiseled-silver block mb-2 text-stroked-black">Automate Your</span>
                 <span className="text-chiseled-gold text-stroked-black">Compliance.</span>
               </h2>
