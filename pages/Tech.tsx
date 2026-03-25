@@ -80,74 +80,86 @@ const Tech: React.FC = () => {
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-        {/* HORIZONTAL PRODUCT PILLS */}
-        <div className="flex flex-col gap-3 mb-20">
-          {tools.map((tool) => (
-            <div key={tool.id} className="p-4 rounded-xl border border-white/10 hover:border-neon-gold/40 hover:shadow-[0_0_15px_rgba(229,199,139,0.08)] bg-black/20 transition-all flex items-center gap-6">
-              <div className="shrink-0 flex items-center justify-center w-[120px]">
-                <div className="h-[30px] flex items-center">
-                  {tool.logo}
-                </div>
-              </div>
-              <div className="flex-grow min-w-0">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-mono font-black text-lg text-white uppercase tracking-tighter">{tool.name}</h3>
-                  <span className="text-slate-400 text-sm font-mono truncate hidden sm:inline">{tool.desc}</span>
-                </div>
-              </div>
-              <div className="shrink-0 flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-lg border text-[9px] font-black tracking-[0.3em] bg-black/60 ${tool.status === 'STABLE' ? 'text-neon-blue border-neon-blue/40' : 'text-neon-purple border-neon-purple/40'}`}>
-                  {tool.status}
-                </span>
-                <div className="hidden md:flex gap-1.5">
-                  {tool.capabilities.map((cap, i) => (
-                    <span key={i} className="px-2.5 py-1 bg-royal-950/80 border border-royal-800 rounded-lg text-[8px] text-slate-400 font-bold uppercase tracking-widest">
-                      {cap}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-          <div className="text-center mt-4">
-            <Link to="/contact" className="text-slate-500 hover:text-neon-gold transition-all text-[10px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-2">
-              Need something custom? <span className="underline">Start a conversation</span> <ArrowRight size={12} />
-            </Link>
-          </div>
-        </div>
-
-        {/* SYNK Ecosystem Section */}
+        {/* SYNK Product Ecosystem */}
         <div className="mb-20 relative">
           <div className="absolute inset-0 bg-neon-purple/3 pointer-events-none blur-[200px]"></div>
           <div className="text-center mb-8 relative z-10">
-            <div className="inline-flex items-center px-5 py-2 rounded-xl bg-neon-purple/10 border border-neon-purple/30 text-neon-purple text-[10px] font-black tracking-[0.6em] uppercase mb-6 shadow-2xl">
-              <Layers size={16} className="mr-4 animate-pulse" /> Coming Soon
-            </div>
-            <h2 className="text-5xl md:text-7xl font-mono font-black text-white uppercase tracking-tighter leading-none mb-8 text-spotlight">
-              Everything We're<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-white to-neon-blue">Building.</span>
+            <h2 className="text-3xl md:text-5xl font-mono font-black text-white uppercase tracking-tighter leading-none mb-4">
+              The SYNK<span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-white to-neon-blue"> Suite.</span>
             </h2>
-            <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">
+            <p className="text-sm text-slate-400 font-light max-w-xl mx-auto">
               Live products, betas, and what's coming next.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-8 relative z-10">
-            {[
-              { name: 'SynkCRM', desc: 'Client management', status: 'LIVE' as const },
-              { name: 'ClaimSYNK', desc: 'Invoice validation', status: 'LIVE' as const },
-              { name: 'ReportSYNK', desc: 'AI case notes', status: 'LIVE' as const },
-              { name: 'FormSYNK', desc: 'Smart forms', status: 'BETA' as const },
-              { name: 'ChargeSYNK', desc: 'Billing automation', status: 'BETA' as const },
-              { name: 'NoteSYNK', desc: 'Compliance notes', status: 'COMING SOON' as const },
-              { name: 'TextSYNK', desc: 'SMS logging', status: 'COMING SOON' as const },
-              { name: 'CallSYNK', desc: 'Call tracking', status: 'COMING SOON' as const },
-              { name: 'mySYNK', desc: 'Self-management portal', status: 'COMING SOON' as const },
-              { name: 'TrainSYNK', desc: 'Team training', status: 'COMING SOON' as const },
-              { name: 'SignSYNK', desc: 'Digital signatures', status: 'COMING SOON' as const },
-              { name: 'BudgetSYNK', desc: 'Financial planning', status: 'COMING SOON' as const },
-              { name: 'StoreSYNK', desc: 'Secure document storage', status: 'COMING SOON' as const },
-              { name: 'MapSYNK', desc: 'Service area mapping', status: 'COMING SOON' as const },
-            ].map((product) => (
+          {/* Tier 1: mySYNK */}
+          <div className="mb-6 relative z-10">
+            <div className="text-[9px] font-mono font-black text-neon-gold uppercase tracking-[0.4em] mb-3 px-1">Participant App — Free / $4.99 mo</div>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { name: 'mySYNK', desc: 'Participant self-management — own your data, track your goals, connect with your team', status: 'COMING SOON' as const },
+              ].map((product) => (
+                <div key={product.name} className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-5 rounded-2xl relative overflow-hidden group/eco transition-all duration-500 hover:scale-[1.01] opacity-70 hover:opacity-100">
+                  <div className="inline-flex items-center px-3 py-1 rounded-lg text-[8px] font-black tracking-[0.3em] uppercase mb-3 border text-neon-purple border-neon-purple/40 bg-neon-purple/10">{product.status}</div>
+                  <h4 className="text-white font-black text-sm uppercase tracking-tight mb-1.5 group-hover/eco:text-neon-blue transition-colors">{product.name}</h4>
+                  <p className="text-slate-500 text-[11px] leading-relaxed font-light">{product.desc}</p>
+                  <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-neon-purple to-transparent opacity-40"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tier 2: SYNK Standard */}
+          <div className="mb-6 relative z-10">
+            <div className="text-[9px] font-mono font-black text-neon-blue uppercase tracking-[0.4em] mb-3 px-1">Standard Tools — $2.99–$14.99 mo</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { name: 'NoteSYNK', desc: 'Compliant note-taking', status: 'COMING SOON' as const },
+                { name: 'InvoiceSYNK', desc: 'Invoice compliance checking', status: 'COMING SOON' as const },
+                { name: 'ShiftSYNK', desc: 'Shift logging & timesheets', status: 'COMING SOON' as const },
+                { name: 'BizSYNK', desc: 'Business health & accounting', status: 'COMING SOON' as const },
+              ].map((product) => (
+                <div key={product.name} className="orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-5 rounded-2xl relative overflow-hidden group/eco transition-all duration-500 hover:scale-[1.03] opacity-70 hover:opacity-100">
+                  <div className="inline-flex items-center px-3 py-1 rounded-lg text-[8px] font-black tracking-[0.3em] uppercase mb-3 border text-neon-purple border-neon-purple/40 bg-neon-purple/10">{product.status}</div>
+                  <h4 className="text-white font-black text-sm uppercase tracking-tight mb-1.5 group-hover/eco:text-neon-blue transition-colors">{product.name}</h4>
+                  <p className="text-slate-500 text-[11px] leading-relaxed font-light">{product.desc}</p>
+                  <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-neon-purple to-transparent opacity-40"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tier 3: SYNK+ Full Platforms */}
+          <div className="mb-6 relative z-10">
+            <div className="text-[9px] font-mono font-black text-neon-gold uppercase tracking-[0.4em] mb-3 px-1">Full Platforms — $29.99–$99.99 mo</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { name: 'NoteSYNK+', desc: 'Full compliance vault', status: 'BETA' as const },
+                { name: 'InvoiceSYNK+', desc: 'Full invoice scanning & reporting', status: 'COMING SOON' as const },
+                { name: 'ShiftSYNK+', desc: 'Full workforce management', status: 'COMING SOON' as const },
+                { name: 'BizSYNK+', desc: 'Full tax audit & accounting', status: 'COMING SOON' as const },
+              ].map((product) => (
+                <div key={product.name} className={`orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-5 rounded-2xl relative overflow-hidden group/eco transition-all duration-500 hover:scale-[1.03] ${product.status === 'COMING SOON' ? 'opacity-70 hover:opacity-100' : ''}`}>
+                  <div className={`inline-flex items-center px-3 py-1 rounded-lg text-[8px] font-black tracking-[0.3em] uppercase mb-3 border ${product.status === 'BETA' ? 'text-neon-blue border-neon-blue/40 bg-neon-blue/10' : 'text-neon-purple border-neon-purple/40 bg-neon-purple/10'}`}>{product.status}</div>
+                  <h4 className="text-white font-black text-sm uppercase tracking-tight mb-1.5 group-hover/eco:text-neon-blue transition-colors">{product.name}</h4>
+                  <p className="text-slate-500 text-[11px] leading-relaxed font-light">{product.desc}</p>
+                  <div className={`absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent to-transparent ${product.status === 'BETA' ? 'via-neon-blue' : 'via-neon-purple'} opacity-40`}></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Extensions & Add-ons */}
+          <div className="mb-6 relative z-10">
+            <div className="text-[9px] font-mono font-black text-slate-500 uppercase tracking-[0.4em] mb-3 px-1">Extensions & Add-ons</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {[
+                { name: 'TextSYNK', desc: 'SMS to business logging', status: 'COMING SOON' as const },
+                { name: 'CallSYNK', desc: 'Automatic call tracking', status: 'COMING SOON' as const },
+                { name: 'ChargeSYNK', desc: 'Calendar-to-invoice billing', status: 'COMING SOON' as const },
+                { name: 'SignSYNK', desc: 'Digital signatures', status: 'COMING SOON' as const },
+                { name: 'MapSYNK', desc: 'Service area mapping', status: 'COMING SOON' as const },
+              ].map((product) => (
               <div
                 key={product.name}
                 className={`orbital-tile !bg-transparent !border !border-white/10 !shadow-none hover:!border-neon-gold/40 hover:!shadow-[0_0_20px_rgba(229,199,139,0.1)] p-5 rounded-2xl relative overflow-hidden group/eco transition-all duration-500 hover:scale-[1.03] ${
