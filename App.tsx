@@ -8,7 +8,6 @@ import { NeuralBackground } from './components/NeuralBackground.tsx';
 import { SovereignGrid } from './components/SovereignGrid.tsx';
 import { RefractiveLens } from './components/RefractiveLens.tsx';
 import { SovereignProvider, useSovereign } from './context/SovereignContext.tsx';
-import { SovereignConsent } from './components/SovereignConsent.tsx';
 import { MatrixXRay } from './components/MatrixXRay.tsx';
 import { NeuralPassport } from './components/NeuralPassport.tsx';
 import { Loader2 } from 'lucide-react';
@@ -63,8 +62,6 @@ const GridInteractionLayer = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const AppContent: React.FC = () => {
-  const [isGridInitialized, setIsGridInitialized] = useState(false);
-
   return (
     <GridInteractionLayer>
       <NeuralBackground />
@@ -74,34 +71,30 @@ const AppContent: React.FC = () => {
       <CustomCursor />
       <NeuralPassport />
 
-      {!isGridInitialized ? (
-        <SovereignConsent onAccepted={() => setIsGridInitialized(true)} />
-      ) : (
-        <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white animate-in fade-in duration-1000 bg-transparent">
-          <PageTransitionScanner />
-          <LiveStatusHUD />
-          
-          <div className="flex-grow flex flex-col bg-transparent">
-            <Header />
-            <main className="flex-grow bg-transparent">
-              <Suspense fallback={<NeuralFallback />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/services" element={<ServicesPage />} />
-                  <Route path="/consultancy" element={<Consultancy />} />
-                  <Route path="/tech" element={<Tech />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
+      <div className="relative z-10 min-h-screen flex flex-col selection:bg-neon-blue/30 selection:text-white animate-in fade-in duration-1000 bg-transparent">
+        <PageTransitionScanner />
+        <LiveStatusHUD />
+        
+        <div className="flex-grow flex flex-col bg-transparent">
+          <Header />
+          <main className="flex-grow bg-transparent">
+            <Suspense fallback={<NeuralFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/consultancy" element={<Consultancy />} />
+                <Route path="/tech" element={<Tech />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
         </div>
-      )}
+      </div>
     </GridInteractionLayer>
   );
 };

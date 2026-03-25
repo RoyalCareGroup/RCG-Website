@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Send, Terminal, Activity, Zap, Loader2, Cpu, ChevronDown, Volume2, VolumeX, ShieldCheck, ArrowRight } from 'lucide-react';
 import { GoogleGenAI, Modality } from "@google/genai";
@@ -27,12 +26,11 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
 }
 
 const INQUIRY_OPTIONS = [
-  "Strategic NDIS Advisory",
-  "SYNK Tech Suite Integration",
-  "Governance & Compliance Hub",
-  "NDIS Audit Diagnostic (TFix)",
-  "Workflow Re-Engineering",
-  "Custom NDIS Software Development",
+  "NDIS Business Consulting",
+  "SYNK Products & Tech",
+  "Compliance & Audit Support",
+  "Training Packages",
+  "Website Development",
   "General Inquiry"
 ];
 
@@ -49,7 +47,7 @@ const Contact: React.FC = () => {
   const cachedBufferRef = useRef<AudioBuffer | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const introTextRaw = `Look, we’re deep in the AI Golden Age, but let's be real:\nneural networks are terrible at reading the room\nand even worse at sharing a coffee.\n\nIf you're tired of talking to algorithms that have the\npersonality of a spicy spreadsheet, drop your payload here.\n\nA real, breathing human architect—one who actually knows\nwhat a 'Monday morning' feels like—will get back to you.\n\nWe’re hardcore tech-native, but we still haven’t figured out\nhow to automate a proper vibe check. Yet.`;
+  const introTextRaw = `We're a tech company built by people who've actually\nworked in the NDIS — not just read about it.\n\nWe know the compliance headaches, the admin overload,\nand the gap between what providers need and what\nmost software actually delivers.\n\nSo we built something better.\n\nDrop us a message below and a real person from our\nteam will get back to you — usually within 24 hours.`;
 
   const handleReadAloud = async () => {
     if (isReadingAloud) {
@@ -107,28 +105,28 @@ const Contact: React.FC = () => {
 
   const finalizeUplink = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `[UPLINK] ${formData.subject}: ${formData.name}`;
-    const body = `RCG PAYLOAD\nOPERATOR: ${formData.name}\nREPLY: ${formData.email}\nMSG: ${formData.msg}`;
+    const subject = `[RCG Inquiry] ${formData.subject}: ${formData.name}`;
+    const body = `Royal Care Group — Contact Form\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.msg}`;
     window.location.href = `mailto:${COMPANY_DETAILS.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
     <div className="flex flex-col bg-transparent overflow-x-hidden min-h-screen px-6 sm:px-16 lg:px-24 font-sans relative">
-      <div className="max-w-7xl mx-auto pt-48 pb-32 relative z-10 w-full flex flex-col items-center">
+      <div className="max-w-7xl mx-auto pt-32 pb-32 relative z-10 w-full flex flex-col items-center">
         
-        <div className="text-center mb-24 animate-hero-reveal max-w-5xl flex flex-col items-center">
-          <div className="circuit-capsule border border-neon-gold/30 bg-black/40 text-neon-gold px-10 py-3 shadow-3xl mb-12 inline-flex items-center gap-4">
+        <div className="text-center mb-16 animate-hero-reveal max-w-5xl flex flex-col items-center">
+          <div className="circuit-capsule border border-neon-gold/30 bg-black/40 text-neon-gold px-10 py-3 shadow-3xl mb-10 inline-flex items-center gap-4">
             <Terminal size={18} className="animate-pulse" /> 
-            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Smart_Human_Sync_Protocol</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Get In Touch</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-12 animate-liquid-shimmer">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
             <span className="block text-chiseled-silver mb-6 text-stroked-black">Contact</span>
-            <span className="text-chiseled-gold text-stroked-black">Matrix.</span>
+            <span className="text-chiseled-gold text-stroked-black">Us.</span>
           </h1>
 
-          <div className="orbital-tile p-12 md:p-20 shadow-[0_60px_120px_rgba(0,0,0,1)] mx-auto group relative max-w-3xl bg-black/60">
+          <div className="orbital-tile p-10 md:p-14 shadow-[0_60px_120px_rgba(0,0,0,1)] mx-auto group relative max-w-3xl bg-black/60">
             <div className="absolute -top-4 left-12 px-10 py-2.5 bg-neon-gold rounded-full text-[10px] text-black uppercase tracking-[0.5em] font-black shadow-3xl z-30 border-2 border-black">
-              Human_Intelligence_Override
+              A Real Person Will Reply
             </div>
             <div className="relative z-10 text-center">
                <p className="text-xl md:text-2xl text-slate-400 font-bold leading-relaxed italic whitespace-pre-line tracking-tight uppercase">
@@ -148,20 +146,20 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="w-full max-w-4xl mb-32">
-          <div className="orbital-tile p-12 md:p-20 shadow-[0_80px_160px_rgba(0,0,0,1)] relative overflow-hidden bg-black/80 border-2 border-white/10 min-h-[750px] flex flex-col transition-all duration-700">
+          <div className="orbital-tile p-10 md:p-14 shadow-[0_80px_160px_rgba(0,0,0,1)] relative overflow-hidden bg-black/80 border-2 border-white/10 min-h-[750px] flex flex-col transition-all duration-700">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-gold via-white/10 to-neon-gold"></div>
             
             {!showHandshake ? (
-              <div className="relative z-10 space-y-16 animate-in fade-in duration-1000">
-                <div className="flex items-center gap-8 text-slate-600 border-b border-white/5 pb-10">
+              <div className="relative z-10 space-y-12 animate-in fade-in duration-1000">
+                <div className="flex items-center gap-8 text-slate-600 border-b border-white/5 pb-8">
                    <Activity size={24} className="text-neon-gold" />
-                   <span className="text-[11px] font-black uppercase tracking-[0.8em] font-mono">Operator_Initiation_v5</span>
+                   <span className="text-[11px] font-black uppercase tracking-[0.8em] font-mono">Your Details</span>
                 </div>
 
-                <form onSubmit={(e) => { e.preventDefault(); analyzeIntent(); }} className="space-y-12">
+                <form onSubmit={(e) => { e.preventDefault(); analyzeIntent(); }} className="space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Operator Identity</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Your Name</label>
                       <input 
                         type="text" required placeholder="FULL NAME"
                         className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
@@ -169,7 +167,7 @@ const Contact: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Response Node</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Your Email</label>
                       <input 
                         type="email" required placeholder="WORK EMAIL"
                         className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
@@ -179,7 +177,7 @@ const Contact: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Inquiry Vector</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">What Can We Help With</label>
                     <div className="relative">
                       <select 
                         className="w-full bg-black/40 border-2 border-white/5 p-6 rounded-2xl text-lg text-white focus:border-neon-gold outline-none transition-all appearance-none font-bold shadow-inner"
@@ -195,9 +193,9 @@ const Contact: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Inquiry Context</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] font-mono ml-4">Tell Us More</label>
                     <textarea 
-                      required rows={5} placeholder="Describe the structural goals or scaling requirements..."
+                      required rows={5} placeholder="Tell us about your business goals or what you need help with..."
                       className="w-full bg-black/40 border-2 border-white/5 p-10 rounded-[2.5rem] text-lg text-white resize-none focus:border-neon-gold outline-none transition-all placeholder:text-slate-800 font-bold shadow-inner" 
                       value={formData.msg} onChange={e => setFormData({...formData, msg: e.target.value})}
                     />
@@ -209,44 +207,44 @@ const Contact: React.FC = () => {
                     className="w-full py-8 bg-black border-[3px] border-neon-gold rounded-2xl text-white font-black text-[12px] tracking-[0.6em] uppercase hover:scale-[1.02] active:bg-neon-gold active:text-black transition-all shadow-3xl disabled:opacity-50 flex items-center justify-center gap-6"
                   >
                     {isAnalyzing ? <Loader2 size={24} className="animate-spin text-neon-gold" /> : <Zap size={24} className="text-neon-gold" />}
-                    <span>{isAnalyzing ? 'Mapping Intent...' : 'Initialize Human Sync'}</span>
+                    <span>{isAnalyzing ? 'Processing...' : 'Send Message'}</span>
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="relative z-10 space-y-16 animate-in slide-in-from-right-10 duration-1000 flex flex-col h-full">
-                <div className="flex items-center gap-10 border-b border-white/5 pb-12">
+              <div className="relative z-10 space-y-12 animate-in slide-in-from-right-10 duration-1000 flex flex-col h-full">
+                <div className="flex items-center gap-10 border-b border-white/5 pb-10">
                    <div className="p-6 bg-royal-950 border-2 border-neon-gold/30 rounded-2xl shadow-3xl">
                       <ShieldCheck className="text-neon-gold" size={48} />
                    </div>
                    <div>
-                      <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter">Neural Handshake</h3>
-                      <p className="text-[11px] text-slate-600 font-black uppercase tracking-[0.8em] mt-3 font-mono">Transmission_Ready // AU_EAST_CLOUD</p>
+                      <h3 className="text-4xl font-display font-black text-white uppercase tracking-tighter">Message Ready</h3>
+                      <p className="text-[11px] text-slate-600 font-black uppercase tracking-[0.8em] mt-3 font-mono">Ready to send</p>
                    </div>
                 </div>
 
                 <div className="space-y-10 flex-grow">
-                   <div className="p-12 bg-black/40 border border-white/10 rounded-[3rem] relative shadow-inner">
-                      <div className="text-[10px] font-black text-neon-gold uppercase tracking-[0.8em] mb-6">Structural Categorization</div>
+                   <div className="p-10 bg-black/40 border border-white/10 rounded-[3rem] relative shadow-inner">
+                      <div className="text-[10px] font-black text-neon-gold uppercase tracking-[0.8em] mb-6">Inquiry Category</div>
                       <h4 className="text-3xl font-display font-black text-white uppercase tracking-tight mb-6">
-                         {analysis?.category || 'Strategic Growth Node'}
+                         {analysis?.category || 'Your Inquiry'}
                       </h4>
                       <p className="text-slate-400 text-xl leading-relaxed italic font-bold">
-                         "{analysis?.intent || 'Transmission protocol ready to bridge your inquiry to our lead architects.'}"
+                         "{analysis?.intent || 'Your message is ready to be sent to our team. We\'ll review and get back to you shortly.'}"
                       </p>
                    </div>
                 </div>
 
-                <div className="space-y-8 pt-12">
+                <div className="space-y-8 pt-8">
                    <button 
                       onClick={finalizeUplink}
                       className="w-full py-8 bg-black border-[4px] border-neon-gold rounded-2xl text-white font-black text-[14px] tracking-[0.6em] uppercase hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-3xl flex items-center justify-center gap-8 group"
                    >
                       <Send size={24} className="text-neon-gold group-active:text-black" />
-                      <span>Deploy Final Uplink</span>
+                      <span>Send Email</span>
                    </button>
                    <button onClick={() => setShowHandshake(false)} className="w-full py-4 text-slate-700 font-black text-[10px] uppercase tracking-[1em] hover:text-white transition-colors">
-                      Protocol Revision // Back to Editor
+                      Back to Form
                    </button>
                 </div>
               </div>

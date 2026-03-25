@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Briefcase, TrendingUp, ShieldCheck, GraduationCap, Code, ArrowRight, Terminal, Database, Zap, Boxes } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,12 +5,12 @@ import { DecodingText } from '../components/DecodingText.tsx';
 
 const ServicesPage: React.FC = () => {
   const businessServices = [
-    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Tech Engineering", desc: "Custom NDIS operating systems and AI assistive billing engines architected for high-fidelity scale." },
-    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "Training Protocols", desc: "High-performance modules for staff and leadership. Compliance mastery for modern care teams." },
-    { icon: <Database size={24} className="text-neon-gold" />, title: "Structural Intelligence", desc: "Elite consultancy re-engineering organizational workflows. Infrastructure that is audit-proof by design." },
-    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "Acquisition Audit", desc: "Technical due diligence for buyers and sellers of NDIS entities. Risk mapping and asset verification." },
-    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Sovereign Compliance", desc: "Assistive logic ensuring every line item matches NDIS standards in real-time. Zero compromise." },
-    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Implementation", desc: "Direct deployment of SYNK AI tools to cut manual administrative debt through high-precision data nodes." }
+    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Custom NDIS Software", desc: "Purpose-built apps and systems designed specifically for NDIS providers. From compliance tools to participant management." },
+    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "NDIS Training Packages", desc: "Custom training designed for your team. Compliance, best practice, and operational efficiency modules." },
+    { icon: <Database size={24} className="text-neon-gold" />, title: "Business Consulting", desc: "Strategic consulting to restructure your NDIS operations. Audit-ready processes and scalable systems." },
+    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "NDIS Business Acquisitions", desc: "Due diligence and risk assessment for buying or selling NDIS registered businesses." },
+    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Compliance Solutions", desc: "Real-time compliance monitoring and audit preparation. Stay ahead of NDIS Commission requirements." },
+    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Product Integration", desc: "Direct setup and onboarding of our SYNK suite tools to streamline your daily operations." }
   ];
 
   return (
@@ -21,15 +20,15 @@ const ServicesPage: React.FC = () => {
         <div className="text-center mb-24 animate-hero-reveal flex flex-col items-center">
           <div className="circuit-capsule border border-slate-300 dark:border-neon-gold/30 bg-white dark:bg-black/40 backdrop-blur-md text-slate-600 dark:text-neon-gold px-10 py-3 shadow-3xl inline-flex items-center gap-4 mb-10">
             <Briefcase size={18} className="animate-pulse" /> 
-            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">National_Service_Architecture</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">What We Do</span>
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-10 animate-liquid-shimmer">
-            <span className="text-chiseled-silver block mb-4 text-stroked-black">Service</span> 
-            <span className="text-chiseled-gold text-stroked-black">Nodes.</span>
+            <span className="text-chiseled-silver block mb-4 text-stroked-black">Our</span> 
+            <span className="text-chiseled-gold text-stroked-black">Services.</span>
           </h1>
           <div className="max-w-5xl mx-auto text-center">
             <div className="text-xl sm:text-2xl text-slate-600 dark:text-slate-400 font-bold leading-relaxed italic opacity-90 tracking-tight uppercase">
-               <DecodingText text="Elite Consulting • Assistive Tech • National Grid Infrastructure" stagger={15} />
+               <DecodingText text="Elite Consulting • Assistive Tech • National NDIS Solutions" stagger={15} />
             </div>
           </div>
         </div>
@@ -48,7 +47,7 @@ const ServicesPage: React.FC = () => {
               </p>
               <Link to="/contact" className="w-full py-5 bg-black border-2 border-neon-gold text-white rounded-xl font-black text-[11px] tracking-[0.4em] uppercase hover:scale-[1.03] active:bg-neon-gold active:text-black transition-all shadow-xl flex items-center justify-center gap-4 group/btn">
                 <Zap size={18} className="text-neon-gold group-active:text-black" />
-                <span>Initialize Sync</span>
+                <span>Get Started</span>
                 <ArrowRight size={18} className="group-hover/btn:translate-x-2 transition-transform" />
               </Link>
             </div>
@@ -62,7 +61,7 @@ const ServicesPage: React.FC = () => {
                 <span className="text-chiseled-gold text-stroked-black">Compliance.</span>
               </h2>
               <p className="text-xl text-slate-300 font-bold italic leading-relaxed">
-                Connect your existing software ecosystem to our SYNK Core and eliminate administrative debt instantly.
+                Connect your existing software ecosystem to our SYNK Core and eliminate administrative burden instantly.
               </p>
               <Link to="/contact" className="px-12 py-6 bg-white text-black font-black text-[12px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-gold hover:text-black transition-all inline-flex items-center gap-6">
                 Connect My Systems <ArrowRight size={20} />
