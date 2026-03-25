@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Menu as MenuIcon, X, Home as HomeIcon, Briefcase, 
-  Target, Shield, Cpu, Mail, Users, Star, 
-  Sun, ChevronRight, Moon, Fingerprint, Lock,
-  BookOpen, Layout
+  Target, Cpu, Mail, Users,
+  Sun, ChevronRight, Moon
 } from 'lucide-react';
 import { BrandLogo } from './BrandLogo.tsx';
 import { useSovereign } from '../context/SovereignContext.tsx';
@@ -13,9 +11,8 @@ import { useSovereign } from '../context/SovereignContext.tsx';
 const Header = () => {
   const [isOpen, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { isSunshineMode, setIsSunshineMode, isMember, setShowPassportModal, memberData } = useSovereign();
+  const { isSunshineMode, setIsSunshineMode } = useSovereign();
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -24,18 +21,13 @@ const Header = () => {
   }, []);
 
   const publicLinks = [
-    { path: '/', label: 'MAINFRAME', icon: <HomeIcon size={14} /> },
-    { path: '/vault', label: 'THE VAULT', icon: <Lock size={14} />, isMemberOnly: true },
-    { path: '/consultancy', label: 'ADVISORY', icon: <Target size={14} /> },
-    { path: '/tech', label: 'TECH SUITE', icon: <Cpu size={14} /> },
-    { path: '/governance', label: 'GOVERNANCE', icon: <Shield size={14} /> },
-    { path: '/services', label: 'SERVICES', icon: <Briefcase size={14} /> },
-    { path: '/makeovers', label: 'MAKEOVERS', icon: <Star size={14} /> },
-    { path: '/about', label: 'OUR STORY', icon: <Users size={14} /> },
-    { path: '/contact', label: 'UPLINK', icon: <Mail size={14} /> }
+    { path: '/', label: 'HOME', icon: <HomeIcon size={14} />, desc: 'Back to homepage' },
+    { path: '/services', label: 'SERVICES', icon: <Briefcase size={14} />, desc: 'What we offer' },
+    { path: '/consultancy', label: 'CONSULTING', icon: <Target size={14} />, desc: 'NDIS business consulting' },
+    { path: '/tech', label: 'TECH', icon: <Cpu size={14} />, desc: 'SYNK product suite' },
+    { path: '/about', label: 'ABOUT', icon: <Users size={14} />, desc: 'Our story & team' },
+    { path: '/contact', label: 'CONTACT', icon: <Mail size={14} />, desc: 'Get in touch' }
   ];
-
-  const isEasyReadPage = location.pathname === '/easy-read';
 
   return (
     <>
@@ -53,41 +45,10 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Action Protocols Cluster */}
+          {/* Action Cluster */}
           <div className="flex items-center gap-2 sm:gap-4">
-             
-             {/* 1. CONTEXT-AWARE EASY READ / STANDARD TOGGLE */}
-             <Link
-               to={isEasyReadPage ? "/" : "/easy-read"}
-               className={`hidden md:flex items-center gap-3 px-5 py-3 rounded-xl border transition-all duration-500 ${
-                 isEasyReadPage 
-                  ? 'bg-amber-400 border-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.3)]' 
-                  : 'border-slate-200 dark:border-white/10 text-slate-500 hover:text-neon-gold hover:border-neon-gold'
-               }`}
-             >
-               {isEasyReadPage ? <Layout size={14} /> : <BookOpen size={14} />}
-               <span className="text-[9px] font-black uppercase tracking-widest">
-                 {isEasyReadPage ? 'Standard Site' : 'Easy Read'}
-               </span>
-             </Link>
 
-             {/* 2. NEURAL PASSPORT NODE */}
-             <button
-              onClick={() => isMember ? navigate('/vault') : setShowPassportModal(true)}
-              className={`relative hidden xl:flex items-center gap-4 px-6 py-3 rounded-xl border-2 transition-all duration-500 overflow-hidden group/passport ${
-                isMember 
-                  ? 'bg-black border-neon-gold text-neon-gold shadow-[0_0_20px_rgba(229,199,139,0.1)]' 
-                  : 'bg-royal-950 border-royal-800 text-slate-500 hover:border-white/40 hover:text-white'
-              }`}
-             >
-               <Fingerprint size={14} className={isMember ? 'animate-pulse' : ''} />
-               <span className="text-[10px] font-display font-black uppercase tracking-widest whitespace-nowrap">
-                 {isMember ? memberData?.name.split(' ')[0] + '_PASSPORT' : 'MEMBER PASSPORT'}
-               </span>
-               <div className="absolute inset-0 bg-neon-gold opacity-0 group-hover/passport:opacity-[0.03] transition-opacity"></div>
-             </button>
-
-             {/* 3. FULL SUNSHINE MODE TOGGLE */}
+             {/* SUNSHINE MODE TOGGLE */}
              <button
               onClick={() => setIsSunshineMode(!isSunshineMode)}
               className={`relative flex items-center gap-4 px-5 py-3 rounded-xl border-2 transition-all duration-500 overflow-hidden group/mode ${
@@ -127,8 +88,8 @@ const Header = () => {
         <div className="h-full flex flex-col justify-center items-center px-6 pt-24 overflow-y-auto">
           <div className="w-full max-w-5xl py-20 space-y-12">
              <div className="text-center">
-                <div className="text-neon-gold/50 text-[9px] font-mono font-black uppercase tracking-[1em] mb-4">Grid_Matrix_System</div>
-                <h3 className="text-4xl sm:text-5xl font-display font-black text-slate-950 dark:text-white uppercase tracking-tighter text-balance">Authorized Nodes</h3>
+                <div className="text-neon-gold/50 text-[9px] font-mono font-black uppercase tracking-[1em] mb-4">Navigation</div>
+                <h3 className="text-4xl sm:text-5xl font-display font-black text-slate-950 dark:text-white uppercase tracking-tighter text-balance">Explore</h3>
              </div>
              
              <nav className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -152,12 +113,11 @@ const Header = () => {
                          {link.icon}
                       </div>
                       <div>
-                         <h4 className="text-slate-950 dark:text-white text-sm font-display font-black uppercase tracking-tight flex items-center gap-2">
+                         <h4 className="text-slate-950 dark:text-white text-sm font-display font-black uppercase tracking-tight">
                            {link.label}
-                           {link.isMemberOnly && <Lock size={10} className="text-neon-gold" />}
                          </h4>
                          <p className="text-slate-400 dark:text-slate-500 text-[8px] font-black uppercase tracking-widest mt-1">
-                           {link.isMemberOnly && !isMember ? 'Required: Passport' : 'Authorization: Standard'}
+                           {link.desc}
                          </p>
                       </div>
                    </div>

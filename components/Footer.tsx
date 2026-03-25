@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Mail, Fingerprint, Globe, Linkedin, Facebook, Layout } from 'lucide-react';
+import { Mail, Globe, Linkedin, Facebook, Layout } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_DETAILS } from '../config.ts';
 
@@ -25,19 +24,27 @@ const Footer: React.FC = () => {
           </Link>
         </div>
 
+        <div className="flex items-center gap-3 text-[8px] font-black uppercase tracking-widest text-slate-400">
+          <Link to="/privacy" className="hover:text-slate-700 transition-colors">Privacy</Link>
+          <span className="text-slate-200">•</span>
+          <Link to="/terms" className="hover:text-slate-700 transition-colors">Terms</Link>
+          <span className="text-slate-200">•</span>
+          <Link to="/services" className="hover:text-slate-700 transition-colors">Services</Link>
+          <span className="text-slate-200">•</span>
+          <Link to="/about" className="hover:text-slate-700 transition-colors">About</Link>
+        </div>
+
         <div className="flex items-center gap-5">
           <a href={COMPANY_DETAILS.socials.linkedin} className="text-slate-300 hover:text-neon-blue transition-all duration-300"><Linkedin size={18} /></a>
           <a href="#" className="text-slate-300 hover:text-neon-purple transition-all duration-300"><Facebook size={18} /></a>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-4 border-t border-slate-50 w-full max-w-xl text-[7.5px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-          <div className="flex items-center gap-1.5"><Fingerprint size={8} /><span>ABN {COMPANY_DETAILS.abn}</span></div>
-          <span className="text-slate-100 hidden sm:inline">•</span>
-          <div className="flex items-center gap-1.5"><Globe size={8} /><span>v{COMPANY_DETAILS.appVersion.split('-')[0]}</span></div>
+          <div className="flex items-center gap-1.5"><Globe size={8} /><span>ABN {COMPANY_DETAILS.abn}</span></div>
           <span className="text-slate-100 hidden sm:inline">•</span>
           <div className="flex items-center gap-1.5"><Layout size={8} /><span>Design by Royal Care</span></div>
           <span className="text-slate-100 hidden sm:inline">•</span>
-          <span className="text-slate-300 font-black tracking-[0.1em]">&copy; 2025 RCG</span>
+          <span className="text-slate-300 font-black tracking-[0.1em]">&copy; 2026 RCG</span>
         </div>
 
       </div>
@@ -45,5 +52,4 @@ const Footer: React.FC = () => {
   );
 };
 
-// Fix: Add default export for the Footer component to resolve the error in App.tsx
 export default Footer;
