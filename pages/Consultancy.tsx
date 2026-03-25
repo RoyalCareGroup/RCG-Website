@@ -19,22 +19,22 @@ const Consultancy: React.FC = () => {
     {
       icon: <Compass size={28} className="text-neon-gold" />,
       title: "Workflow Re-Engineering",
-      desc: "We replace manual legacy processes with automated, efficient systems using our SYNK platform."
+      desc: "We replace manual legacy processes with automated, efficient systems — using our SYNK platform and proven methodology."
     },
     {
       icon: <BarChart3 size={28} className="text-slate-400" />,
       title: "Revenue Optimisation",
-      desc: "Identifying revenue leakage through detailed auditing. We optimise line-item utilisation across your services."
+      desc: "Identifying revenue leakage through detailed auditing. We optimise billing, utilisation, and service delivery across your operations."
     },
     {
       icon: <ShieldCheck size={28} className="text-neon-gold" />,
       title: "Governance & Compliance",
-      desc: "Building compliance frameworks that protect your registration. Audit-ready systems from day one."
+      desc: "Building compliance frameworks that protect your business. Audit-ready systems for NDIS, aged care, allied health, and regulated industries."
     },
     {
       icon: <Users size={28} className="text-slate-400" />,
       title: "Executive Strategic Advisory",
-      desc: "High-level consultation for Boards and CEOs. Strategic guidance for critical business decisions."
+      desc: "High-level consultation for business owners, boards, and leadership teams. Strategic guidance for critical business decisions."
     }
   ];
 
@@ -48,12 +48,12 @@ const Consultancy: React.FC = () => {
             <span className="text-[10px] font-black uppercase tracking-[0.6em] font-mono">Strategic Advisory</span>
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
-            <span className="text-chiseled-silver block mb-4 text-stroked-black">NDIS Business</span> 
+            <span className="text-chiseled-silver block mb-4 text-stroked-black">Business</span> 
             <span className="text-chiseled-gold text-stroked-black">Consulting.</span>
           </h1>
           <div className="max-w-2xl mx-auto text-center">
             <div className="text-xl text-slate-600 dark:text-slate-400 font-bold leading-relaxed italic opacity-90 tracking-tight uppercase">
-               <DecodingText text="Expert consulting for national NDIS providers. We restructure operations for scalable growth." stagger={8} />
+               <DecodingText text="Expert consulting for growing businesses. We restructure operations for scalable, compliant growth — with deep NDIS expertise." stagger={8} />
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ const Consultancy: React.FC = () => {
               <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
                  <div>
                     <h3 className="text-3xl font-display font-black text-white uppercase tracking-tight">Impact Projection</h3>
-                    <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">SYNK_Performance_Metrics</p>
+                    <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em] mt-2 font-mono">Performance_Metrics</p>
                  </div>
                  <div className="flex gap-8 bg-black/40 px-8 py-4 rounded-2xl border border-white/5 shadow-inner">
                     <div className="flex items-center gap-4">

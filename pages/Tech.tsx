@@ -97,7 +97,7 @@ const ProductHeroSection: React.FC<{
                       <span className="text-[11px] font-black text-white uppercase tracking-widest">{cap}</span>
                    </div>
                    <p className="text-[10px] text-slate-500 leading-relaxed font-bold italic opacity-0 group-hover/cap:opacity-100 transition-opacity duration-500">
-                      High-fidelity structural automation enabled.
+                      Included in this product.
                    </p>
                 </div>
               ))}
@@ -105,7 +105,7 @@ const ProductHeroSection: React.FC<{
            
            <div className="pt-6">
               <button className="px-10 py-5 bg-white text-black rounded-xl font-black text-[11px] uppercase tracking-[0.5em] hover:bg-[#06b6d4] hover:text-white transition-all shadow-[0_20px_40px_rgba(0,0,0,0.5)] active:scale-95 flex items-center gap-5 group">
-                 <span>Explore Architecture</span>
+                 <span>Learn More</span>
                  <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
               </button>
            </div>
@@ -143,7 +143,7 @@ const ProductHeroSection: React.FC<{
               </div>
 
               <div className={`absolute bottom-12 right-12 flex flex-col items-end gap-2 transition-all duration-1000 delay-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                 <span className="text-[8px] font-mono text-slate-500 font-black tracking-[0.4em] uppercase">AU_EAST_CLOUD_NODE</span>
+                 <span className="text-[8px] font-mono text-slate-500 font-black tracking-[0.4em] uppercase">AU_CLOUD_HOSTED</span>
                  <span className="text-[10px] font-mono text-[#06b6d4] font-black tracking-widest uppercase">STABLE_V{tool.version}</span>
               </div>
               
@@ -160,13 +160,13 @@ const ProductHeroSection: React.FC<{
            <div className={`absolute -top-10 -right-10 w-40 h-40 bg-black/80 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-3xl p-6 flex flex-col justify-between transition-all duration-1000 delay-[1200ms] ${isVisible ? 'translate-x-0 translate-y-0 opacity-100' : 'translate-x-20 -translate-y-10 opacity-0'}`}>
               <div className="flex justify-between items-start">
                  <Binary size={20} className="text-[#06b6d4]" />
-                 <span className="text-[8px] font-black text-slate-600 uppercase">RC_BUS_CORE</span>
+                 <span className="text-[8px] font-black text-slate-600 uppercase">PERFORMANCE</span>
               </div>
               <div className="space-y-2">
                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-[#06b6d4] w-[80%] animate-pulse" />
                  </div>
-                 <span className="text-[9px] font-mono text-white/40 block uppercase">0XF2_SYNK_NODE</span>
+                 <span className="text-[9px] font-mono text-white/40 block uppercase">SYNK_ACTIVE</span>
               </div>
            </div>
 
@@ -175,8 +175,8 @@ const ProductHeroSection: React.FC<{
                  <Lock size={20} className="text-[#06b6d4]" />
               </div>
               <div>
-                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Security Node</span>
-                 <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Sovereign_Link</span>
+                 <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Security</span>
+                 <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Encrypted</span>
               </div>
            </div>
 
@@ -202,8 +202,8 @@ const Tech: React.FC = () => {
       version: 'v1.2',
       status: 'STABLE', 
       logo: <SynkCrmLogo width={110} height={24} />, 
-      desc: 'The Relational Backbone. Automated lifecycle mapping and predictive utilization analytics for high-fidelity scale.',
-      capabilities: ['Lifecycle Engine', 'Plan Analytics', 'Direct Integration', 'Predictive Churn']
+      desc: 'Smart client management. Track relationships, automate follow-ups, and scale your business with confidence.',
+      capabilities: ['Client Management', 'Plan Tracking', 'Integrations', 'Churn Prevention']
     },
     { 
       id: 'claim', 
@@ -211,8 +211,8 @@ const Tech: React.FC = () => {
       version: 'v5.4',
       status: 'STABLE', 
       logo: <ClaimSynkLogo size={28} isStable={true} />, 
-      desc: 'The Audit Engine. Eliminates rejected claims via real-time price guide parity and historical leakage detection.',
-      capabilities: ['Real-time Validation', 'Leakage Detection', 'Batch Processing', 'Regulatory Parity']
+      desc: 'Invoicing & claims made simple. Real-time validation, batch processing, and automatic error detection.',
+      capabilities: ['Real-time Checks', 'Error Detection', 'Batch Processing', 'Compliance']
     },
     { 
       id: 'report', 
@@ -220,8 +220,8 @@ const Tech: React.FC = () => {
       version: 'v2.1',
       status: 'STABLE', 
       logo: <ReportSynkLogo size={28} isStable={true} />, 
-      desc: 'The Neural Documenter. Translates support logs into high-compliance, audit-proof case notes in seconds.',
-      capabilities: ['Neural Voice Processing', 'Policy Grounding', 'Voice-to-JSON', 'Contextual Intelligence']
+      desc: 'Turn voice notes into professional reports in seconds. AI-powered documentation that saves hours.',
+      capabilities: ['Voice to Text', 'Smart Templates', 'Instant Reports', 'AI Assistance']
     },
     { 
       id: 'form', 
@@ -229,8 +229,8 @@ const Tech: React.FC = () => {
       version: 'v1.0',
       status: 'BETA', 
       logo: <FormSynkLogo size={28} isStable={false} />, 
-      desc: 'The Intake Accelerator. Automated risk flagging, service agreement generation, and digital signature nodes.',
-      capabilities: ['Risk Engine', 'Auto-Populate', 'Sovereign Storage', 'Policy-Aware Logic']
+      desc: 'Smart intake forms. Auto-populate, digital signatures, and risk flagging built in.',
+      capabilities: ['Risk Flagging', 'Auto-Fill', 'Secure Storage', 'Smart Logic']
     }
   ];
 
@@ -242,16 +242,16 @@ const Tech: React.FC = () => {
         <div className="flex flex-col items-center text-center mb-16 animate-hero-reveal">
           <div className="circuit-capsule mb-10 px-8 py-3 bg-black border-2 border-neon-gold/30 shadow-3xl text-neon-gold inline-flex items-center gap-4">
              <Boxes size={18} className="animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-[0.6em]">Tech Division // Suit v10.13</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.6em]">Tech Division // Suite v10.13</span>
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-white mb-10 uppercase tracking-tighter leading-[0.8] animate-liquid-shimmer">
-            <span className="text-chiseled-silver block mb-4 text-stroked-black">Software</span> 
-            <span className="text-chiseled-gold text-stroked-black">Infrastructure.</span>
+            <span className="text-chiseled-silver block mb-4 text-stroked-black">Our</span> 
+            <span className="text-chiseled-gold text-stroked-black">Products.</span>
           </h1>
           <div className="max-w-3xl mx-auto px-4 space-y-12">
             <p className="text-slate-400 text-xl md:text-2xl font-bold leading-relaxed italic opacity-90 tracking-tight text-center uppercase">
                <DecodingText 
-                text="Architecting organizational freedom through high-fidelity binary logic. Meet the tools that turn red tape into data."
+                text="Simple, powerful tools that handle the busy work — so you can focus on what matters."
                 stagger={5}
                />
             </p>
@@ -273,8 +273,8 @@ const Tech: React.FC = () => {
       <div className="py-40 relative z-10 px-6">
          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20 space-y-6">
-               <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">Unified Diagnostic.</h2>
-               <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[11px]">Systematizing Knowledge in Real-time</p>
+               <h2 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter">See It In Action.</h2>
+               <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[11px]">Smart Tools Working in Real-time</p>
             </div>
             
             <div className="p-1 bg-gradient-to-br from-neon-gold/10 to-transparent rounded-[3rem] shadow-3xl max-w-6xl mx-auto border border-white/5 overflow-hidden">
@@ -284,11 +284,11 @@ const Tech: React.FC = () => {
                         <div className="p-4 bg-royal-950 rounded-2xl border border-neon-gold/20 shadow-2xl">
                            <Activity size={24} className="text-neon-gold" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-[0.5em] text-white">Live_TFix_Diagnostic_Console</span>
+                        <span className="text-[11px] font-black uppercase tracking-[0.5em] text-white">Live Product Demo</span>
                      </div>
                      <div className="flex items-center gap-3">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
-                        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest font-black">NODE_ONLINE_STABLE</span>
+                        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest font-black">DEMO_ACTIVE</span>
                      </div>
                   </div>
                   <TechDemo />

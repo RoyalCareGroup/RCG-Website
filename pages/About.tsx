@@ -11,19 +11,19 @@ const About: React.FC = () => {
     { 
       label: "Our Origin", 
       title: "Front-Line Experience", 
-      desc: "We delivered the care before we built the systems. Our expertise was forged in SIL houses, not boardrooms.",
+      desc: "We started in one of Australia's most complex industries — the NDIS. We delivered the care before we built the systems.",
       id: "ORG_01"
     },
     { 
       label: "Our Approach", 
-      title: "The Provider Bridge", 
-      desc: "We build the tools we wish we had when scaling our own services. Translating NDIS policy into practical technology.",
+      title: "Built From Real Problems", 
+      desc: "We build the tools we wish we had when scaling our own services. Translating real-world business pain into practical technology.",
       id: "STR_04"
     },
     { 
       label: "Our Reach", 
-      title: "National Compliance", 
-      desc: "Keeping national providers ahead of the NDIS Commission's evolving requirements with proactive oversight.",
+      title: "Beyond One Industry", 
+      desc: "Our expertise in NDIS compliance powers tools that work for any business — aged care, allied health, trades, consulting, and more.",
       id: "NAT_09"
     }
   ];
@@ -62,16 +62,16 @@ const About: React.FC = () => {
                 <div className="border-l-4 border-neon-gold pl-12 space-y-8">
                   <h3 className="text-3xl sm:text-4xl font-display font-black text-white uppercase tracking-tight leading-none">Experience-Led <br/>Innovation.</h3>
                   <p className="text-xl sm:text-2xl text-slate-300 font-bold leading-relaxed italic opacity-90">
-                    "Most NDIS software was built by engineers who never ran a support shift. We fixed that."
+                    "We started in one of Australia's most complex industries — the NDIS. Now we build smart tools for businesses of all sizes."
                   </p>
                 </div>
                 
                 <div className="space-y-8 text-lg font-bold text-slate-400 leading-relaxed italic">
                   <p>
-                    Composed of former NDIA staffers, SIL owners, and clinical experts, our team has lived the manual red tape. We transitioned into building smart systems to eliminate administrative burden.
+                    Our team cut its teeth in the trenches — running NDIS services, managing compliance, and living the manual red tape that slows businesses down. We didn't just study the problem. We lived it.
                   </p>
                   <p>
-                    Today, we build specialised AI tools that work <span className="text-white">alongside</span> your people—cutting complex research and keeping every outcome human-verified.
+                    That experience became the foundation for everything we build today. Smart tools that work <span className="text-white">alongside</span> your people — cutting admin, simplifying compliance, and keeping every outcome human-verified. Built for NDIS. Ready for any business.
                   </p>
                 </div>
 
@@ -81,7 +81,7 @@ const About: React.FC = () => {
                    </div>
                    <div>
                       <div className="text-[10px] text-slate-600 font-black uppercase tracking-[0.6em] font-mono">Our Mission</div>
-                      <div className="text-white text-sm font-black uppercase tracking-[0.2em] mt-2">Built by Providers, for Providers.</div>
+                      <div className="text-white text-sm font-black uppercase tracking-[0.2em] mt-2">Smart Systems for Smarter Business.</div>
                    </div>
                 </div>
               </div>

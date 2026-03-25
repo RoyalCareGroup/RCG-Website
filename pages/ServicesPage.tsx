@@ -5,12 +5,12 @@ import { DecodingText } from '../components/DecodingText.tsx';
 
 const ServicesPage: React.FC = () => {
   const businessServices = [
-    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Custom NDIS Software", desc: "Purpose-built apps and systems designed specifically for NDIS providers. From compliance tools to participant management." },
-    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "NDIS Training Packages", desc: "Custom training designed for your team. Compliance, best practice, and operational efficiency modules." },
-    { icon: <Database size={24} className="text-neon-gold" />, title: "Business Consulting", desc: "Strategic consulting to restructure your NDIS operations. Audit-ready processes and scalable systems." },
-    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "NDIS Business Acquisitions", desc: "Due diligence and risk assessment for buying or selling NDIS registered businesses." },
-    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Compliance Solutions", desc: "Real-time compliance monitoring and audit preparation. Stay ahead of NDIS Commission requirements." },
-    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Product Integration", desc: "Direct setup and onboarding of our SYNK suite tools to streamline your daily operations." }
+    { icon: <Terminal size={24} className="text-neon-gold" />, title: "Custom Business Software", desc: "Purpose-built apps and systems designed for your industry. From compliance tools to client management — tailored to how you actually work." },
+    { icon: <GraduationCap size={24} className="text-slate-400" />, title: "Custom Training Packages", desc: "Training designed for your team. Compliance, best practice, and operational efficiency modules for NDIS, aged care, allied health, and more." },
+    { icon: <Database size={24} className="text-neon-gold" />, title: "Business Consulting", desc: "Strategic consulting to restructure your operations. Audit-ready processes and scalable systems for regulated and growing businesses." },
+    { icon: <TrendingUp size={24} className="text-slate-400" />, title: "Business Acquisitions & Due Diligence", desc: "Due diligence and risk assessment for buying or selling businesses — with specialist expertise in NDIS registered providers." },
+    { icon: <ShieldCheck size={24} className="text-neon-gold" />, title: "Compliance Solutions", desc: "Real-time compliance monitoring and audit preparation. Stay ahead of regulatory requirements across NDIS, aged care, and allied health." },
+    { icon: <Code size={24} className="text-slate-400" />, title: "SYNK Product Integration", desc: "Direct setup and onboarding of our SYNK suite tools to streamline your daily operations — for any business, any industry." }
   ];
 
   return (
@@ -28,7 +28,7 @@ const ServicesPage: React.FC = () => {
           </h1>
           <div className="max-w-5xl mx-auto text-center">
             <div className="text-xl sm:text-2xl text-slate-600 dark:text-slate-400 font-bold leading-relaxed italic opacity-90 tracking-tight uppercase">
-               <DecodingText text="Elite Consulting • Assistive Tech • National NDIS Solutions" stagger={15} />
+               <DecodingText text="Business Consulting • Smart Tech • Industry Expertise" stagger={15} />
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@ const ServicesPage: React.FC = () => {
                 <span className="text-chiseled-gold text-stroked-black">Compliance.</span>
               </h2>
               <p className="text-xl text-slate-300 font-bold italic leading-relaxed">
-                Connect your existing software ecosystem to our SYNK Core and eliminate administrative burden instantly.
+                Connect your existing software ecosystem to our SYNK platform and eliminate administrative burden instantly.
               </p>
               <Link to="/contact" className="px-12 py-6 bg-white text-black font-black text-[12px] tracking-[0.5em] uppercase rounded-xl hover:bg-neon-gold hover:text-black transition-all inline-flex items-center gap-6">
                 Connect My Systems <ArrowRight size={20} />

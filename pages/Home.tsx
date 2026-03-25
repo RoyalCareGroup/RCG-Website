@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -16,23 +15,23 @@ const Home = () => {
       title: "Our Services",
       subtitle: "What We Offer",
       icon: <Briefcase size={20} className="text-neon-gold" />,
-      desc: "NDIS consulting, custom training packages, and tech solutions built for providers.",
+      desc: "Business consulting, custom training packages, and tech solutions — with deep expertise in NDIS, aged care, and allied health.",
       path: "/services",
       btnText: "Explore",
     },
     {
-      title: "NDIS Consulting",
-      subtitle: "Business Advisory",
+      title: "Business Consulting",
+      subtitle: "Strategic Advisory",
       icon: <Target size={20} className="text-neon-blue" />,
-      desc: "Strategic guidance to build, scale, and bulletproof your NDIS provider business.",
+      desc: "Strategic guidance to build, scale, and future-proof your business — from compliance-heavy industries to professional services.",
       path: "/consultancy",
       btnText: "Get Started",
     },
     {
       title: "SYNK Tech Suite",
-      subtitle: "Built for NDIS",
+      subtitle: "Built for Business",
       icon: <Cpu size={20} className="text-neon-gold" />,
-      desc: "Purpose-built tools that automate compliance, notes, invoicing, and communication.",
+      desc: "Smart tools that automate compliance, notes, invoicing, and communication for businesses of all sizes.",
       path: "/tech",
       btnText: "View Products",
     }
@@ -55,7 +54,7 @@ const Home = () => {
              <div className="max-w-4xl mx-auto text-center px-4 space-y-8">
                <div className="text-slate-600 dark:text-slate-400 text-sm sm:text-base font-bold leading-relaxed italic opacity-90 tracking-tight text-center uppercase">
                  <DecodingText 
-                    text="Systematizing Your NDIS Knowledge"
+                    text="Smart Tools for Smarter Business"
                     stagger={25}
                     glow={true}
                     className="text-slate-950 dark:text-white"
@@ -71,7 +70,7 @@ const Home = () => {
 
                  <Link to="/consultancy" className={heroBtnClass}>
                    <Target size={14} className="text-neon-gold" />
-                   <span>NDIS Consulting</span>
+                   <span>Business Consulting</span>
                    <ArrowRight size={14} className="text-neon-gold group-hover:translate-x-1 transition-transform" />
                  </Link>
 
@@ -93,11 +92,11 @@ const Home = () => {
           <div className="mt-10 grid grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="p-3">
               <div className="text-2xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">4+</div>
-              <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.3em]">Years in NDIS</div>
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.3em]">Years in Business</div>
             </div>
             <div className="p-3">
               <div className="text-2xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">170+</div>
-              <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.3em]">Participants Supported</div>
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-[0.3em]">Clients Supported</div>
             </div>
             <div className="p-3">
               <div className="text-2xl font-black text-slate-950 dark:text-white mb-1 tracking-tighter">5</div>
@@ -146,7 +145,7 @@ const Home = () => {
       <section className="py-16 relative z-10 border-t border-slate-200 dark:border-white/5 px-4 text-center">
          <div className="max-w-5xl mx-auto space-y-8">
            <div className="circuit-capsule border border-slate-300 dark:border-neon-gold/20 text-[9px] px-8 py-3 inline-flex bg-white dark:bg-black shadow-xl items-center gap-4 text-slate-600 dark:text-neon-gold/80 uppercase font-black tracking-[0.4em]">
-              <Scale size={16} className="animate-pulse" /> NDIS Business Intelligence
+              <Scale size={16} className="animate-pulse" /> Business Intelligence
            </div>
            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-black uppercase tracking-tighter leading-[0.9] animate-liquid-shimmer">
               <span className="text-chiseled-silver block mb-2 text-stroked-black">Eliminate administrative debt</span> 

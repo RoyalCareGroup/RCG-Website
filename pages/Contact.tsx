@@ -26,11 +26,11 @@ async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: 
 }
 
 const INQUIRY_OPTIONS = [
-  "NDIS Business Consulting",
+  "Business Consulting",
   "SYNK Products & Tech",
   "Compliance & Audit Support",
-  "Training Packages",
-  "Website Development",
+  "Custom Training",
+  "Software Development",
   "General Inquiry"
 ];
 
@@ -47,7 +47,7 @@ const Contact: React.FC = () => {
   const cachedBufferRef = useRef<AudioBuffer | null>(null);
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const introTextRaw = `We're a tech company built by people who've actually\nworked in the NDIS — not just read about it.\n\nWe know the compliance headaches, the admin overload,\nand the gap between what providers need and what\nmost software actually delivers.\n\nSo we built something better.\n\nDrop us a message below and a real person from our\nteam will get back to you — usually within 24 hours.`;
+  const introTextRaw = `We're a tech company built by people who've actually\nrun businesses in complex, regulated industries.\n\nWe know the compliance headaches, the admin overload,\nand the gap between what businesses need and what\nmost software actually delivers.\n\nSo we built something better.\n\nDrop us a message below and a real person from our\nteam will get back to you — usually within 24 hours.`;
 
   const handleReadAloud = async () => {
     if (isReadingAloud) {
@@ -92,7 +92,7 @@ const Contact: React.FC = () => {
     setIsAnalyzing(true);
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `Analyze this NDIS provider inquiry for integrity and intent: NAME: "${formData.name}", MESSAGE: "${formData.msg}". Return JSON: {category, intent}.`;
+      const prompt = `Analyze this business inquiry for integrity and intent: NAME: "${formData.name}", MESSAGE: "${formData.msg}". Return JSON: {category, intent}.`;
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
